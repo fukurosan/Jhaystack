@@ -9,7 +9,7 @@ npm install Jhaystack
 
 Typically you would use the library like so:
 ```javascript
-import Jhaystack from "Jhaystack"
+import Jhaystack from "jhaystack"
 const se = new Jhaystack()
 const data = [
     {
@@ -26,7 +26,7 @@ Jhaystack can also include only certain key values in your JSON objects, or alte
 You can configure your Jhaystack instance by passing either an inclusion or disclusion array to the constructor. The first argument to the constructor is the inclusion array, and the second is the disclusion array. You can technically pass both of them, but it doesn't really make sense.
 
 ```javascript
-import Jhaystack from "Jhaystack"
+import Jhaystack from "jhaystack"
 const include = ["name"]
 const disclude = ["name"]
 const seInc = new Jhaystack(include, null)
