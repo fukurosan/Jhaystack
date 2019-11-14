@@ -9,6 +9,10 @@
     "build": "babel src --out-dir lib --copy-files",
     "prepublish": "npm run clean && npm run build"
   },
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/your-user/repo-url.git"
+  },
   "keywords": [
     "JSON",
     "search",
