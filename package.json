@@ -1,0 +1,25 @@
+{
+  "name": "jhaystack",
+  "version": "0.0.1",
+  "description": "A simple JSON object search engine",
+  "main": "./lib/index.js",
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "clean": "rimraf lib",
+    "build": "babel src --out-dir lib --copy-files",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "JSON",
+    "search",
+    "engine"
+  ],
+  "author": "Henrik Olofsson",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "rimraf": "^3.0.0"
+  }
+}
