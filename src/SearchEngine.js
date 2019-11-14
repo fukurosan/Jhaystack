@@ -15,8 +15,8 @@ export default class SearchEngine {
         : this.traverseItem(item, searchString, false, false) && fuzzyHits.push(item)
     })
     let results = {
-      strictHits: strictHits,
-      fuzzyHits: fuzzyHits
+      strict: strictHits,
+      fuzzy: fuzzyHits
     }
     return results
   }
@@ -89,7 +89,7 @@ export default class SearchEngine {
     out = Array.isArray(o) ? [] : {}
     for (key in o) {
       v = o[key]
-      out[key] = typeof v === "object" && v !== null ? copyObject(v) : v
+      out[key] = typeof v === "object" && v !== null ? this.copyObject(v) : v
     }
     return out
   }
