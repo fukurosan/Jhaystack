@@ -1,3 +1,3 @@
-import SearchEngine from "./SearchEngine"
+import Jhaystack from "./SearchEngine"
 
-export = SearchEngine
+export = Jhaystack

@@ -1,7 +1,7 @@
 {
   "name": "jhaystack",
   "version": "0.0.1",
-  "description": "A simple JSON object search engine",
+  "description": "A simple JSON search utility",
   "main": "./lib/index.js",
   "types": "./src/index.d.ts",
   "scripts": {
