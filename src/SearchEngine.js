@@ -112,4 +112,22 @@ export default class SearchEngine {
     }
   }
 
+  extractNestedObjects(object, key, value) {
+    let foundArr = []
+    const seen = new WeakSet()
+    JSON.stringify(object, (currKey, nestedValue) => {
+      if(typeof nestedValue === "object" && nestedValue !== null){
+        if(seen.has(nestedValue)){
+          return
+        }
+        seen.add(nestedValue)
+      }
+      if(nestedValue && nestedValue[key] === value) {
+        foundArr.push(nestedValue)
+      }
+      return nestedValue
+    })
+    return foundArr
+  }
+
 }

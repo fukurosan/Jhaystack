@@ -42,3 +42,34 @@ const data = [
 const resultsInc = seInc.search(data, "tm")
 const resultsDesc = seDesc.search(data, "tm")
 ```
+
+Finally, you can use Jhaystack to find nested objects inside other objects, and extract these. It's really simple:
+
+```javascript
+import Jhaystack from "jhaystack"
+const attribute = ["id"]
+const disclude = ["1"]
+const se = new Jhaystack(null, null)
+const data = [
+    {
+        nestedObjects: [
+            {
+                id: "1",
+                text: "You found me!"
+            },
+            {
+                id: "2"
+            }
+        ]
+    },
+    {
+        nestedObjects: [
+            {
+                id: "3"
+            }
+        ]
+    }
+]
+const resultArray = se.extractNestedObjects(data, "id", "1")
+//[{ id: "1", text: "You found me!" }]
+```
