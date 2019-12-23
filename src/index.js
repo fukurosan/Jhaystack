@@ -1,3 +1,9 @@
-import Jhaystack from "./SearchEngine"
+import Jhaystack from "./Jhaystack"
+import ComparisonStrategies from "./Strategies/ComparisonStrategy"
+import TraversalStrategies from "./Strategies/TraversalStrategy"
 
-module.exports = Jhaystack
+module.exports = {
+    Jhaystack: Jhaystack,
+    ComparisonStrategies: ComparisonStrategies,
+    TraversalStrategies: TraversalStrategies
+}
