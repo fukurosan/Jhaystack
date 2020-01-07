@@ -10,7 +10,7 @@
     "build:wbp": "webpack --config webpack.config.js",
     "build:lib": "babel src --out-dir lib --copy-files",
     "prepublish": "npm run clean && npm run build",
-    "test": "jest"
+    "test": "jest --coverage --verbose"
   },
   "repository": {
     "type": "git",

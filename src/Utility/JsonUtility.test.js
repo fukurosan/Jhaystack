@@ -20,11 +20,12 @@ const data = {
     ]
 }
 
-
-test("Deep copy works!", () => {
-    const clone = deepCopyObject(data)
-    const dataString = JSON.stringify(data)
-    const cloneString = JSON.stringify(clone)
-    expect(clone === data).toBe(false)
-    expect(cloneString === dataString).toBe(true)
+describe("JSON Utility Module", () => {
+    it("Deep copy works!", () => {
+        const clone = deepCopyObject(data)
+        const dataString = JSON.stringify(data)
+        const cloneString = JSON.stringify(clone)
+        expect(clone === data).toBe(false)
+        expect(cloneString === dataString).toBe(true)
+    })
 })
