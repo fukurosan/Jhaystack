@@ -13,7 +13,7 @@ Jhaystack is highly modular, and built on configurable traversal and comparison 
 To use Jhaystack you need to supply a traversal strategy, an array of comparison strategies, as well as an array of objects to be searched (a.k.a. the "dataset").
 
 #### Typical Usage
-Typically you would use the library by creating an instance of Jhaystack and setting it up using the built in functions. This involves provided a traversal strategy, an array of comparison strategies, an (optional) result limit in the form of an integer, and a dataset. The search function can then be used to execute a search.
+Typically you would use the library by creating an instance of Jhaystack and setting it up using the built in functions. This involves providing a traversal strategy, an array of comparison strategies, an (optional) result limit in the form of an integer, and a dataset. The search function can then be used to execute a search.
 ```javascript
 import { Jhaystack, TraversalStrategies, ComparisonStrategies } from "jhaystack"
 const data = [
