@@ -1,6 +1,6 @@
-export const FUZZY_SEARCH = (term, context) => {
-    term = term.toLowerCase().replace(/ /g, "")
-    context = context.toLowerCase().replace(/ /g, "")
+export const FUZZY = (term, context) => {
+    term = ("" + term).toUpperCase().replace(/ /g, "")
+    context = ("" + context).toUpperCase().replace(/ /g, "")
     const clen = context.length
     const tlen = term.length
     if (tlen > clen) {
@@ -25,20 +25,45 @@ export const FUZZY_SEARCH = (term, context) => {
 }
 
 export const STARTS_WITH = (term, context) => {
-    return context.toLowerCase().startsWith(term.toLowerCase())
+    return ("" + context).startsWith("" + term)
+}
+
+export const STARTS_WITH_CASE_INSENSITIVE = (term, context) => {
+    return ("" + context).toUpperCase().startsWith(("" + term).toUpperCase())
+}
+
+export const ENDS_WITH = (term, context) => {
+    return ("" + context).endsWith("" + term)
+}
+
+export const ENDS_WITH_CASE_INSENSITIVE = (term, context) => {
+    return ("" + context).toUpperCase().endsWith(("" + term).toUpperCase())
 }
 
 export const CONTAINS = (term, context) => {
-    return context.toLowerCase().indexOf(term.toLowerCase()) > -1
+    return ("" + context).indexOf("" + term) > -1
 }
 
-export const EXACT_MATCH = (term, context) => {
-    return context === term
+export const CONTAINS_CASE_INSENSITIVE = (term, context) => {
+    return ("" + context).toUpperCase().indexOf(("" + term).toUpperCase()) > -1
+}
+
+export const EQUALS = (term, context) => {
+    return ("" + context) === ("" + term)
+}
+
+export const EQUALS_CASE_INSENSITIVE = (term, context) => {
+    return ("" + context).toUpperCase() === ("" + term).toUpperCase()
 }
 
 export default {
-    FUZZY_SEARCH,
+    FUZZY,
     STARTS_WITH,
+    STARTS_WITH_CASE_INSENSITIVE,
+    ENDS_WITH,
+    ENDS_WITH_CASE_INSENSITIVE,
     CONTAINS,
-    EXACT_MATCH
+    CONTAINS_CASE_INSENSITIVE,
+    EQUALS,
+    EQUALS_CASE_INSENSITIVE
 }

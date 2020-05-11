@@ -1,19 +1,19 @@
 import { attributeValidator } from "./Validation"
 
-const includedAttributes = [
-    "A",
-    "B",
-    "C"
-]
-
-const ignoredAttributes = [
-    "A",
-    "B",
-    "C"
-]
-
 describe("Validation Module", () => {
-    it("Attribute validation works!", () => {
+    const includedAttributes = [
+        "A",
+        "B",
+        "C"
+    ]
+    
+    const ignoredAttributes = [
+        "A",
+        "B",
+        "C"
+    ]
+
+    it("Correctly validates attributes!", () => {
         const attribute = "A"
         const wildAttribute = "G"
         const resultIncluded = attributeValidator(attribute, includedAttributes, null)

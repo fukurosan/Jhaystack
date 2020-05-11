@@ -1,7 +1,11 @@
-export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy, validator) => {
+export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy, validator, limit) => {
     let hits = []
+    let numberOfFound = 0
     const seen = new WeakSet()
     objectArray.forEach(object => {
+        if (limit && numberOfFound >= limit) {
+            return
+        }
         JSON.stringify(object, (currKey, nestedValue) => {
             if (typeof nestedValue === "object" && nestedValue !== null) {
                 if (seen.has(nestedValue)) {
@@ -9,9 +13,14 @@ export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy
                 }
                 seen.add(nestedValue)
                 Object.keys(nestedValue).forEach(key => {
-                    if (typeof nestedValue[key] !== "object" && !Array.isArray(nestedValue[key])) {
-                        if (validator(key) && comparisonStrategy(searchString, nestedValue[key])) {
-                            hits.push(nestedValue)
+                    let isHit = false
+                    if (typeof nestedValue[key] !== "object" && !Array.isArray(nestedValue[key]) && validator(key)) {
+                        for (let i = 0; i < comparisonStrategy.length; i++) {
+                            if (comparisonStrategy[i](searchString, nestedValue[key])) {
+                                hits.push(nestedValue)
+                                numberOfFound++
+                                break
+                            }
                         }
                     }
                 })
@@ -22,44 +31,103 @@ export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy
     return hits
 }
 
-export const RETURN_ROOT_ON_FIRST_FOUND = (objectArray, searchString, comparisonStrategy, validator) => {
+export const RETURN_ROOT_ON_FIRST_MATCH = (objectArray, searchString, comparisonStrategy, validator, limit) => {
     let hits = []
-
-    const traverse = (object, searchString) => {
+    let numberOfFound = 0
+    const traverse = (object) => {
         let isHit = false
         Object.keys(object).forEach(key => {
-            if (validator(key)) {
+            if (validator(key) && !isHit) {
                 const thisItem = object[key]
-                if (thisItem !== null && typeof thisItem !== "object") {
-                    if (!isHit) {
-                        isHit = comparisonStrategy(searchString, thisItem)
+                if (thisItem !== null && typeof thisItem !== "object" && !isHit) {
+                    for (let i = 0; i < comparisonStrategy.length; i++) {
+                        isHit = comparisonStrategy[i](searchString, thisItem)
+                        if (isHit) {
+                            break
+                        }
                     }
                 }
             }
         })
-        if (isHit) {
-            return true
-        }
-        else {
+        if (!isHit) {
             Object.keys(object).forEach(key => {
                 if (object[key] === Object(object[key])) {
-                    if (traverse(object[key], searchString)) {
-                        return true
+                    if (traverse(object[key])) {
+                        isHit = true
                     }
                 }
             })
         }
-        return false
+        return isHit
     }
 
     objectArray.forEach(item => {
-        traverse(item, searchString) && hits.push(item)
+        if(limit && numberOfFound >= limit) {
+            return
+        }
+        traverse(item, searchString) && 
+        hits.push(item) && 
+        numberOfFound++
     })
 
     return hits
 }
 
+export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (objectArrayIn, searchString, comparisonStrategy, validator, limit) => {
+    const objectArray = [...objectArrayIn]
+    let hits = []
+    let numberOfFound = 0
+    comparisonStrategy.forEach(() => hits.push([]))
+
+    const traverse = (object, comparisonFunction) => {
+        let isHit = false
+        Object.keys(object).forEach(key => {
+            if (validator(key) && !isHit) {
+                const thisItem = object[key]
+                if (thisItem !== null && typeof thisItem !== "object" && !isHit) {
+                    isHit = comparisonFunction(searchString, thisItem)
+                }
+            }
+        })
+        if (!isHit) {
+            Object.keys(object).forEach(key => {
+                if (object[key] === Object(object[key]) && !isHit) {
+                    if (traverse(object[key], comparisonFunction)) {
+                        isHit = true
+                    }
+                }
+            })
+        }
+        return isHit
+    }
+
+    comparisonStrategy.forEach((comparisonFunction, strategyIndex) => {
+        for (let objectIndex = 0; objectIndex < objectArray.length; objectIndex++) {
+            if(limit && numberOfFound >= limit) {
+                return
+            }
+            const isHit = traverse(objectArray[objectIndex], comparisonFunction)
+            if (isHit) {
+                const foundObject = objectArray.splice(objectIndex, objectIndex === 0 ? 1 : objectIndex)[0]
+                hits[strategyIndex].push(foundObject)
+                numberOfFound++
+                objectIndex--
+            }
+        }
+    })
+
+    let result = []
+    hits.forEach(hitArray => {
+        result = [...result, ...hitArray]
+    })
+
+    return result
+}
+
+
+
 export default {
     EXTRACT_ALL_NESTED,
-    RETURN_ROOT_ON_FIRST_FOUND
+    RETURN_ROOT_ON_FIRST_MATCH,
+    RETURN_ROOT_ON_FIRST_MATCH_ORDERED
 }
