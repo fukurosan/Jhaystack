@@ -13,7 +13,6 @@ export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy
                 }
                 seen.add(nestedValue)
                 Object.keys(nestedValue).forEach(key => {
-                    let isHit = false
                     if (typeof nestedValue[key] !== "object" && !Array.isArray(nestedValue[key]) && validator(key)) {
                         for (let i = 0; i < comparisonStrategy.length; i++) {
                             if (comparisonStrategy[i](searchString, nestedValue[key])) {
