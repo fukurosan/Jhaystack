@@ -123,8 +123,6 @@ export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (objectArrayIn, searchString, 
     return result
 }
 
-
-
 export default {
     EXTRACT_ALL_NESTED,
     RETURN_ROOT_ON_FIRST_MATCH,

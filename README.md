@@ -25,8 +25,8 @@ const data = [
     }
 ]
 const se = new Jhaystack()
-    .setTraversalStrategy(TraversalStrategies.RETURN_ROOT_ON_FIRST_MATCH_ORDERED)
-    .setComparisonStrategy([ComparisonStrategies.STARTS_WITH, ComparisonStrategies.FUZZY])
+    .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH_ORDERED)
+    .setComparisonStrategy([ComparisonStrategy.STARTS_WITH, ComparisonStrategy.FUZZY])
     .setLimit(2)
     .setDataset(data)
 const results = se.search("tm")
@@ -47,13 +47,13 @@ const data = [
     }
 ]
 const seInc = new Jhaystack()
-    .setTraversalStrategy(TraversalStrategies.RETURN_ROOT_ON_FIRST_MATCH)
-    .setComparisonStrategy([ComparisonStrategies.FUZZY])
+    .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
+    .setComparisonStrategy([ComparisonStrategy.FUZZY])
     .setDataset(data)
     .setIncludedAttributes(attributeArray)
 const seIgn = new Jhaystack()
-    .setTraversalStrategy(TraversalStrategies.RETURN_ROOT_ON_FIRST_MATCH)
-    .setComparisonStrategy([ComparisonStrategies.FUZZY])
+    .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
+    .setComparisonStrategy([ComparisonStrategy.FUZZY])
     .setDataset(data)
     .setIgnoredAttributes(attributeArray)
 const resultsIncluded = seInc.search("tm")

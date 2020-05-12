@@ -9,6 +9,5 @@ package-lock.json
 yarn.lock
 
 # project files
-src
 .babelrc
 .gitignore

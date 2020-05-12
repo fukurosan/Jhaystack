@@ -1,4 +1,4 @@
-import { Jhaystack, ComparisonStrategies, TraversalStrategies } from "./index"
+import { Jhaystack, ComparisonStrategy, TraversalStrategy } from "./index"
 
 describe("End to end", () => {
     const data = [
@@ -30,8 +30,8 @@ describe("End to end", () => {
 
     it("Typical fuzzy match setup works", () => {
         const se = new Jhaystack()
-            .setComparisonStrategy([ComparisonStrategies.FUZZY])
-            .setTraversalStrategy(TraversalStrategies.RETURN_ROOT_ON_FIRST_MATCH)
+            .setComparisonStrategy([ComparisonStrategy.FUZZY])
+            .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
             .setDataset(data)
         const result = se.search("dck")
         expect(result.length).toBe(1)
@@ -40,8 +40,8 @@ describe("End to end", () => {
 
     it("Library correctly parses incorrectly specified comparison strategy", () => {
         const se = new Jhaystack()
-            .setComparisonStrategy(ComparisonStrategies.FUZZY)
-            .setTraversalStrategy(TraversalStrategies.RETURN_ROOT_ON_FIRST_MATCH)
+            .setComparisonStrategy(ComparisonStrategy.FUZZY)
+            .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
             .setDataset(data)
         const result = se.search("dck")
         expect(result.length).toBe(1)
@@ -50,8 +50,8 @@ describe("End to end", () => {
 
     it("Typical setup with a limiter works", () => {
         const se = new Jhaystack()
-            .setComparisonStrategy([ComparisonStrategies.CONTAINS])
-            .setTraversalStrategy(TraversalStrategies.RETURN_ROOT_ON_FIRST_MATCH)
+            .setComparisonStrategy([ComparisonStrategy.CONTAINS])
+            .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
             .setDataset(data)
             .setLimit(1)
         let result = se.search("min")

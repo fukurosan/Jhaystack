@@ -1,9 +1,11 @@
 import Jhaystack from "./Jhaystack"
-import ComparisonStrategies from "./Strategies/ComparisonStrategy"
-import TraversalStrategies from "./Strategies/TraversalStrategy"
+import ComparisonStrategy from "./Strategies/ComparisonStrategy"
+import TraversalStrategy from "./Strategies/TraversalStrategy"
 
-module.exports = {
-    Jhaystack: Jhaystack,
-    ComparisonStrategies: ComparisonStrategies,
-    TraversalStrategies: TraversalStrategies
+export default Jhaystack
+
+export {
+    Jhaystack,
+    ComparisonStrategy,
+    TraversalStrategy
 }
