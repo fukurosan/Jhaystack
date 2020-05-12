@@ -107,7 +107,7 @@ export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (objectArrayIn, searchString, 
             }
             const isHit = traverse(objectArray[objectIndex], comparisonFunction)
             if (isHit) {
-                const foundObject = objectArray.splice(objectIndex, objectIndex === 0 ? 1 : objectIndex)[0]
+                const foundObject = objectArray.splice(objectIndex, 1)[0]
                 hits[strategyIndex].push(foundObject)
                 numberOfFound++
                 objectIndex--
