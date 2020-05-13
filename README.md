@@ -101,3 +101,5 @@ There are quite a few things that I hope to do moving forward:
 - Make things faster (there's a lot that can be done!)
 - Implement search indexes
 - Make more detailed tests
+- Allow for users to specifiy a regex for attribute path evaluations
+- Preprocess attribute validations
