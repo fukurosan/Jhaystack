@@ -56,6 +56,18 @@ export const EQUALS_CASE_INSENSITIVE = (term, context) => {
     return ("" + context).toUpperCase() === ("" + term).toUpperCase()
 }
 
+export const FULL_TEXT = (term, context) => {
+    let found = 0
+    const termWords = ("" + term).toUpperCase().split(" ")
+    const contextWords = ("" + context).toUpperCase().split(" ")
+    termWords.forEach(termWord => {
+        if(contextWords.indexOf(termWord) > -1) {
+            found++
+        }
+    })
+    return found === termWords.length
+}
+
 export default {
     FUZZY,
     STARTS_WITH,
@@ -65,5 +77,6 @@ export default {
     CONTAINS,
     CONTAINS_CASE_INSENSITIVE,
     EQUALS,
-    EQUALS_CASE_INSENSITIVE
+    EQUALS_CASE_INSENSITIVE,
+    FULL_TEXT
 }

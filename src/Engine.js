@@ -10,6 +10,8 @@ export default class SearchEngine {
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH
     this.data = []
     this.limit = null
+    this.ignoredAttributes = null
+    this.includedAttributes = null
   }
 
   setComparisonStrategy(strategy) {
@@ -28,12 +30,24 @@ export default class SearchEngine {
   }
 
   setIgnoredAttributes(attributes) {
-    this.ignoredAttributes = this.ignoredAttributes
-    return this
+    if (!attributes) {
+      this.ignoredAttributes = null
+    }
+    else {
+      this.ignoredAttributes = {}
+      attributes.forEach(attr => this.ignoredAttributes[attr] = true)
+      return this
+    }
   }
 
   setIncludedAttributes(attributes) {
-    this.includedAttributes = attributes
+    if (!attributes) {
+      this.includedAttributes = null
+    }
+    else {
+      this.includedAttributes = {}
+      attributes.forEach(attr => this.includedAttributes[attr] = true)
+    }
     return this
   }
 

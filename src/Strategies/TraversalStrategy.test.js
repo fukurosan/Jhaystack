@@ -34,14 +34,14 @@ describe("Traversal Strategy", () => {
 
             let result = RETURN_ROOT_ON_FIRST_MATCH_ORDERED(data, searchString, comparisonStrategies, validator)
             expect(result.length).toBe(2)
-            expect(result[0].firstName).toBe("mini")
-            expect(result[1].firstName).toBe("Benjamin")
+            expect(result[0].item.firstName).toBe("mini")
+            expect(result[1].item.firstName).toBe("Benjamin")
 
             comparisonStrategies = [CONTAINS, STARTS_WITH]
             result = RETURN_ROOT_ON_FIRST_MATCH_ORDERED(data, searchString, comparisonStrategies, validator)
             expect(result.length).toBe(2)
-            expect(result[0].firstName).toBe("Benjamin")
-            expect(result[1].firstName).toBe("mini")
+            expect(result[0].item.firstName).toBe("Benjamin")
+            expect(result[1].item.firstName).toBe("mini")
         })
 
         it("Correctly limits results", () => {
@@ -49,7 +49,7 @@ describe("Traversal Strategy", () => {
             let searchString = "min"
             let result = RETURN_ROOT_ON_FIRST_MATCH_ORDERED(data, searchString, comparisonStrategies, validator, 1)
             expect(result.length).toBe(1)
-            expect(result[0].firstName).toBe("mini")
+            expect(result[0].item.firstName).toBe("mini")
         })
 
         it("Correctly finds nested objects", () => {
@@ -57,7 +57,7 @@ describe("Traversal Strategy", () => {
             let searchString = "Nes"
             let result = RETURN_ROOT_ON_FIRST_MATCH_ORDERED(data, searchString, comparisonStrategies, validator)
             expect(result.length).toBe(1)
-            expect(result[0].id).toBe("1")
+            expect(result[0].item.id).toBe("1")
         })
     })
 
@@ -67,7 +67,7 @@ describe("Traversal Strategy", () => {
             let searchString = "obj"
             let result = EXTRACT_ALL_NESTED(data, searchString, comparisonStrategies, validator)
             expect(result.length).toBe(1)
-            expect(result[0].id).toBe("3")
+            expect(result[0].item.id).toBe("3")
         })    
 
         it("Correctly limits results", () => {
@@ -75,7 +75,7 @@ describe("Traversal Strategy", () => {
             let searchString = "min"
             let result = EXTRACT_ALL_NESTED(data, searchString, comparisonStrategies, validator, 1)
             expect(result.length).toBe(1)
-            expect(result[0].firstName).toBe("Benjamin")
+            expect(result[0].item.firstName).toBe("Benjamin")
         })
     })
 
@@ -85,7 +85,7 @@ describe("Traversal Strategy", () => {
             let searchString = "obj"
             let result = RETURN_ROOT_ON_FIRST_MATCH(data, searchString, comparisonStrategies, validator)
             expect(result.length).toBe(1)
-            expect(result[0].id).toBe("1")
+            expect(result[0].item.id).toBe("1")
         })
 
         it("Correctly limits results", () => {
@@ -93,7 +93,7 @@ describe("Traversal Strategy", () => {
             let searchString = "min"
             let result = RETURN_ROOT_ON_FIRST_MATCH(data, searchString, comparisonStrategies, validator, 1)
             expect(result.length).toBe(1)
-            expect(result[0].firstName).toBe("Benjamin")
+            expect(result[0].item.firstName).toBe("Benjamin")
         })
     })
 })

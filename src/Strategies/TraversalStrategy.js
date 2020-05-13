@@ -1,7 +1,7 @@
 export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy, validator, limit) => {
     let hits = []
     let numberOfFound = 0
-    const seen = new WeakSet()
+    const seen = new Set()
     objectArray.forEach(object => {
         if (limit && numberOfFound >= limit) {
             return
@@ -13,10 +13,14 @@ export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy
                 }
                 seen.add(nestedValue)
                 Object.keys(nestedValue).forEach(key => {
-                    if (typeof nestedValue[key] !== "object" && !Array.isArray(nestedValue[key]) && validator(key)) {
+                    if (typeof nestedValue[key] !== "object" && !Array.isArray(nestedValue[key]) && validator([key])) {
                         for (let i = 0; i < comparisonStrategy.length; i++) {
                             if (comparisonStrategy[i](searchString, nestedValue[key])) {
-                                hits.push(nestedValue)
+                                hits.push({
+                                    path: [key],
+                                    depth: 1,
+                                    item: nestedValue
+                                })
                                 numberOfFound++
                                 break
                             }
@@ -31,16 +35,20 @@ export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy
 }
 
 export const RETURN_ROOT_ON_FIRST_MATCH = (objectArray, searchString, comparisonStrategy, validator, limit) => {
-    let hits = []
-    let numberOfFound = 0
-    const traverse = (object) => {
+    const traverse = (object, path = []) => {
         let isHit = false
         Object.keys(object).forEach(key => {
-            if (validator(key) && !isHit) {
+            const nextPath = [...path, key]
+            if (!isHit && validator(nextPath)) {
                 const thisItem = object[key]
-                if (thisItem !== null && typeof thisItem !== "object" && !isHit) {
+                if (thisItem !== null && typeof thisItem !== "object") {
                     for (let i = 0; i < comparisonStrategy.length; i++) {
-                        isHit = comparisonStrategy[i](searchString, thisItem)
+                        if (comparisonStrategy[i](searchString, thisItem)) {
+                            isHit = {
+                                path: nextPath,
+                                depth: nextPath.length
+                            }
+                        }
                         if (isHit) {
                             break
                         }
@@ -50,65 +58,70 @@ export const RETURN_ROOT_ON_FIRST_MATCH = (objectArray, searchString, comparison
         })
         if (!isHit) {
             Object.keys(object).forEach(key => {
-                if (object[key] === Object(object[key])) {
-                    if (traverse(object[key])) {
-                        isHit = true
-                    }
+                if (!isHit && object[key] === Object(object[key])) {
+                    isHit = traverse(object[key], [...path, key])
                 }
             })
         }
         return isHit
     }
 
+    let hits = []
+    let numberOfFound = 0
     objectArray.forEach(item => {
-        if(limit && numberOfFound >= limit) {
+        if (limit && numberOfFound >= limit) {
             return
         }
-        traverse(item, searchString) && 
-        hits.push(item) && 
-        numberOfFound++
+        const result = traverse(item)
+        result &&
+            (result.item = item) &&
+            hits.push(result) &&
+            numberOfFound++
     })
-
     return hits
 }
 
 export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (objectArrayIn, searchString, comparisonStrategy, validator, limit) => {
-    const objectArray = [...objectArrayIn]
-    let hits = []
-    let numberOfFound = 0
-    comparisonStrategy.forEach(() => hits.push([]))
-
-    const traverse = (object, comparisonFunction) => {
+    const traverse = (object, comparisonFunction, path = []) => {
         let isHit = false
         Object.keys(object).forEach(key => {
-            if (validator(key) && !isHit) {
+            const newPath = [...path, key]
+            if (!isHit && validator(newPath)) {
                 const thisItem = object[key]
-                if (thisItem !== null && typeof thisItem !== "object" && !isHit) {
-                    isHit = comparisonFunction(searchString, thisItem)
+                if (thisItem !== null && typeof thisItem !== "object") {
+                    if (comparisonFunction(searchString, thisItem)) {
+                        isHit = {
+                            path: newPath,
+                            depth: newPath.length
+                        }
+                    }
                 }
             }
         })
         if (!isHit) {
             Object.keys(object).forEach(key => {
-                if (object[key] === Object(object[key]) && !isHit) {
-                    if (traverse(object[key], comparisonFunction)) {
-                        isHit = true
-                    }
+                if (!isHit && object[key] === Object(object[key])) {
+                    isHit = traverse(object[key], comparisonFunction, [...path, key])
                 }
             })
         }
         return isHit
     }
 
+    const objectArray = [...objectArrayIn]
+    let hits = []
+    let numberOfFound = 0
+    comparisonStrategy.forEach(() => hits.push([]))
+
     comparisonStrategy.forEach((comparisonFunction, strategyIndex) => {
         for (let objectIndex = 0; objectIndex < objectArray.length; objectIndex++) {
-            if(limit && numberOfFound >= limit) {
-                return
+            if (limit && numberOfFound >= limit) {
+                break
             }
             const isHit = traverse(objectArray[objectIndex], comparisonFunction)
             if (isHit) {
-                const foundObject = objectArray.splice(objectIndex, 1)[0]
-                hits[strategyIndex].push(foundObject)
+                isHit.item = objectArray.splice(objectIndex, 1)[0]
+                hits[strategyIndex].push(isHit)
                 numberOfFound++
                 objectIndex--
             }

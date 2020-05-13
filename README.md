@@ -8,12 +8,15 @@ npm install jhaystack
 ```
 
 ### How it works
-Jhaystack is highly modular, and built on configurable traversal and comparison strategies. This lets you customize precisely how you want the engine to work, and even write your own plugins. Its essentially meant to be like building with javascript lego blocks. Jhaystack ships with a few different strategies that should fulfill most use cases.
+Jhaystack is modular, and built on configurable traversal and comparison strategies. This lets you customize precisely how you want the engine to work, and even write your own plugins. Its essentially meant to be like building with javascript lego blocks. Jhaystack ships with a few different strategies that should fulfill most use cases.
 
 To use Jhaystack you need to supply a traversal strategy, an array of comparison strategies, as well as an array of objects to be searched (a.k.a. the "dataset").
 
 #### Typical Usage
 Typically you would use the library by creating an instance of Jhaystack and setting it up using the built in functions. This involves providing a traversal strategy, an array of comparison strategies, an (optional) result limit in the form of an integer, and a dataset. The search function can then be used to execute a search.
+
+The result of a search will be an array of objects. Each object has the item itself (item) where a match was found, a path (path) to where in the object the match was found, as well as a depth (depth) specifying how many steps into the structure the match was found.
+
 ```javascript
 import { Jhaystack, TraversalStrategies, ComparisonStrategies } from "jhaystack"
 const data = [
@@ -30,7 +33,7 @@ const se = new Jhaystack()
     .setLimit(2)
     .setDataset(data)
 const results = se.search("tm")
-//[{name: "tom"}, {name, "tim"}]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }, { path: ["name"], depth: 1, item: { name: "tim" }]
 ```
 
 #### Included / Ignored Attributes Customizability
@@ -57,9 +60,9 @@ const seIgn = new Jhaystack()
     .setDataset(data)
     .setIgnoredAttributes(attributeArray)
 const resultsIncluded = seInc.search("tm")
-//[{name: "tom"}]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }]
 const resultsIgnored = seIgn.search("tm")
-//[{otherNameAttribute: "tom"}]
+//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tom" }]
 ```
 
 #### Traversal Strategy
@@ -85,9 +88,16 @@ CONTAINS   |   This strategy will determine if the context contains the term in 
 CONTAINS_CASE_INSENSITIVE   |   This strategy will determine if the context contains the term in its exact form (not case sensitive!)
 EQUALS   |   This strategy will determine if the term is exactly the context
 EQUALS_CASE_INSENSITIVE   |   This strategy will determine if the term is exactly the context (not case sensitive!)
+FULL_TEXT   |   This strategy will determine if all the words in the term are contained inside of the context (not case sensitive!)
 
 You can easily build your own strategy, by supplying Jhaystack with a custom function reference. The function should return a boolean that states if it is a match or not, and takes the following arguments:
 Argument | Description
 --- | ---
 term*   |   The value to be searched for
 context*   |   The value to be searched
+
+## Future work
+There are quite a few things that I hope to do moving forward:
+- Make things faster (there's a lot that can be done!)
+- Implement search indexes
+- Make more detailed tests

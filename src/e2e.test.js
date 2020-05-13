@@ -31,11 +31,13 @@ describe("End to end", () => {
     it("Typical fuzzy match setup works", () => {
         const se = new Jhaystack()
             .setComparisonStrategy([ComparisonStrategy.FUZZY])
-            .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
+            .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH_ORDERED)
             .setDataset(data)
         const result = se.search("dck")
         expect(result.length).toBe(1)
-        expect(result[0].firstName).toBe("Arnold")
+        expect(result[0].item.firstName).toBe("Arnold")
+        expect(result[0].path[0]).toBe("lastName")
+        expect(result[0].depth).toBe(1)
     })
 
     it("Library correctly parses incorrectly specified comparison strategy", () => {
@@ -45,7 +47,9 @@ describe("End to end", () => {
             .setDataset(data)
         const result = se.search("dck")
         expect(result.length).toBe(1)
-        expect(result[0].firstName).toBe("Arnold")
+        expect(result[0].item.firstName).toBe("Arnold")
+        expect(result[0].path[0]).toBe("lastName")
+        expect(result[0].depth).toBe(1)
     })
 
     it("Typical setup with a limiter works", () => {
@@ -56,7 +60,21 @@ describe("End to end", () => {
             .setLimit(1)
         let result = se.search("min")
         expect(result.length).toBe(1)
-        expect(result[0].firstName).toBe("Benjamin")
+        expect(result[0].item.firstName).toBe("Benjamin")
+        expect(result[0].path[0]).toBe("firstName")
+        expect(result[0].depth).toBe(1)
+    })
+
+    it("Typical setup with a nested search result works", () => {
+        const se = new Jhaystack()
+            .setComparisonStrategy([ComparisonStrategy.CONTAINS])
+            .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
+            .setDataset(data)
+        let result = se.search("Nested")
+        expect(result.length).toBe(1)
+        expect(result[0].item.id).toBe("1")
+        expect(JSON.stringify(result[0].path)).toBe(JSON.stringify(["children", "0", "nested", "text"]))
+        expect(result[0].depth).toBe(4)
     })
 
 })

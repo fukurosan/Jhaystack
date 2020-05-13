@@ -7,7 +7,8 @@ import {
     CONTAINS,
     CONTAINS_CASE_INSENSITIVE,
     EQUALS,
-    EQUALS_CASE_INSENSITIVE
+    EQUALS_CASE_INSENSITIVE,
+    FULL_TEXT
 } from "./ComparisonStrategy"
 
 describe("Comparison Strategy Module", () => {
@@ -87,5 +88,13 @@ describe("Comparison Strategy Module", () => {
         const invalidTerm = "donald duck"
         expect(EQUALS_CASE_INSENSITIVE(exactMatchTerm, context)).toBe(true)
         expect(EQUALS_CASE_INSENSITIVE(invalidTerm, context)).toBe(true)
+    })
+
+    it("Full text comparison works", () => {
+        const context = "Donald Quack Duck"
+        const validTerm = "duck quack"
+        const invalidTerm = "uck quack"
+        expect(FULL_TEXT(validTerm, context)).toBe(true)
+        expect(FULL_TEXT(invalidTerm, context)).toBe(false)
     })
 })
