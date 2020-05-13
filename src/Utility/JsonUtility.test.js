@@ -31,7 +31,6 @@ describe("JSON Utility Module", () => {
 
     it("Object flattening works", () => {
         const flattened = flattenObject(data)
-        console.log(flattened)
         expect(flattened.length).toBe(5)
     })
 })

@@ -1,14 +1,15 @@
 import { FUZZY } from "./Strategies/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH } from "./Strategies/TraversalStrategy"
 import { attributeValidator } from "./Validation/Validation"
-import { deepCopyObject } from "./Utility/JsonUtility"
+import { deepCopyObject, flattenObject } from "./Utility/JsonUtility"
 
 export default class SearchEngine {
 
   constructor() {
     this.comparisonStrategy = [FUZZY]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH
-    this.data = []
+    this.originalData = []
+    this.processedData = []
     this.limit = null
     this.ignoredAttributes = null
     this.includedAttributes = null
@@ -38,6 +39,7 @@ export default class SearchEngine {
       attributes.forEach(attr => this.ignoredAttributes[attr] = true)
       return this
     }
+    this.prepareDataset()
   }
 
   setIncludedAttributes(attributes) {
@@ -48,11 +50,13 @@ export default class SearchEngine {
       this.includedAttributes = {}
       attributes.forEach(attr => this.includedAttributes[attr] = true)
     }
+    this.prepareDataset()
     return this
   }
 
   setDataset(datasetArray) {
-    this.data = deepCopyObject(datasetArray)
+    this.originalData = deepCopyObject(datasetArray)
+    this.prepareDataset()
     return this
   }
 
@@ -67,12 +71,23 @@ export default class SearchEngine {
     }
   }
 
+  prepareDataset() {
+    const validator = this.getValidator()
+    this.processedData = this.originalData
+      .map(object => {
+        return {
+          original: object,
+          flattened: flattenObject(object)
+        }
+      })
+      .filter(object => validator(object.flattened.path))
+  }
+
   search(searchString) {
-    if (!this.data) {
+    if (!this.processedData) {
       throw Error("No Dataset provided!")
     }
-    const validator = this.getValidator()
-    return this.traversalStrategy(this.data, searchString, this.comparisonStrategy, validator, this.limit)
+    return this.traversalStrategy(this.processedData, searchString, this.comparisonStrategy, this.limit)
   }
 
 }
