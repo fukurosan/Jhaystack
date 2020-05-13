@@ -6,3 +6,25 @@ export const deepCopyObject = (o) => {
     }
     return out
 }
+
+export const flattenObject = (object) => {
+    let result = []
+    const traverse = (o, path = []) => {
+        Object.keys(o).forEach(key => {
+            const newPath = [...path, key]
+            const thisItem = o[key]
+            if (thisItem !== null && typeof thisItem !== "object") {
+                result.push({
+                    value: o[key],
+                    path: newPath,
+                    depth: newPath.length
+                })
+            }
+            else if (thisItem !== null && typeof thisItem === "object") {
+                traverse(thisItem, [...path, key])
+            }
+        })
+    }
+    traverse(object)
+    return result
+}

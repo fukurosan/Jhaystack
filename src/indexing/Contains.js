@@ -16,10 +16,10 @@ export default (dataset, validator) => {
     }
 
     dataset.forEach(item => {
-        const traverse = (obj, path) => {
+        const traverse = (obj, path = []) => {
             Object.keys(obj).forEach(key => {
                 if (validator(key)) {
-                    const localPath = path ? [...path, key] : [key]
+                    const localPath = [...path, key]
                     if (obj[key] !== null && typeof obj[key] === "object") {
                         traverse(obj[key], localPath)
                     }

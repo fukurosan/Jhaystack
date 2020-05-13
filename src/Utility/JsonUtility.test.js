@@ -1,4 +1,4 @@
-import { deepCopyObject } from "./JsonUtility"
+import { deepCopyObject, flattenObject } from "./JsonUtility"
 
 describe("JSON Utility Module", () => {
     const data = {
@@ -27,5 +27,11 @@ describe("JSON Utility Module", () => {
         const cloneString = JSON.stringify(clone)
         expect(clone === data).toBe(false)
         expect(cloneString === dataString).toBe(true)
+    })
+
+    it("Object flattening works", () => {
+        const flattened = flattenObject(data)
+        console.log(flattened)
+        expect(flattened.length).toBe(5)
     })
 })
