@@ -1,13 +1,16 @@
 import Index from "../Model/Index"
+import Shard from "../Model/Shard"
 
 export default class FullTextIndex extends Index {
-    constructor(shards) {
+    tag: string
+    
+    constructor(shards: Shard[]) {
         super(shards)
         this.tag = "CONTAINS"
     }
 
     build() {
-        const extractStringTokens = (string) => {
+        const extractStringTokens = (string: string) => {
             let tokens = []
             let token = null
             const length = string.length

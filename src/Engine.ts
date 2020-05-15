@@ -4,6 +4,14 @@ import { deepCopyObject, flattenObject } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 
 export default class SearchEngine {
+  private comparisonStrategy: ((term: any, context: any) => boolean)[]
+  private traversalStrategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
+  private items: never[]
+  private originalData: never[]
+  private indexes: never[]
+  private limit: null
+  private excludedPaths: null
+  private includedPaths: null
 
   constructor() {
     this.comparisonStrategy = [FUZZY]
@@ -16,7 +24,7 @@ export default class SearchEngine {
     this.includedPaths = null
   }
 
-  setComparisonStrategy(strategy) {
+  setComparisonStrategy(strategy: ((term: any, context: any) => boolean)[]) {
     if (!Array.isArray(strategy)) {
       this.comparisonStrategy = [strategy]
     }
@@ -25,11 +33,11 @@ export default class SearchEngine {
     }
   }
 
-  setTraversalStrategy(strategy) {
+  setTraversalStrategy(strategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]) {
     this.traversalStrategy = strategy
   }
 
-  setExcludedPaths(paths) {
+  setExcludedPaths(paths: String[]) {
     if (!paths || !Array.isArray(paths)) {
       this.excludedPaths = null
     }

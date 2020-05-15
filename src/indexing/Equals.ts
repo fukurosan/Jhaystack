@@ -1,7 +1,10 @@
 import Index from "../Model/Index"
+import Shard from "../Model/Shard"
 
 export default class EqualsIndex extends Index {
-    constructor(shards) {
+    tag: string
+    
+    constructor(shards: Shard[]) {
         super(shards)
         this.tag = "EQUALS"
     }
