@@ -10,6 +10,7 @@ export default class SearchEngine {
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH
     this.items = []
     this.originalData = []
+    this.indexes = []
     this.limit = null
     this.excludedPaths = null
     this.includedPaths = null
@@ -22,12 +23,10 @@ export default class SearchEngine {
     else {
       this.comparisonStrategy = strategy
     }
-    return this
   }
 
   setTraversalStrategy(strategy) {
     this.traversalStrategy = strategy
-    return this
   }
 
   setExcludedPaths(paths) {
@@ -36,7 +35,6 @@ export default class SearchEngine {
     }
     else {
       this.excludedPaths = paths
-      return this
     }
     this.prepareDataset()
   }
@@ -49,25 +47,32 @@ export default class SearchEngine {
       this.includedPaths = paths
     }
     this.prepareDataset()
-    return this
   }
 
   setDataset(datasetArray) {
     this.originalData = deepCopyObject(datasetArray)
     this.prepareDataset()
-    return this
   }
 
   setLimit(limit) {
     this.limit = limit
-    return this
+  }
+
+  setIndexes(indexes) {
+    if (!indexes || !Array.isArray(indexes)) {
+      this.indexes = []
+    }
+    else {
+      this.indexes = indexes
+    }
+    this.prepareDataset()
   }
 
   prepareDataset() {
     delete this.items
-      this.items = this.originalData.map(item => {
-        return new Item(item, this.includedPaths, this.excludedPaths)
-      })
+    this.items = this.originalData.map(item => {
+      return new Item(item, this.includedPaths, this.excludedPaths, this.indexes)
+    })
   }
 
   search(searchString) {

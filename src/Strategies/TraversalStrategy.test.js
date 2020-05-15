@@ -28,7 +28,7 @@ describe("Traversal Strategy", () => {
 
     const processedData = data
     .map(object => {
-      return new Item(object, null, null)
+      return new Item(object, null, null, [])
     })
 
     describe("Return root ordered", () => {

@@ -1,6 +1,4 @@
-import EQUALS_INDEX from "./Equals"
-import CONTAINS_INDEX from "./Contains"
-import FULL_TEXT_INDEX from "./FullText"
+import Indexes from "./indexes"
 import { flattenObject } from "../Utility/JsonUtility"
 
 describe("Indexing module", () => {
@@ -35,7 +33,7 @@ describe("Indexing module", () => {
     })
 
     it("Creates full text index", () => {
-        const index = new FULL_TEXT_INDEX(data)
+        const index = new Indexes.FULL_TEXT(data)
         expect(index.evaluate(["TOM"])).toBeTruthy()
         expect(index.evaluate(["TEM"])).toBeTruthy()
         expect(index.evaluate(["OM"])).toBe(undefined)
@@ -45,7 +43,7 @@ describe("Indexing module", () => {
     })
 
     it("Creates contains index", () => {
-        const index = new CONTAINS_INDEX(data)
+        const index = new Indexes.CONTAINS(data)
         expect(index.evaluate(["IBBI"])).toBeTruthy()
         expect(index.evaluate(["IBBI"])[0].path.toString()).toBe(["items", "2", "lastName"].toString())
         expect(index.evaluate(["IBBI"])[0].value).toEqual("Ribbity")
@@ -53,7 +51,7 @@ describe("Indexing module", () => {
     })
 
     it("Creates equals index", () => {
-        const index = new EQUALS_INDEX(data)
+        const index = new Indexes.EQUALS(data)
         expect(index.evaluate(["JIM"])).toBeTruthy()
         expect(index.evaluate(["JIM"])[0].path.toString()).toBe(["items", "1", "firstName"].toString())
         expect(index.evaluate(["JIM"])[0].value).toEqual("Jim")

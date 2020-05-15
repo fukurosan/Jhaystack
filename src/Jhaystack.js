@@ -32,6 +32,11 @@ export default class Jhaystack {
     return this
   }
 
+  setIndexes(indexes) {
+    this[s_Engine].setIndexes(indexes)
+    return this
+  }
+
   setLimit(limit) {
     this[s_Engine].setLimit(limit)
     return this
