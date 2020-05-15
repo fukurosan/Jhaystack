@@ -8,11 +8,11 @@ export default class SearchEngine {
   private comparisonStrategy: ((term: any, context: any) => boolean)[]
   private traversalStrategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
   private items: Item[]
-  private originalData: Object[]
+  private originalData: object[]
   private indexes: Index[]
-  private limit: Number|null
-  private excludedPaths: String[]|null
-  private includedPaths: String[]|null
+  private limit: number|null
+  private excludedPaths: string[]|null
+  private includedPaths: string[]|null
 
   constructor() {
     this.comparisonStrategy = [FUZZY]
@@ -38,7 +38,7 @@ export default class SearchEngine {
     this.traversalStrategy = strategy
   }
 
-  setExcludedPaths(paths: String[]) {
+  setExcludedPaths(paths: string[]) {
     if (!paths || !Array.isArray(paths)) {
       this.excludedPaths = null
     }
@@ -48,7 +48,7 @@ export default class SearchEngine {
     this.prepareDataset()
   }
 
-  setIncludedAttributes(paths: String[]) {
+  setIncludedAttributes(paths: string[]) {
     if (!paths || !Array.isArray(paths)) {
       this.includedPaths = null
     }
@@ -58,12 +58,12 @@ export default class SearchEngine {
     this.prepareDataset()
   }
 
-  setDataset(datasetArray: Object[]) {
+  setDataset(datasetArray: object[]) {
     this.originalData = deepCopyObject(datasetArray)
     this.prepareDataset()
   }
 
-  setLimit(limit: Number) {
+  setLimit(limit: number) {
     this.limit = limit
   }
 
@@ -84,7 +84,7 @@ export default class SearchEngine {
     })
   }
 
-  search(searchString: String) {
+  search(searchString: string) {
     return this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit)
   }
 

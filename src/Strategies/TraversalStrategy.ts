@@ -1,7 +1,7 @@
 import SearchResult from "../Model/SearchResult"
 import Item from "../Model/Item"
 
-export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: String, comparisonStrategy: ((term: String, context: any) => Boolean)[], limit?: Number) => {
+export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number) => {
     let result: SearchResult[] = []
     let numberOfFound = 0
     itemArray.forEach(item => {

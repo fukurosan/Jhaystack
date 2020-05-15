@@ -1,4 +1,4 @@
-export const pathValidator = (path: String[], includedPaths?: (RegExp|String)[]|null, excludedPaths?: (RegExp|String)[]|null) => {
+export const pathValidator = (path: string[], includedPaths?: (RegExp|string)[]|null, excludedPaths?: (RegExp|string)[]|null) => {
 
     const pathStr = path.toString().replace(/,/g, ".")
 
