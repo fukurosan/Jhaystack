@@ -1,17 +1,18 @@
 import { FUZZY } from "./Strategies/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH } from "./Strategies/TraversalStrategy"
-import { deepCopyObject, flattenObject } from "./Utility/JsonUtility"
+import { deepCopyObject } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
+import Index from "./Model/Index"
 
 export default class SearchEngine {
   private comparisonStrategy: ((term: any, context: any) => boolean)[]
   private traversalStrategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
-  private items: never[]
-  private originalData: never[]
-  private indexes: never[]
-  private limit: null
-  private excludedPaths: null
-  private includedPaths: null
+  private items: Item[]
+  private originalData: Object[]
+  private indexes: Index[]
+  private limit: Number|null
+  private excludedPaths: String[]|null
+  private includedPaths: String[]|null
 
   constructor() {
     this.comparisonStrategy = [FUZZY]
@@ -47,7 +48,7 @@ export default class SearchEngine {
     this.prepareDataset()
   }
 
-  setIncludedAttributes(paths) {
+  setIncludedAttributes(paths: String[]) {
     if (!paths || !Array.isArray(paths)) {
       this.includedPaths = null
     }
@@ -57,16 +58,16 @@ export default class SearchEngine {
     this.prepareDataset()
   }
 
-  setDataset(datasetArray) {
+  setDataset(datasetArray: Object[]) {
     this.originalData = deepCopyObject(datasetArray)
     this.prepareDataset()
   }
 
-  setLimit(limit) {
+  setLimit(limit: Number) {
     this.limit = limit
   }
 
-  setIndexes(indexes) {
+  setIndexes(indexes: Index[]) {
     if (!indexes || !Array.isArray(indexes)) {
       this.indexes = []
     }
@@ -83,7 +84,7 @@ export default class SearchEngine {
     })
   }
 
-  search(searchString) {
+  search(searchString: String) {
     return this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit)
   }
 

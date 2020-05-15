@@ -1,7 +1,8 @@
 import SearchResult from "../Model/SearchResult"
+import Item from "../Model/Item"
 
-export const EXTRACT_ALL_NESTED = (itemArray, searchString, comparisonStrategy, limit) => {
-    let result = []
+export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: String, comparisonStrategy: ((term: String, context: any) => Boolean)[], limit?: Number) => {
+    let result: SearchResult[] = []
     let numberOfFound = 0
     itemArray.forEach(item => {
         if (limit && numberOfFound >= limit) {
@@ -14,7 +15,7 @@ export const EXTRACT_ALL_NESTED = (itemArray, searchString, comparisonStrategy, 
                 }
                 result.push(new SearchResult(
                     shard.path.slice(0, shard.path.length - 1).reduce((acc, current) => { return acc[current] }, item.original),
-                    shard.path[shard.path.length - 1]
+                    [shard.path[shard.path.length - 1]]
                 ))
             })
         numberOfFound++

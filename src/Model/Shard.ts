@@ -2,14 +2,14 @@ import { getLastNonNumericItemInArray } from "../Utility/JsonUtility"
 
 export default class Shard {
     value: any
-    path: string[]
+    path: String[]
     depth: number
-    key: string
+    key: String
 
-    constructor(value: any, path: string[]) {
+    constructor(value: any, path: String[]) {
         this.value = value
         this.path = path
         this.depth = this.path.length
-        this.key = getLastNonNumericItemInArray(this.path)
+        this.key = <String> getLastNonNumericItemInArray(this.path)
     }
 }

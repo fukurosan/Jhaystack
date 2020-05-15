@@ -1,7 +1,7 @@
 import Shard from "./Shard"
 
 interface IndexMap {
-    [key: string]: any;
+    [key: string]: Shard[]
 }
 
 export default abstract class Index {

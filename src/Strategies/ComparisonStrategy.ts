@@ -1,4 +1,4 @@
-export const FUZZY = (term, context) => {
+export const FUZZY = (term: string, context: any) => {
     term = ("" + term).toUpperCase().replace(/ /g, "")
     context = ("" + context).toUpperCase().replace(/ /g, "")
     const clen = context.length
@@ -24,39 +24,39 @@ export const FUZZY = (term, context) => {
     return true
 }
 
-export const STARTS_WITH = (term, context) => {
+export const STARTS_WITH = (term: string, context: any) => {
     return ("" + context).startsWith("" + term)
 }
 
-export const STARTS_WITH_CASE_INSENSITIVE = (term, context) => {
+export const STARTS_WITH_CASE_INSENSITIVE = (term: string, context: any) => {
     return ("" + context).toUpperCase().startsWith(("" + term).toUpperCase())
 }
 
-export const ENDS_WITH = (term, context) => {
+export const ENDS_WITH = (term: string, context: any) => {
     return ("" + context).endsWith("" + term)
 }
 
-export const ENDS_WITH_CASE_INSENSITIVE = (term, context) => {
+export const ENDS_WITH_CASE_INSENSITIVE = (term: string, context: any) => {
     return ("" + context).toUpperCase().endsWith(("" + term).toUpperCase())
 }
 
-export const CONTAINS = (term, context) => {
+export const CONTAINS = (term: string, context: any) => {
     return ("" + context).indexOf("" + term) > -1
 }
 
-export const CONTAINS_CASE_INSENSITIVE = (term, context) => {
+export const CONTAINS_CASE_INSENSITIVE = (term: string, context: any) => {
     return ("" + context).toUpperCase().indexOf(("" + term).toUpperCase()) > -1
 }
 
-export const EQUALS = (term, context) => {
+export const EQUALS = (term: string, context: any) => {
     return ("" + context) === ("" + term)
 }
 
-export const EQUALS_CASE_INSENSITIVE = (term, context) => {
+export const EQUALS_CASE_INSENSITIVE = (term: string, context: any) => {
     return ("" + context).toUpperCase() === ("" + term).toUpperCase()
 }
 
-export const FULL_TEXT = (term, context) => {
+export const FULL_TEXT = (term: string, context: any) => {
     let found = 0
     const termWords = ("" + term).toUpperCase().split(" ")
     const contextWords = ("" + context).toUpperCase().split(" ")

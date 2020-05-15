@@ -1,17 +1,37 @@
 import Shard from "../Model/Shard"
 
-export const deepCopyObject = (o) => {
-    let out = Array.isArray(o) ? [] : {}
-    for (let key in o) {
-        let v = o[key]
-        out[key] = typeof v === "object" && v !== null ? deepCopyObject(v) : v
-    }
-    return out
+interface ObjectLiteral {
+    [key: string]: any
 }
 
-export const flattenObject = (object) => {
-    let result = []
-    const traverse = (o, path = []) => {
+export const deepCopyObject = <T>(o: T): any => {    
+    if (o === null) {
+        return o
+    }
+    if (o instanceof Array) {
+        const out: any[] = []
+        for (let key in o) {
+            let v = o[key]
+            out[key] = typeof v === "object" && v !== null ? deepCopyObject(v) : v
+        }
+        return out 
+    }
+    if (typeof o === "object" && o !== {}) {
+        const out: ObjectLiteral = {}
+        for (let key in o) {
+            let v = o[key]
+            out[key] = typeof v === "object" && v !== null ? deepCopyObject(v) : v
+        }
+        return out
+    }
+    if (o instanceof Date) {
+        return new Date(o.getTime())
+    }
+}
+
+export const flattenObject = (object: ObjectLiteral) => {
+    let result: Shard[] = []
+    const traverse = (o: ObjectLiteral, path: String[] = []) => {
         Object.keys(o).forEach(key => {
             const newPath = [...path, key]
             const thisItem = o[key]
@@ -32,7 +52,7 @@ export const flattenObject = (object) => {
     return result
 }
 
-export const getLastNonNumericItemInArray = (array) => {
+export const getLastNonNumericItemInArray = (array: (String|Number)[]) => {
     let lastValidKey
     let index = array.length - 1
     while (!lastValidKey) {
