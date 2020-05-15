@@ -1,15 +1,15 @@
 import { FUZZY } from "./Strategies/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH } from "./Strategies/TraversalStrategy"
-import { attributeValidator } from "./Validation/Validation"
 import { deepCopyObject, flattenObject } from "./Utility/JsonUtility"
+import Item from "./Model/Item"
 
 export default class SearchEngine {
 
   constructor() {
     this.comparisonStrategy = [FUZZY]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH
+    this.items = [] //Item
     this.originalData = []
-    this.processedData = []
     this.limit = null
     this.ignoredAttributes = null
     this.includedAttributes = null
@@ -65,29 +65,14 @@ export default class SearchEngine {
     return this
   }
 
-  getValidator() {
-    return (attribute) => {
-      return attributeValidator(attribute, this.includedAttributes, this.ignoredAttributes)
-    }
-  }
-
   prepareDataset() {
-    const validator = this.getValidator()
-    this.processedData = this.originalData
-      .map(object => {
-        return {
-          original: object,
-          flattened: flattenObject(object)
-        }
+      this.items = this.originalData.map(item => {
+        return new Item(item, this.includedAttributes, this.ignoredAttributes)
       })
-      .filter(object => validator(object.flattened.path))
   }
 
   search(searchString) {
-    if (!this.processedData) {
-      throw Error("No Dataset provided!")
-    }
-    return this.traversalStrategy(this.processedData, searchString, this.comparisonStrategy, this.limit)
+    return this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit)
   }
 
 }

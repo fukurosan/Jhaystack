@@ -1,6 +1,6 @@
 import { EXTRACT_ALL_NESTED, RETURN_ROOT_ON_FIRST_MATCH, RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./TraversalStrategy"
 import { STARTS_WITH, CONTAINS } from "./ComparisonStrategy"
-import { flattenObject } from "../Utility/JsonUtility"
+import Item from "../Model/Item"
 
 describe("Traversal Strategy", () => {
     const data = [
@@ -28,10 +28,7 @@ describe("Traversal Strategy", () => {
 
     const processedData = data
     .map(object => {
-      return {
-        original: object,
-        flattened: flattenObject(object)
-      }
+      return new Item(object, null, null)
     })
 
     describe("Return root ordered", () => {
@@ -51,7 +48,7 @@ describe("Traversal Strategy", () => {
             expect(result[1].item.firstName).toBe("mini")
         })
 
-        it("Correctly limits results", () => {
+        it("Limits results", () => {
             let comparisonStrategies = [STARTS_WITH, CONTAINS]
             let searchString = "min"
             let result = RETURN_ROOT_ON_FIRST_MATCH_ORDERED(processedData, searchString, comparisonStrategies, 1)
@@ -59,7 +56,7 @@ describe("Traversal Strategy", () => {
             expect(result[0].item.firstName).toBe("mini")
         })
 
-        it("Correctly finds nested objects", () => {
+        it("Finds nested objects", () => {
             let comparisonStrategies = [STARTS_WITH, CONTAINS]
             let searchString = "Nes"
             let result = RETURN_ROOT_ON_FIRST_MATCH_ORDERED(processedData, searchString, comparisonStrategies)
@@ -69,7 +66,7 @@ describe("Traversal Strategy", () => {
     })
 
     describe("Nested Extraction", () => {
-        it("Correctly extracts nested object", () => {
+        it("Extracts nested object", () => {
             let comparisonStrategies = [CONTAINS]
             let searchString = "obj"
             let result = EXTRACT_ALL_NESTED(processedData, searchString, comparisonStrategies)
@@ -77,7 +74,7 @@ describe("Traversal Strategy", () => {
             expect(result[0].item.id).toBe("3")
         })    
 
-        it("Correctly limits results", () => {
+        it("Limits results", () => {
             let comparisonStrategies = [CONTAINS]
             let searchString = "min"
             let result = EXTRACT_ALL_NESTED(processedData, searchString, comparisonStrategies, 1)
@@ -87,7 +84,7 @@ describe("Traversal Strategy", () => {
     })
 
     describe("Return on first found", () => {
-        it("Correctly returns root object on hit", () => {
+        it("Returns root object on hit", () => {
             let comparisonStrategies = [CONTAINS]
             let searchString = "obj"
             let result = RETURN_ROOT_ON_FIRST_MATCH(processedData, searchString, comparisonStrategies)
@@ -95,7 +92,7 @@ describe("Traversal Strategy", () => {
             expect(result[0].item.id).toBe("1")
         })
 
-        it("Correctly limits results", () => {
+        it("Limits results", () => {
             let comparisonStrategies = [CONTAINS]
             let searchString = "min"
             let result = RETURN_ROOT_ON_FIRST_MATCH(processedData, searchString, comparisonStrategies, 1)

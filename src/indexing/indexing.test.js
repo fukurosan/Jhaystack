@@ -33,7 +33,7 @@ describe("Indexing module", () => {
 
     const validator = () => true
 
-    it("Correctly creates full text index", () => {
+    it("Creates full text index", () => {
         const index = FULL_TEXT_INDEX(data, validator)
         expect(index["TOM"]).toBeTruthy()
         expect(index["TEM"]).toBeTruthy()
@@ -42,7 +42,7 @@ describe("Indexing module", () => {
         expect(index["TOM"][0].item).toEqual(data[0])
     })
 
-    it("Correctly creates contains index", () => {
+    it("Creates contains index", () => {
         const index = CONTAINS_INDEX(data, validator)
         expect(index["IBBI"]).toBeTruthy()
         expect(index["IBBI"][0].path[0]).toBe("lastName")
@@ -50,7 +50,7 @@ describe("Indexing module", () => {
         expect(index[2].length).toBe(2)
     })
 
-    it("Correctly creates equals index", () => {
+    it("Creates equals index", () => {
         const index = EQUALS_INDEX(data, validator)
         expect(index["JIM"]).toBeTruthy()
         expect(index["JIM"][0].path[0]).toBe("firstName")

@@ -1,18 +1,18 @@
-export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy, limit) => {
+export const EXTRACT_ALL_NESTED = (itemArray, searchString, comparisonStrategy, limit) => {
     let result = []
     let numberOfFound = 0
-    objectArray.forEach(object => {
+    itemArray.forEach(item => {
         if (limit && numberOfFound >= limit) {
             return
         }
-        object.flattened.filter(flattenedItem => comparisonStrategy.find(comparisonFunction => comparisonFunction(searchString, flattenedItem.value)))
-            .forEach(flattenedItem => {
+        item.shards.filter(shard => comparisonStrategy.find(comparisonFunction => comparisonFunction(searchString, shard.value)))
+            .forEach(shard => {
                 if (limit && numberOfFound >= limit) {
                     return
                 }
                 result.push({
-                    item: flattenedItem.path.slice(0, flattenedItem.path.length - 1).reduce((acc, current) => { return acc[current] }, object.original),
-                    path: flattenedItem.path[flattenedItem.path.length - 1],
+                    item: shard.path.slice(0, shard.path.length - 1).reduce((acc, current) => { return acc[current] }, item.original),
+                    path: shard.path[shard.path.length - 1],
                     depth: 1
                 })
             })
@@ -21,19 +21,19 @@ export const EXTRACT_ALL_NESTED = (objectArray, searchString, comparisonStrategy
     return result
 }
 
-export const RETURN_ROOT_ON_FIRST_MATCH = (objectArray, searchString, comparisonStrategy, limit) => {
+export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray, searchString, comparisonStrategy, limit) => {
     let result = []
     let numberOfFound = 0
-    objectArray.forEach(object => {
+    itemArray.forEach(item => {
         if (limit && numberOfFound >= limit) {
             return
         }
-        const isHit = object.flattened.find(flattenedItem => comparisonStrategy.find(comparisonFunction => comparisonFunction(searchString, flattenedItem.value)))
-        if (isHit) {
+        const foundShard = item.shards.find(shard => comparisonStrategy.find(comparisonFunction => comparisonFunction(searchString, shard.value)))
+        if (foundShard) {
             result.push({
-                item: object.original,
-                path: isHit.path,
-                depth: isHit.depth
+                item: item.original,
+                path: foundShard.path,
+                depth: foundShard.depth
             })
             numberOfFound++
         }
@@ -41,32 +41,32 @@ export const RETURN_ROOT_ON_FIRST_MATCH = (objectArray, searchString, comparison
     return result
 }
 
-export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (objectArrayIn, searchString, comparisonStrategy, limit) => {
-    const objectArray = [...objectArrayIn]
-    let hits = []
+export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn, searchString, comparisonStrategy, limit) => {
+    const itemArray = [...itemArrayIn]
+    let matches = []
     let numberOfFound = 0
-    comparisonStrategy.forEach(() => hits.push([]))
+    comparisonStrategy.forEach(() => matches.push([]))
 
     comparisonStrategy.forEach((comparisonFunction, strategyIndex) => {
-        for (let objectIndex = 0; objectIndex < objectArray.length; objectIndex++) {
+        for (let itemIndex = 0; itemIndex < itemArray.length; itemIndex++) {
             if (limit && numberOfFound >= limit) {
                 break
             }
-            const isHit = objectArray[objectIndex].flattened.find(flattenedItem => comparisonFunction(searchString, flattenedItem.value))
-            if (isHit) {
-                hits[strategyIndex].push({
-                    item: objectArray.splice(objectIndex, 1)[0].original,
-                    path: isHit.path,
-                    depth: isHit.depth
+            const foundShard = itemArray[itemIndex].shards.find(shard => comparisonFunction(searchString, shard.value))
+            if (foundShard) {
+                matches[strategyIndex].push({
+                    item: itemArray.splice(itemIndex, 1)[0].original,
+                    path: foundShard.path,
+                    depth: foundShard.depth
                 })
                 numberOfFound++
-                objectIndex--
+                itemIndex--
             }
         }
     })
 
     let result = []
-    hits.forEach(hitArray => {
+    matches.forEach(hitArray => {
         result = [...result, ...hitArray]
     })
 

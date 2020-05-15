@@ -1,20 +1,12 @@
+import { getLastNonNumericItemInArray } from "../Utility/JsonUtility"
+
 export const attributeValidator = (path, includedAttributesMap, ignoredAttributesMap) => {
     if (includedAttributesMap || ignoredAttributesMap) {
-        let lastValidKey
-        let index = path.length - 1
-        while (!lastValidKey) {
-            if (index === -1) {
-                lastValidKey = path[path.length - 1]
-                break
-            }
-            if (Number.isNaN(+path[index])) {
-                lastValidKey = path[index]
-            }
-            else {
-                index--
-            }
+        let lastValidKey = getLastNonNumericItemInArray(path)
+        if(!lastValidKey) {
+            return false
         }
-        if (includedAttributesMap && includedAttributesMap[lastValidKey]) {
+        else if (includedAttributesMap && includedAttributesMap[lastValidKey]) {
             return true
         }
         else if (includedAttributesMap && !includedAttributesMap[lastValidKey]) {
