@@ -106,5 +106,4 @@ There are quite a few things that I hope to do moving forward:
 - Implement search indexes
 - Make more detailed tests
 - Expand the list of comparison strategies
-- Convert the project codebase to Typescript
 - Convert certain heavy operations to WebAssembly

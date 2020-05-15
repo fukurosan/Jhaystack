@@ -42,7 +42,8 @@ describe("End to end", () => {
 
     it("Library correctly parses incorrectly specified comparison strategy", () => {
         const se = new Jhaystack()
-            .setComparisonStrategy(ComparisonStrategy.FUZZY)
+        //@ts-ignore
+            .setComparisonStrategy(ComparisonStrategy.FUZZY) //This is incorrectly typed on purpose
             .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
             .setDataset(data)
         const result = se.search("dck")

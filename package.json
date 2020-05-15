@@ -2,14 +2,10 @@
   "name": "jhaystack",
   "version": "0.0.9",
   "description": "A simple JSON search utility",
-  "main": "./src/index.ts",
-  "types": "./src/index.d.ts",
+  "main": "./build/index.js",
   "scripts": {
-    "build:tsc": "tsc",
-    "clean": "rimraf lib && rimraf bundle",
-    "build": "npm run build:lib && npm run build:wbp",
-    "build:wbp": "webpack --config webpack.config.js",
-    "build:lib": "babel src --out-dir lib --copy-files",
+    "build": "tsc",
+    "clean": "rimraf build",
     "prepublish": "npm run clean && npm run build",
     "test": "jest --coverage --verbose"
   },
@@ -25,16 +21,10 @@
   "author": "Henrik Olofsson",
   "license": "MIT",
   "devDependencies": {
-    "@babel/cli": "^7.7.0",
-    "@babel/core": "^7.7.2",
-    "@babel/preset-env": "^7.7.1",
     "@types/jest": "^25.2.2",
-    "babel-loader": "^8.0.6",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^25.5.1",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "ts-jest": "^25.5.1"
   },
   "dependencies": {
     "typescript": "^3.9.2"

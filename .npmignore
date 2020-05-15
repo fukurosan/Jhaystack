@@ -11,3 +11,9 @@ yarn.lock
 # project files
 .babelrc
 .gitignore
+
+# Sources
+src
+
+# Coverage
+coverage
