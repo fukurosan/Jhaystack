@@ -11,8 +11,8 @@ export default class SearchEngine {
   private originalData: object[]
   private indexes: Index[]
   private limit: number|null
-  private excludedPaths: string[]|null
-  private includedPaths: string[]|null
+  private excludedPaths: (RegExp|string)[]|null
+  private includedPaths: (RegExp|string)[]|null
 
   constructor() {
     this.comparisonStrategy = [FUZZY]
