@@ -36,11 +36,13 @@ const results = se.search("tm")
 //[{ path: ["name"], depth: 1, item: { name: "tom" }, { path: ["name"], depth: 1, item: { name: "tim" }]
 ```
 
-#### Included / Ignored Attributes Customizability
-Jhaystack by default scans all attributes for the given search criteria, but can be configured to either ignore certain attributes, or only look for certain attributes. To do this is super simple:
+#### Included / Excluded Paths Customizability
+Jhaystack by default scans all attributes and paths for the given search criteria, but can be configured to either exclude certain paths, or only include certain paths. You do this by providing an array of regular expressions (either as RegExp objects, or as strings) to the engine. The regex provided will be evaluated against a string representation of the path inside the JSON object. The string will be formatted with a "." separating each step in the structure. An exclude match will always take precedence over an include match.
+
+Example:
 ```javascript
 import Jhaystack from "jhaystack"
-const attributeArray = ["name"]
+const pathRegexArray = [/^other/]
 const data = [
     {
         name: "tom"
@@ -53,16 +55,16 @@ const seInc = new Jhaystack()
     .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
     .setComparisonStrategy([ComparisonStrategy.FUZZY])
     .setDataset(data)
-    .setIncludedAttributes(attributeArray)
+    .setIncludedPaths(pathRegexArray)
 const seIgn = new Jhaystack()
     .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
     .setComparisonStrategy([ComparisonStrategy.FUZZY])
     .setDataset(data)
-    .setIgnoredAttributes(attributeArray)
+    .setExcludedPaths(pathRegexArray)
 const resultsIncluded = seInc.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }]
+//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tim" }]
 const resultsIgnored = seIgn.search("tm")
-//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tom" }]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }]
 ```
 
 #### Traversal Strategy
@@ -101,5 +103,3 @@ There are quite a few things that I hope to do moving forward:
 - Make things faster (there's a lot that can be done!)
 - Implement search indexes
 - Make more detailed tests
-- Allow for users to specifiy a regex for attribute path evaluations
-- Preprocess attribute validations

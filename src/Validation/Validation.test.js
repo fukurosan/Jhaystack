@@ -1,34 +1,35 @@
-import { attributeValidator } from "./Validation"
+import { pathValidator } from "./Validation"
 
 describe("Validation Module", () => {
-    const includedAttributes = {
-        "A": true,
-        "B": true,
-        "C": true
-    }
+    const includedPaths = [
+        /\.?A$/,
+        /\.?B$/,
+        /\.?C$/
+    ]
 
-    const ignoredAttributes = {
-        "A": true,
-        "B": true,
-        "C": true
-    }
+    const excludedPaths = [
+        /\.?A$/,
+        /\.?B$/,
+        /\.?C$/
+    ]
 
-    it("Validates attributes", () => {
-        const attribute = "A"
-        const wildAttribute = "G"
-        const resultIncluded = attributeValidator([attribute], includedAttributes, null)
-        const resultNotIncluded = attributeValidator([wildAttribute], includedAttributes, null)
-        const resultIgnored = attributeValidator([attribute], null, ignoredAttributes)
-        const resultWildCard = attributeValidator([attribute], null, null)
+    it("Validates paths", () => {
+        const path = ["A"]
+        const wildPath = ["G"]
+        const resultIncluded = pathValidator(path, includedPaths, null)
+        const resultNotIncluded = pathValidator(wildPath, includedPaths, null)
+        const resultExcluded = pathValidator(path, null, excludedPaths)
+        const resultWildCard = pathValidator(path, null, null)
         expect(resultIncluded).toBe(true)
         expect(resultNotIncluded).toBe(false)
-        expect(resultIgnored).toBe(false)
+        expect(resultExcluded).toBe(false)
         expect(resultWildCard).toBe(true)
     })
 
-    it("Interprets array key as outer object key", () => {
-        const includedAttributes = { "hello": true }
-        const resultIncluded = attributeValidator(["hello", "0"], includedAttributes, null)
+    it("Converts provided path string to regex", () => {
+        const includedPaths = ["hello"]
+        const path = ["hello", "0"]
+        const resultIncluded = pathValidator(path, includedPaths, null)
         expect(resultIncluded).toBe(true)
     })
 })

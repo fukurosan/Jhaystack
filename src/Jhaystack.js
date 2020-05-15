@@ -17,13 +17,13 @@ export default class Jhaystack {
     return this
   }
 
-  setIgnoredAttributes(attributes) {
-    this[s_Engine].setIgnoredAttributes(attributes)
+  setExcludedPaths(paths) {
+    this[s_Engine].setExcludedPaths(paths)
     return this
   }
 
-  setIncludedAttributes(attributes) {
-    this[s_Engine].setIncludedAttributes(attributes)
+  setIncludedPaths(paths) {
+    this[s_Engine].setIncludedPaths(paths)
     return this
   }
 

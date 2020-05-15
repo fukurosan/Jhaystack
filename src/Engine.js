@@ -11,8 +11,8 @@ export default class SearchEngine {
     this.items = [] //Item
     this.originalData = []
     this.limit = null
-    this.ignoredAttributes = null
-    this.includedAttributes = null
+    this.excludedPaths = null
+    this.includedPaths = null
   }
 
   setComparisonStrategy(strategy) {
@@ -30,25 +30,23 @@ export default class SearchEngine {
     return this
   }
 
-  setIgnoredAttributes(attributes) {
-    if (!attributes) {
-      this.ignoredAttributes = null
+  setExcludedPaths(paths) {
+    if (!paths || !Array.isArray(paths)) {
+      this.excludedPaths = null
     }
     else {
-      this.ignoredAttributes = {}
-      attributes.forEach(attr => this.ignoredAttributes[attr] = true)
+      this.excludedPaths = paths
       return this
     }
     this.prepareDataset()
   }
 
-  setIncludedAttributes(attributes) {
-    if (!attributes) {
-      this.includedAttributes = null
+  setIncludedAttributes(paths) {
+    if (!paths || !Array.isArray(paths)) {
+      this.includedPaths = null
     }
     else {
-      this.includedAttributes = {}
-      attributes.forEach(attr => this.includedAttributes[attr] = true)
+      this.includedPaths = paths
     }
     this.prepareDataset()
     return this
@@ -67,7 +65,7 @@ export default class SearchEngine {
 
   prepareDataset() {
       this.items = this.originalData.map(item => {
-        return new Item(item, this.includedAttributes, this.ignoredAttributes)
+        return new Item(item, this.includedPaths, this.excludedPaths)
       })
   }
 

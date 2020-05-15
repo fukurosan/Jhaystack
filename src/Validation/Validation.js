@@ -1,28 +1,22 @@
-import { getLastNonNumericItemInArray } from "../Utility/JsonUtility"
+export const pathValidator = (path, includedPaths, excludedPaths) => {
 
-export const attributeValidator = (path, includedAttributesMap, ignoredAttributesMap) => {
-    if (includedAttributesMap || ignoredAttributesMap) {
-        let lastValidKey = getLastNonNumericItemInArray(path)
-        if(!lastValidKey) {
-            return false
-        }
-        else if (includedAttributesMap && includedAttributesMap[lastValidKey]) {
-            return true
-        }
-        else if (includedAttributesMap && !includedAttributesMap[lastValidKey]) {
-            return false
-        }
-        else if (ignoredAttributesMap && !ignoredAttributesMap[lastValidKey]) {
-            return true
-        }
-        else if (ignoredAttributesMap && ignoredAttributesMap[lastValidKey]) {
-            return false
-        }
-        else {
-            return true
-        }
+    const pathStr = path.toString().replace(/,/g, ".")
+
+    if (includedPaths && excludedPaths) {
+        let includedMatch = includedPaths.map(regex => typeof regex === "string" ? new RegExp(regex) : regex).find(regex => regex.exec(pathStr))
+        let excludeMatch = excludedPaths.map(regex => typeof regex === "string" ? new RegExp(regex) : regex).find(regex => regex.exec(pathStr))
+        return includedMatch && !excludeMatch
+    }
+    else if (includedPaths && !excludedPaths) {
+        let includedMatch = includedPaths.map(regex => typeof regex === "string" ? new RegExp(regex) : regex).find(regex => regex.exec(pathStr))
+        return includedMatch ? true : false
+    }
+    else if (!includedPaths && excludedPaths) {
+        let excludeMatch = excludedPaths.map(regex => typeof regex === "string" ? new RegExp(regex) : regex).find(regex => regex.exec(pathStr))
+        return excludeMatch ? false : true
     }
     else {
         return true
     }
+
 }
