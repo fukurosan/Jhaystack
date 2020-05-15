@@ -1,30 +1,19 @@
-export default (dataset, validator) => {
-    let result = []
+import Index from "../Model/Index"
 
-    dataset.forEach(item => {
-        const traverse = (obj, path = []) => {
-            Object.keys(obj).forEach(key => {
-                if (validator(key)) {
-                    const localPath = [...path, key]
-                    if (obj[key] !== null && typeof obj[key] === "object") {
-                        traverse(obj[key], localPath)
-                    }
-                    else {
-                        const value = ("" + obj[key]).toUpperCase()
-                        if (!result[value]) {
-                            result[value] = []
-                        }
-                        result[value].push({
-                            item: item,
-                            path: localPath,
-                            depth: localPath.length
-                        })
-                    }
-                }
-            })
-        }
-        traverse(item)
-    })
+export default class EqualsIndex extends Index {
+    constructor(shards) {
+        super(shards)
+        this.tag = "EQUALS"
+    }
 
-    return result
+    build() {
+        this.index = {}
+        this.shards.forEach(shard => {
+            const value = ("" + shard.value).toUpperCase()
+            if (!this.index[value]) {
+                this.index[value] = []
+            }
+            this.index[value].push(shard)
+        })
+    }
 }

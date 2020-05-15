@@ -8,7 +8,7 @@ export default class SearchEngine {
   constructor() {
     this.comparisonStrategy = [FUZZY]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH
-    this.items = [] //Item
+    this.items = []
     this.originalData = []
     this.limit = null
     this.excludedPaths = null
@@ -64,6 +64,7 @@ export default class SearchEngine {
   }
 
   prepareDataset() {
+    delete this.items
       this.items = this.originalData.map(item => {
         return new Item(item, this.includedPaths, this.excludedPaths)
       })

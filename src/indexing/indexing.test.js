@@ -1,61 +1,63 @@
 import EQUALS_INDEX from "./Equals"
 import CONTAINS_INDEX from "./Contains"
 import FULL_TEXT_INDEX from "./FullText"
+import { flattenObject } from "../Utility/JsonUtility"
 
 describe("Indexing module", () => {
 
-    const data = [
-        {
-            id: 1,
-            firstName: "Tim Tom Tem",
-            lastName: "Bern",
-            relation: [2, 3]
-        },
-        {
-            id: 2,
-            firstName: "Jim",
-            lastName: "Jiggery",
-            hobbies: [
-                {
-                    name: "Dancing"
-                },
-                {
-                    name: "Tennis"
-                }
-            ]
-        },
-        {
-            id: 3,
-            firstName: "Rich",
-            lastName: "Ribbity"
-        }
-    ]
-
-    const validator = () => true
+    const data = flattenObject({
+        items: [
+            {
+                id: 1,
+                firstName: "Tim Tom Tem",
+                lastName: "Bern",
+                relation: [2, 3]
+            },
+            {
+                id: 2,
+                firstName: "Jim",
+                lastName: "Jiggery",
+                hobbies: [
+                    {
+                        name: "Dancing"
+                    },
+                    {
+                        name: "Tennis"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                firstName: "Rich",
+                lastName: "Ribbity"
+            }
+        ]
+    })
 
     it("Creates full text index", () => {
-        const index = FULL_TEXT_INDEX(data, validator)
-        expect(index["TOM"]).toBeTruthy()
-        expect(index["TEM"]).toBeTruthy()
-        expect(index["OM"]).toBe(undefined)
-        expect(index["TOM"][0].path[0]).toBe("firstName")
-        expect(index["TOM"][0].item).toEqual(data[0])
+        const index = new FULL_TEXT_INDEX(data)
+        expect(index.evaluate(["TOM"])).toBeTruthy()
+        expect(index.evaluate(["TEM"])).toBeTruthy()
+        expect(index.evaluate(["OM"])).toBe(undefined)
+        expect(index.evaluate(["TOM"])[0].path.toString()).toBe(["items", "0", "firstName"].toString())
+        expect(index.evaluate(["TOM"])[0].value).toEqual("Tim Tom Tem")
+        expect(index.tag).toBe("FULL_TEXT")
     })
 
     it("Creates contains index", () => {
-        const index = CONTAINS_INDEX(data, validator)
-        expect(index["IBBI"]).toBeTruthy()
-        expect(index["IBBI"][0].path[0]).toBe("lastName")
-        expect(index["IBBI"][0].item).toEqual(data[2])
-        expect(index[2].length).toBe(2)
+        const index = new CONTAINS_INDEX(data)
+        expect(index.evaluate(["IBBI"])).toBeTruthy()
+        expect(index.evaluate(["IBBI"])[0].path.toString()).toBe(["items", "2", "lastName"].toString())
+        expect(index.evaluate(["IBBI"])[0].value).toEqual("Ribbity")
+        expect(index.tag).toBe("CONTAINS")
     })
 
     it("Creates equals index", () => {
-        const index = EQUALS_INDEX(data, validator)
-        expect(index["JIM"]).toBeTruthy()
-        expect(index["JIM"][0].path[0]).toBe("firstName")
-        expect(index["JIM"][0].item).toEqual(data[1])
-        expect(index[2].length).toBe(2)
+        const index = new EQUALS_INDEX(data)
+        expect(index.evaluate(["JIM"])).toBeTruthy()
+        expect(index.evaluate(["JIM"])[0].path.toString()).toBe(["items", "1", "firstName"].toString())
+        expect(index.evaluate(["JIM"])[0].value).toEqual("Jim")
+        expect(index.tag).toBe("EQUALS")
     })
 
 })
