@@ -1,3 +1,5 @@
+import SearchResult from "../Model/SearchResult"
+
 export const EXTRACT_ALL_NESTED = (itemArray, searchString, comparisonStrategy, limit) => {
     let result = []
     let numberOfFound = 0
@@ -10,11 +12,10 @@ export const EXTRACT_ALL_NESTED = (itemArray, searchString, comparisonStrategy, 
                 if (limit && numberOfFound >= limit) {
                     return
                 }
-                result.push({
-                    item: shard.path.slice(0, shard.path.length - 1).reduce((acc, current) => { return acc[current] }, item.original),
-                    path: shard.path[shard.path.length - 1],
-                    depth: 1
-                })
+                result.push(new SearchResult(
+                    shard.path.slice(0, shard.path.length - 1).reduce((acc, current) => { return acc[current] }, item.original),
+                    shard.path[shard.path.length - 1]
+                ))
             })
         numberOfFound++
     })
@@ -30,11 +31,10 @@ export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray, searchString, comparisonSt
         }
         const foundShard = item.shards.find(shard => comparisonStrategy.find(comparisonFunction => comparisonFunction(searchString, shard.value)))
         if (foundShard) {
-            result.push({
-                item: item.original,
-                path: foundShard.path,
-                depth: foundShard.depth
-            })
+            result.push(new SearchResult(
+                item.original,
+                foundShard.path
+            ))
             numberOfFound++
         }
     })
@@ -54,11 +54,10 @@ export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn, searchString, co
             }
             const foundShard = itemArray[itemIndex].shards.find(shard => comparisonFunction(searchString, shard.value))
             if (foundShard) {
-                matches[strategyIndex].push({
-                    item: itemArray.splice(itemIndex, 1)[0].original,
-                    path: foundShard.path,
-                    depth: foundShard.depth
-                })
+                matches[strategyIndex].push(new SearchResult(
+                    itemArray.splice(itemIndex, 1)[0].original,
+                    foundShard.path
+                ))
                 numberOfFound++
                 itemIndex--
             }
