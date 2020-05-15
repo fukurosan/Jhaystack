@@ -14,7 +14,7 @@ export const EXTRACT_ALL_NESTED = (itemArray, searchString, comparisonStrategy, 
                 }
                 result.push(new SearchResult(
                     shard.path.slice(0, shard.path.length - 1).reduce((acc, current) => { return acc[current] }, item.original),
-                    shard.path[shard.path.length - 1]
+                    [shard.path[shard.path.length - 1]]
                 ))
             })
         numberOfFound++
