@@ -1,6 +1,10 @@
 import SearchResult from "../Model/SearchResult"
 import Item from "../Model/Item"
 
+interface ObjectLiteral {
+    [key: string]: any
+}
+
 export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number) => {
     let result: SearchResult[] = []
     let numberOfFound = 0
@@ -14,7 +18,7 @@ export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comp
                     return
                 }
                 result.push(new SearchResult(
-                    shard.path.slice(0, shard.path.length - 1).reduce((acc, current) => { return acc[current] }, item.original),
+                    shard.path.slice(0, shard.path.length - 1).reduce((acc: ObjectLiteral, current) => { return acc[current] }, item.original),
                     [shard.path[shard.path.length - 1]]
                 ))
             })
@@ -23,8 +27,8 @@ export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comp
     return result
 }
 
-export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray, searchString, comparisonStrategy, limit) => {
-    let result = []
+export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number) => {
+    let result: SearchResult[] = []
     let numberOfFound = 0
     itemArray.forEach(item => {
         if (limit && numberOfFound >= limit) {
@@ -42,9 +46,9 @@ export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray, searchString, comparisonSt
     return result
 }
 
-export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn, searchString, comparisonStrategy, limit) => {
+export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number) => {
     const itemArray = [...itemArrayIn]
-    let matches = []
+    let matches: SearchResult[][] = []
     let numberOfFound = 0
     comparisonStrategy.forEach(() => matches.push([]))
 
@@ -65,7 +69,7 @@ export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn, searchString, co
         }
     })
 
-    let result = []
+    let result: SearchResult[] = []
     matches.forEach(hitArray => {
         result = [...result, ...hitArray]
     })

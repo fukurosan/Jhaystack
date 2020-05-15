@@ -48,7 +48,7 @@ export default class SearchEngine {
     this.prepareDataset()
   }
 
-  setIncludedAttributes(paths: string[]) {
+  setIncludedPaths(paths: string[]) {
     if (!paths || !Array.isArray(paths)) {
       this.includedPaths = null
     }
