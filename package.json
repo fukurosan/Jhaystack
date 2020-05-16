@@ -1,9 +1,9 @@
 {
   "name": "jhaystack",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A simple JSON search utility",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./bundle/bundle.js",
+  "types": "./lib/index.d.ts",
   "scripts": {
     "clean": "rimraf lib && rimraf bundle",
     "build": "npm run build:lib && npm run build:wbp",
@@ -17,7 +17,8 @@
     "url": "https://github.com/fukurosan/Jhaystack.git"
   },
   "keywords": [
-    "JSON",
+    "jhaystack",
+    "json",
     "search",
     "engine"
   ],
