@@ -18,7 +18,7 @@ Typically you would use the library by creating an instance of Jhaystack and set
 The result of a search will be an array of objects. Each object has the item itself (item) where a match was found, a path (path) to where in the object the match was found, as well as a depth (depth) specifying how many steps into the structure the match was found.
 
 ```javascript
-import { Jhaystack, TraversalStrategies, ComparisonStrategies } from "jhaystack"
+import { Jhaystack, TraversalStrategy, ComparisonStrategy } from "jhaystack"
 const data = [
     {
         name: "tom"
@@ -41,7 +41,6 @@ Jhaystack by default scans all attributes and paths for the given search criteri
 
 Example:
 ```javascript
-import Jhaystack from "jhaystack"
 const pathRegexArray = [/^other/]
 const data = [
     {
