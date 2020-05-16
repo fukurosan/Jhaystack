@@ -1,9 +1,13 @@
+interface ObjectLiteral {
+    [key: string]: any
+}
+
 export default class SearchResult {
-    item: any
-    path: any
-    depth: any
+    item: ObjectLiteral
+    path: (string|number)[]
+    depth: number
     
-    constructor(item: object, path: string[]) {
+    constructor(item: ObjectLiteral, path: (string|number)[]) {
         this.item = item
         this.path = path
         this.depth = path.length
