@@ -1,8 +1,8 @@
 {
   "name": "jhaystack",
-  "version": "0.0.10",
+  "version": "0.0.15",
   "description": "A simple JSON search utility",
-  "main": "./bundle/bundle.js",
+  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
     "clean": "rimraf lib && rimraf bundle",

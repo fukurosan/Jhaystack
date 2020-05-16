@@ -12,8 +12,5 @@ yarn.lock
 .babelrc
 .gitignore
 
-# source folder
-src
-
 # coverage
 coverage
