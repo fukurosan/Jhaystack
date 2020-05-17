@@ -5,7 +5,7 @@ interface ObjectLiteral {
     [key: string]: any
 }
 
-export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number) => {
+export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number): SearchResult[] => {
     let result: SearchResult[] = []
     let numberOfFound = 0
     itemArray.forEach(item => {
@@ -27,7 +27,7 @@ export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comp
     return result
 }
 
-export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number) => {
+export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number): SearchResult[] => {
     let result: SearchResult[] = []
     let numberOfFound = 0
     itemArray.forEach(item => {
@@ -46,7 +46,7 @@ export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray: Item[], searchString: stri
     return result
 }
 
-export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number) => {
+export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number): SearchResult[] => {
     const itemArray = [...itemArrayIn]
     let matches: SearchResult[][] = []
     let numberOfFound = 0

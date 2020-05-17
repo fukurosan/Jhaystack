@@ -29,7 +29,7 @@ export const deepCopyObject = <T>(o: T): any => {
     }
 }
 
-export const flattenObject = (object: ObjectLiteral) => {
+export const flattenObject = (object: ObjectLiteral): Shard[] => {
     let result: Shard[] = []
     const traverse = (o: ObjectLiteral, path: string[] = []) => {
         Object.keys(o).forEach(key => {
@@ -52,7 +52,7 @@ export const flattenObject = (object: ObjectLiteral) => {
     return result
 }
 
-export const getLastNonNumericItemInArray = (array: (string|number)[]) => {
+export const getLastNonNumericItemInArray = (array: (string|number)[]): string|null => {
     let lastValidKey
     let index = array.length - 1
     while (!lastValidKey) {
@@ -61,7 +61,7 @@ export const getLastNonNumericItemInArray = (array: (string|number)[]) => {
             break
         }
         if (Number.isNaN(+array[index])) {
-            lastValidKey = array[index]
+            lastValidKey = <string> array[index]
         }
         else {
             index--

@@ -1,4 +1,4 @@
-export const FUZZY = (term: string, context: any) => {
+export const FUZZY = (term: string, context: any): boolean => {
     term = (`${term}`).toUpperCase().replace(/ /g, "")
     context = (`${context}`).toUpperCase().replace(/ /g, "")
     const clen = context.length
@@ -24,39 +24,39 @@ export const FUZZY = (term: string, context: any) => {
     return true
 }
 
-export const STARTS_WITH = (term: string, context: any) => {
+export const STARTS_WITH = (term: string, context: any): boolean => {
     return (`${context}`).startsWith(`${term}`)
 }
 
-export const STARTS_WITH_CASE_INSENSITIVE = (term: string, context: any) => {
+export const STARTS_WITH_CASE_INSENSITIVE = (term: string, context: any): boolean => {
     return (`${context}`).toUpperCase().startsWith((`${term}`).toUpperCase())
 }
 
-export const ENDS_WITH = (term: string, context: any) => {
+export const ENDS_WITH = (term: string, context: any): boolean => {
     return (`${context}`).endsWith(`${term}`)
 }
 
-export const ENDS_WITH_CASE_INSENSITIVE = (term: string, context: any) => {
+export const ENDS_WITH_CASE_INSENSITIVE = (term: string, context: any): boolean => {
     return (`${context}`).toUpperCase().endsWith((`${term}`).toUpperCase())
 }
 
-export const CONTAINS = (term: string, context: any) => {
+export const CONTAINS = (term: string, context: any): boolean => {
     return (`${context}`).indexOf(`${term}`) > -1
 }
 
-export const CONTAINS_CASE_INSENSITIVE = (term: string, context: any) => {
+export const CONTAINS_CASE_INSENSITIVE = (term: string, context: any): boolean => {
     return (`${context}`).toUpperCase().indexOf((`${term}`).toUpperCase()) > -1
 }
 
-export const EQUALS = (term: string, context: any) => {
+export const EQUALS = (term: string, context: any): boolean => {
     return (`${context}`) === (`${term}`)
 }
 
-export const EQUALS_CASE_INSENSITIVE = (term: string, context: any) => {
+export const EQUALS_CASE_INSENSITIVE = (term: string, context: any): boolean => {
     return (`${context}`).toUpperCase() === (`${term}`).toUpperCase()
 }
 
-export const FULL_TEXT = (term: string, context: any) => {
+export const FULL_TEXT = (term: string, context: any): boolean => {
     let found = 0
     const termWords = (`${term}`).toUpperCase().split(" ")
     const contextWords = (`${context}`).toUpperCase().split(" ")
