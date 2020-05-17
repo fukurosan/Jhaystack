@@ -53,16 +53,16 @@ const data = [
 const seInc = new Jhaystack()
     .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
     .setComparisonStrategy([ComparisonStrategy.FUZZY])
-    .setDataset(data)
     .setIncludedPaths(pathRegexArray)
-const seIgn = new Jhaystack()
+    .setDataset(data)
+const seExc = new Jhaystack()
     .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
     .setComparisonStrategy([ComparisonStrategy.FUZZY])
-    .setDataset(data)
     .setExcludedPaths(pathRegexArray)
+    .setDataset(data)
 const resultsIncluded = seInc.search("tm")
 //[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tim" }]
-const resultsIgnored = seIgn.search("tm")
+const resultsExcluded = seExc.search("tm")
 //[{ path: ["name"], depth: 1, item: { name: "tom" }]
 ```
 
