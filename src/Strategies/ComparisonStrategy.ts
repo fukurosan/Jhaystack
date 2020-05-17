@@ -1,6 +1,6 @@
 export const FUZZY = (term: string, context: any) => {
-    term = ("" + term).toUpperCase().replace(/ /g, "")
-    context = ("" + context).toUpperCase().replace(/ /g, "")
+    term = (`${term}`).toUpperCase().replace(/ /g, "")
+    context = (`${context}`).toUpperCase().replace(/ /g, "")
     const clen = context.length
     const tlen = term.length
     if (tlen > clen) {
@@ -25,41 +25,41 @@ export const FUZZY = (term: string, context: any) => {
 }
 
 export const STARTS_WITH = (term: string, context: any) => {
-    return ("" + context).startsWith("" + term)
+    return (`${context}`).startsWith(`${term}`)
 }
 
 export const STARTS_WITH_CASE_INSENSITIVE = (term: string, context: any) => {
-    return ("" + context).toUpperCase().startsWith(("" + term).toUpperCase())
+    return (`${context}`).toUpperCase().startsWith((`${term}`).toUpperCase())
 }
 
 export const ENDS_WITH = (term: string, context: any) => {
-    return ("" + context).endsWith("" + term)
+    return (`${context}`).endsWith(`${term}`)
 }
 
 export const ENDS_WITH_CASE_INSENSITIVE = (term: string, context: any) => {
-    return ("" + context).toUpperCase().endsWith(("" + term).toUpperCase())
+    return (`${context}`).toUpperCase().endsWith((`${term}`).toUpperCase())
 }
 
 export const CONTAINS = (term: string, context: any) => {
-    return ("" + context).indexOf("" + term) > -1
+    return (`${context}`).indexOf(`${term}`) > -1
 }
 
 export const CONTAINS_CASE_INSENSITIVE = (term: string, context: any) => {
-    return ("" + context).toUpperCase().indexOf(("" + term).toUpperCase()) > -1
+    return (`${context}`).toUpperCase().indexOf((`${term}`).toUpperCase()) > -1
 }
 
 export const EQUALS = (term: string, context: any) => {
-    return ("" + context) === ("" + term)
+    return (`${context}`) === (`${term}`)
 }
 
 export const EQUALS_CASE_INSENSITIVE = (term: string, context: any) => {
-    return ("" + context).toUpperCase() === ("" + term).toUpperCase()
+    return (`${context}`).toUpperCase() === (`${term}`).toUpperCase()
 }
 
 export const FULL_TEXT = (term: string, context: any) => {
     let found = 0
-    const termWords = ("" + term).toUpperCase().split(" ")
-    const contextWords = ("" + context).toUpperCase().split(" ")
+    const termWords = (`${term}`).toUpperCase().split(" ")
+    const contextWords = (`${context}`).toUpperCase().split(" ")
     termWords.forEach(termWord => {
         if(contextWords.indexOf(termWord) > -1) {
             found++
