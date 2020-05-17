@@ -10,8 +10,20 @@ module.exports = {
         path: path.resolve(__dirname, "bundle"),
         libraryTarget: "umd",
         library: "Jhaystack",
-        umdNamedDefine: true,
-        libraryExport: "default"
+        globalObject: `(() => {
+          if(typeof self !== "undefined") {
+              return self
+          }
+          else if(typeof window !== "undefined") {
+              return window
+          }
+          else if(typeof global !== "undefined") {
+              return global
+          }
+          else {
+              return Function('return this')()
+          }
+        })`
     },
     module: {
         rules: [
