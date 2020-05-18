@@ -1,5 +1,6 @@
 import Engine from "./Engine"
 import Index from "./Model/Index"
+import SearchResult from "./Model/SearchResult"
 
 export default class Jhaystack {
 
@@ -16,6 +17,11 @@ export default class Jhaystack {
 
   setTraversalStrategy(strategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]) {
     this.engine.setTraversalStrategy(strategy)
+    return this
+  }
+
+  setSortingStrategy(strategy: (a: SearchResult, b: SearchResult) => number) {
+    this.engine.setSortingStrategy(strategy)
     return this
   }
 

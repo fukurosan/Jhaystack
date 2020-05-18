@@ -19,7 +19,8 @@ export const EXTRACT_ALL_NESTED = (itemArray: Item[], searchString: string, comp
                 }
                 result.push(new SearchResult(
                     shard.path.slice(0, shard.path.length - 1).reduce((acc: ObjectLiteral, current) => { return acc[current] }, item.original),
-                    [shard.path[shard.path.length - 1]]
+                    [shard.path[shard.path.length - 1]],
+                    shard.value
                 ))
             })
         numberOfFound++
@@ -38,7 +39,8 @@ export const RETURN_ROOT_ON_FIRST_MATCH = (itemArray: Item[], searchString: stri
         if (foundShard) {
             result.push(new SearchResult(
                 item.original,
-                foundShard.path
+                foundShard.path,
+                foundShard.value
             ))
             numberOfFound++
         }
@@ -61,7 +63,8 @@ export const RETURN_ROOT_ON_FIRST_MATCH_ORDERED = (itemArrayIn: Item[], searchSt
             if (foundShard) {
                 matches[strategyIndex].push(new SearchResult(
                     itemArray.splice(itemIndex, 1)[0].original,
-                    foundShard.path
+                    foundShard.path,
+                    foundShard.value
                 ))
                 numberOfFound++
                 itemIndex--
