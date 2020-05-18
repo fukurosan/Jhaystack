@@ -1,9 +1,15 @@
-import Contains from "./Contains"
-import Equals from "./Equals"
-import FullText from "./FullText"
+import CONTAINS from "./Contains"
+import EQUALS from "./Equals"
+import FULL_TEXT from "./FullText"
+
+export {
+    CONTAINS,
+    EQUALS,
+    FULL_TEXT
+}
 
 export default {
-    CONTAINS: Contains,
-    EQUALS: Equals,
-    FULL_TEXT: FullText
+    CONTAINS,
+    EQUALS,
+    FULL_TEXT
 }

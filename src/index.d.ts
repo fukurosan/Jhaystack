@@ -1,9 +1,11 @@
 import Jhaystack from "./Jhaystack"
-import ComparisonStrategy from "./Strategies/ComparisonStrategy"
-import TraversalStrategy from "./Strategies/TraversalStrategy"
+import ComparisonStrategy from "./Comparison/ComparisonStrategy"
+import TraversalStrategy from "./Traversal/TraversalStrategy"
+import SortingStrategy from "./Sorting/SortingStrategy"
 
 export {
     Jhaystack,
     ComparisonStrategy,
-    TraversalStrategy
+    TraversalStrategy,
+    SortingStrategy
 }
