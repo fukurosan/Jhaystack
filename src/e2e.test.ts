@@ -1,5 +1,4 @@
-import { Jhaystack, ComparisonStrategy, TraversalStrategy } from "./index"
-import { SORT_BY_ATTRIBUTE } from "./Strategies/SortingStrategy"
+import { Jhaystack, ComparisonStrategy, TraversalStrategy, SortingStrategy } from "./index"
 
 describe("End to end", () => {
     const data = [
@@ -72,7 +71,7 @@ describe("End to end", () => {
             .setComparisonStrategy([ComparisonStrategy.CONTAINS])
             .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
             .setDataset(data)
-            .setSortingStrategy(SORT_BY_ATTRIBUTE)
+            .setSortingStrategy(SortingStrategy.SORT_BY_ATTRIBUTE)
         let result = se.search("min")
         expect(result.length).toBe(2)
         expect(result[0].item.firstName).toBe("Benjamin")

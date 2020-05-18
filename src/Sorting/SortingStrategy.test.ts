@@ -3,7 +3,7 @@ import SearchResult from "../Model/SearchResult"
 
 describe("Sorting Strategy", () => {
 
-    let items
+    let items: SearchResult[]
 
     beforeEach(() => {
         items = [

@@ -1,5 +1,5 @@
 import { EXTRACT_ALL_NESTED, RETURN_ROOT_ON_FIRST_MATCH, RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./TraversalStrategy"
-import { STARTS_WITH, CONTAINS } from "./ComparisonStrategy"
+import { STARTS_WITH, CONTAINS } from "../Comparison/ComparisonStrategy"
 import Item from "../Model/Item"
 
 describe("Traversal Strategy", () => {
