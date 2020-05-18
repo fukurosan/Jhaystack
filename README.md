@@ -13,12 +13,12 @@ Jhaystack is modular, and built on configurable traversal and comparison strateg
 To use Jhaystack you need to supply a traversal strategy, an array of comparison strategies, as well as an array of objects to be searched (a.k.a. the "dataset").
 
 #### Typical Usage
-Typically you would use the library by creating an instance of Jhaystack and setting it up using the built in functions. This involves providing a traversal strategy, an array of comparison strategies, an (optional) result limit in the form of an integer, and a dataset. The search function can then be used to execute a search.
+Typically you would use the library by creating an instance of Jhaystack and setting it up using the built in functions. This involves providing a traversal strategy, an array of comparison strategies, an (optional) result limit in the form of an integer, an (optional) sorting algorithm, and a dataset. The search function can then be used to execute a search.
 
 The result of a search will be an array of objects. Each object has the item itself (item) where a match was found, a path (path) to where in the object the match was found, as well as a depth (depth) specifying how many steps into the structure the match was found.
 
 ```javascript
-import { Jhaystack, TraversalStrategy, ComparisonStrategy } from "jhaystack"
+import { Jhaystack, TraversalStrategy, ComparisonStrategy, SortingStrategy } from "jhaystack"
 const data = [
     {
         name: "tom"
@@ -30,10 +30,11 @@ const data = [
 const se = new Jhaystack()
     .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH_ORDERED)
     .setComparisonStrategy([ComparisonStrategy.STARTS_WITH, ComparisonStrategy.FUZZY])
+    .setSortingStrategy(SortingStrategy.SORT_BY_ATTRIBUTE)
     .setLimit(2)
     .setDataset(data)
 const results = se.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, { path: ["name"], depth: 1, item: { name: "tim" }]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }, value= "tom" }, { path: ["name"], depth: 1, item: { name: "tim" }, value: "tom" }]
 ```
 
 #### Included / Excluded Paths Customizability
@@ -61,9 +62,9 @@ const seExc = new Jhaystack()
     .setExcludedPaths(pathRegexArray)
     .setDataset(data)
 const resultsIncluded = seInc.search("tm")
-//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tim" }]
+//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tim" }, value: "tim" }]
 const resultsExcluded = seExc.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom" }]
 ```
 
 #### Traversal Strategy
@@ -96,6 +97,17 @@ Argument | Description
 --- | ---
 term*   |   The value to be searched for
 context*   |   The value to be searched
+
+#### Sorting Strategy
+The sorting strategy defines how Jhaystack sorts the search result. There are a few sorting algorithms that come with Jhaystack:
+
+Strategy | Description
+--- | ---
+SORT_BY_VALUE   |   This strategy will sort by the value of the found match
+SORT_BY_ATTRIBUTE   |   This strategy will sort by the name of the attribute
+SORT_BY_DEPTH   |   This strategy will by the depth of the match
+
+You can easily build your own strategy as well, by supplying Jhaystack with a custom function reference. The function is a regular array sorting function.
 
 ### Gotchas
 Changing included/excluded paths will cause the engine to have to revalidate the internal shard list which is a fairly heavy operation. It is therefore recommended to set the dataset last of all in the chain of intial setup actions.

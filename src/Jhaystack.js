@@ -17,6 +17,11 @@ export default class Jhaystack {
     return this
   }
 
+  setSortingStrategy(strategy) {
+    this[s_Engine].setSortingStrategy(strategy)
+    return this
+  }
+
   setExcludedPaths(paths) {
     this[s_Engine].setExcludedPaths(paths)
     return this

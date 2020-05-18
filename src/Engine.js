@@ -1,6 +1,7 @@
 import { FUZZY } from "./Strategies/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH } from "./Strategies/TraversalStrategy"
-import { deepCopyObject, flattenObject } from "./Utility/JsonUtility"
+import { SORT_BY_VALUE } from "./Strategies/SortingStrategy"
+import { deepCopyObject } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 
 export default class SearchEngine {
@@ -8,6 +9,7 @@ export default class SearchEngine {
   constructor() {
     this.comparisonStrategy = [FUZZY]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH
+    this.sortingStrategy = SORT_BY_VALUE
     this.items = []
     this.originalData = []
     this.indexes = []
@@ -27,6 +29,10 @@ export default class SearchEngine {
 
   setTraversalStrategy(strategy) {
     this.traversalStrategy = strategy
+  }
+
+  setSortingStrategy(strategy) {
+    this.sortingStrategy = strategy
   }
 
   setExcludedPaths(paths) {
@@ -76,7 +82,7 @@ export default class SearchEngine {
   }
 
   search(searchString) {
-    return this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit)
+    return this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit).sort(this.sortingStrategy)
   }
 
 }
