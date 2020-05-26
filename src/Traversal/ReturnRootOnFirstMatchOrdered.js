@@ -16,7 +16,8 @@ export default (itemArrayIn, searchString, comparisonStrategy, limit) => {
                 matches[strategyIndex].push(new SearchResult(
                     itemArray.splice(itemIndex, 1)[0].original,
                     foundShard.path,
-                    foundShard.value
+                    foundShard.value,
+                    ((1 / comparisonStrategy.length) * (comparisonStrategy.length - strategyIndex))
                 ))
                 numberOfFound++
                 itemIndex--

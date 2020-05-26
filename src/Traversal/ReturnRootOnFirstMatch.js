@@ -12,7 +12,8 @@ export default (itemArray, searchString, comparisonStrategy, limit) => {
             result.push(new SearchResult(
                 item.original,
                 foundShard.path,
-                foundShard.value
+                foundShard.value,
+                1
             ))
             numberOfFound++
         }
