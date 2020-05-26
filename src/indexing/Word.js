@@ -1,9 +1,9 @@
 import Index from "../Model/Index"
 
-export default class FullTextIndex extends Index {
+export default class WordIndex extends Index {
     constructor(shards) {
         super(shards)
-        this.tag = "FULL_TEXT"
+        this.tag = "WORD"
     }
 
     build() {

@@ -1,9 +1,9 @@
 import Index from "../Model/Index"
 
-export default class EqualsIndex extends Index {
+export default class ValueIndex extends Index {
     constructor(shards) {
         super(shards)
-        this.tag = "EQUALS"
+        this.tag = "VALUE"
     }
 
     build() {

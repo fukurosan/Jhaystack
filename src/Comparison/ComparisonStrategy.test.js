@@ -1,5 +1,5 @@
 import {
-    FUZZY,
+    FUZZY_SEQUENCE,
     STARTS_WITH,
     STARTS_WITH_CASE_INSENSITIVE,
     ENDS_WITH,
@@ -8,18 +8,19 @@ import {
     CONTAINS_CASE_INSENSITIVE,
     EQUALS,
     EQUALS_CASE_INSENSITIVE,
-    FULL_TEXT
+    CONTAINS_ALL_WORDS,
+    BITAP_FUZZY
 } from "./ComparisonStrategy"
 
 describe("Comparison Strategy Module", () => {
-    it("Fuzzy comparison works", () => {
+    it("Fuzzy sequence comparison works", () => {
         const context = "Donald Duck"
         const containsNonCapitalTerm = "ald du"
         const wayApartTerm = "ddk"
         const invalidTerm = "kcud dlanod"
-        expect(FUZZY(containsNonCapitalTerm, context)).toBe(true)
-        expect(FUZZY(invalidTerm, context)).toBe(false)
-        expect(FUZZY(wayApartTerm, context)).toBe(true)
+        expect(FUZZY_SEQUENCE(containsNonCapitalTerm, context)).toBe(true)
+        expect(FUZZY_SEQUENCE(invalidTerm, context)).toBe(false)
+        expect(FUZZY_SEQUENCE(wayApartTerm, context)).toBe(true)
     })
 
     it("Starts with comparison works", () => {
@@ -90,11 +91,40 @@ describe("Comparison Strategy Module", () => {
         expect(EQUALS_CASE_INSENSITIVE(invalidTerm, context)).toBe(true)
     })
 
-    it("Full text comparison works", () => {
+    it("Contains all words comparison works", () => {
         const context = "Donald Quack Duck"
         const validTerm = "duck quack"
         const invalidTerm = "uck quack"
-        expect(FULL_TEXT(validTerm, context)).toBe(true)
-        expect(FULL_TEXT(invalidTerm, context)).toBe(false)
+        expect(CONTAINS_ALL_WORDS(validTerm, context)).toBe(true)
+        expect(CONTAINS_ALL_WORDS(invalidTerm, context)).toBe(false)
+    })
+
+    describe("Bitap comparison works", () => {
+        const context = "I have phoned the guy on a telephone"
+        const error0Term = "telephone"
+        const error0CapitalTerm = "TELEPHONE"
+        const error2Term = "elephant"
+        const error3Term = "elephantt"
+
+        it("Handles exact match", () => {
+            expect(BITAP_FUZZY(error0Term, context, 0)).toBe(true)
+            expect(BITAP_FUZZY(error0Term, context, 1)).toBe(true)
+        })
+
+        it("Handles capital letters", () => {
+            expect(BITAP_FUZZY(error0CapitalTerm, context, 0)).toBe(true)
+            expect(BITAP_FUZZY(error0CapitalTerm, context, 1)).toBe(true)
+        })
+
+        it("Handles fuzzy match with k distance configured", () => {
+            expect(BITAP_FUZZY(error2Term, context, 0)).toBe(false)
+            expect(BITAP_FUZZY(error2Term, context, 1)).toBe(false)
+            expect(BITAP_FUZZY(error2Term, context, 2)).toBe(true)
+        })
+
+        it("Default distance is 2", () => {
+            expect(BITAP_FUZZY(error2Term, context)).toBe(true)
+            expect(BITAP_FUZZY(error3Term, context)).toBe(false)
+        })
     })
 })

@@ -1,21 +1,21 @@
 export default (term, context) => {
     term = (`${term}`).toUpperCase().replace(/ /g, "")
     context = (`${context}`).toUpperCase().replace(/ /g, "")
-    const clen = context.length
-    const tlen = term.length
-    if (tlen > clen) {
+    const contextLength = context.length
+    const termLength = term.length
+    if (termLength > contextLength) {
         return false
     }
-    if (tlen === clen) {
+    if (termLength === contextLength) {
         return term === context
     }
     if (context.indexOf(term) !== -1) {
         return true
     }
-    outer: for (let i = 0, j = 0; i < tlen; i++) {
-        let nch = term.charCodeAt(i)
-        while (j < clen) {
-            if (context.charCodeAt(j++) === nch) {
+    outer: for (let i = 0, j = 0; i < termLength; i++) {
+        let termCharacter = term.charAt(i)
+        while (j < contextLength) {
+            if (context.charAt(j++) === termCharacter) {
                 continue outer
             }
         }
