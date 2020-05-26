@@ -81,7 +81,7 @@ The comparison strategy defines how Jhaystack compares two values to evaluate if
 
 Strategy | Description
 --- | ---
-BITAP_FUZZY   |   This strategy will determine if the context and the term are within a Levenshtein distance of 2.
+BITAP_FUZZY   |   This strategy will determine if the term can be found inside of the context within a Levenshtein distance of 2.
 FUZZY_SEQUENCE   |   This strategy will determine if all letters of the term exist somwhere inside the context, in the given order but not necessarily right after each other. (not case sensitive!)
 STARTS_WITH   |   This strategy will determine if the context starts with the term
 STARTS_WITH_CASE_INSENSITIVE   |   This strategy will determine if the context starts with the term  (not case sensitive!)
