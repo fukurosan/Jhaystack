@@ -107,6 +107,7 @@ Strategy | Description
 SORT_BY_VALUE   |   This strategy will sort by the value of the found match
 SORT_BY_ATTRIBUTE   |   This strategy will sort by the name of the attribute
 SORT_BY_DEPTH   |   This strategy will sort by the depth of the match
+SORT_BY_RELEVANCE   |   This strategy will sort by the relevance of the match
 
 You can easily build your own strategy as well, by supplying Jhaystack with a custom function reference. The function is a regular array sorting function.
 
