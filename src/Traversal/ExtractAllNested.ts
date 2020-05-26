@@ -17,7 +17,8 @@ export default (itemArray: Item[], searchString: string, comparisonStrategy: ((t
                 result.push(new SearchResult(
                     shard.path.slice(0, shard.path.length - 1).reduce((acc: ObjectLiteral, current) => { return acc[current] }, item.original),
                     [shard.path[shard.path.length - 1]],
-                    shard.value
+                    shard.value,
+                    1
                 ))
             })
         numberOfFound++

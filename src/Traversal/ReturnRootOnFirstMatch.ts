@@ -13,7 +13,8 @@ export default (itemArray: Item[], searchString: string, comparisonStrategy: ((t
             result.push(new SearchResult(
                 item.original,
                 foundShard.path,
-                foundShard.value
+                foundShard.value,
+                1
             ))
             numberOfFound++
         }
