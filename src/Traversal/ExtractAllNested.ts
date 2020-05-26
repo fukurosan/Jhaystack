@@ -1,9 +1,6 @@
 import SearchResult from "../Model/SearchResult"
 import Item from "../Model/Item"
-
-interface ObjectLiteral {
-    [key: string]: any
-}
+import { ObjectLiteral } from "../Utility/JsonUtility"
 
 export default (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number): SearchResult[] => {
     let result: SearchResult[] = []

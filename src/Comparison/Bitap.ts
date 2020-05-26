@@ -1,3 +1,5 @@
+import { ObjectLiteral } from "../Utility/JsonUtility"
+
 //Fantastic Japanese wiki article on Bitap (shift-and, shift-or): 
 //https://ja.m.wikipedia.org/wiki/Bitapアルゴリズム
 //The implementation in this file includes Wu & Mander's changes:
@@ -8,10 +10,6 @@
 //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.332.9395&rep=rep1&type=pdf
 //This implementation does not include Navarro's changes.
 //The default maximum Levenshtein distance of this implementation is 2
-
-interface ObjectLiteral {
-    [key: string]: any
-}
 
 const generateBitMask = (term: string, context: string) => {
     let characterMap: ObjectLiteral = {}
@@ -31,7 +29,7 @@ const generateBitMask = (term: string, context: string) => {
     return characterMap
 }
 
-export default (termIn: string, contextIn: string, maxErrors:number=2) => {
+export default (termIn: string, contextIn: string, maxErrors: number = 2) => {
     const term = termIn.toUpperCase()
     const context = contextIn.toUpperCase()
     const numberOfStates = maxErrors + 1 //+1 is the 0 state (no errors!)

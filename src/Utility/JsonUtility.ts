@@ -1,6 +1,6 @@
 import Shard from "../Model/Shard"
 
-interface ObjectLiteral {
+export interface ObjectLiteral {
     [key: string]: any
 }
 

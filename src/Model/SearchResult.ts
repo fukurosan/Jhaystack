@@ -1,6 +1,4 @@
-interface ObjectLiteral {
-    [key: string]: any
-}
+import { ObjectLiteral } from "../Utility/JsonUtility"
 
 export default class SearchResult {
     item: ObjectLiteral
