@@ -6,7 +6,7 @@ export default class EqualsIndex extends Index {
     
     constructor(shards: Shard[]) {
         super(shards)
-        this.tag = "EQUALS"
+        this.tag = "VALUE"
     }
 
     build() {

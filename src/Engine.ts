@@ -1,6 +1,5 @@
-import { FUZZY } from "./Comparison/ComparisonStrategy"
-import { RETURN_ROOT_ON_FIRST_MATCH } from "./Traversal/TraversalStrategy"
-import { SORT_BY_VALUE } from "./Sorting/SortingStrategy"
+import { BITAP_FUZZY } from "./Comparison/ComparisonStrategy"
+import { RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./Traversal/TraversalStrategy"
 import { deepCopyObject } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 import Index from "./Model/Index"
@@ -9,7 +8,7 @@ import SearchResult from "./Model/SearchResult"
 export default class SearchEngine {
   private comparisonStrategy: ((term: any, context: any) => boolean)[]
   private traversalStrategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
-  private sortingStrategy: (a: SearchResult, b: SearchResult) => number
+  private sortingStrategy: ((a: SearchResult, b: SearchResult) => number) | null
   private items: Item[]
   private originalData: object[]
   private indexes: Index[]
@@ -18,9 +17,9 @@ export default class SearchEngine {
   private includedPaths: (RegExp|string)[]|null
 
   constructor() {
-    this.comparisonStrategy = [FUZZY]
-    this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH
-    this.sortingStrategy = SORT_BY_VALUE
+    this.comparisonStrategy = [BITAP_FUZZY]
+    this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH_ORDERED
+    this.sortingStrategy = null
     this.items = []
     this.originalData = []
     this.indexes = []
@@ -93,7 +92,11 @@ export default class SearchEngine {
   }
 
   search(searchString: string) {
-    return this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit).sort(this.sortingStrategy)
+    let searchResult = this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit)
+    if(this.sortingStrategy) {
+      searchResult.sort(this.sortingStrategy)
+    }
+    return searchResult
   }
 
 }

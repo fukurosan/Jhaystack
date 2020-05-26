@@ -30,7 +30,7 @@ describe("End to end", () => {
 
     it("Typical fuzzy match setup works", () => {
         const se = new Jhaystack()
-            .setComparisonStrategy([ComparisonStrategy.FUZZY])
+            .setComparisonStrategy([ComparisonStrategy.FUZZY_SEQUENCE])
             .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH_ORDERED)
             .setDataset(data)
         const result = se.search("dck")
@@ -43,7 +43,7 @@ describe("End to end", () => {
     it("Library correctly parses incorrectly specified comparison strategy", () => {
         const se = new Jhaystack()
         //@ts-ignore
-            .setComparisonStrategy(ComparisonStrategy.FUZZY) //This is incorrectly typed on purpose
+            .setComparisonStrategy(ComparisonStrategy.FUZZY_SEQUENCE) //This is incorrectly typed on purpose
             .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
             .setDataset(data)
         const result = se.search("dck")

@@ -1,4 +1,4 @@
-import { SORT_BY_VALUE, SORT_BY_ATTRIBUTE, SORT_BY_DEPTH } from "./SortingStrategy"
+import { SORT_BY_VALUE, SORT_BY_ATTRIBUTE, SORT_BY_DEPTH, SORT_BY_RELEVANCE } from "./SortingStrategy"
 import SearchResult from "../Model/SearchResult"
 
 describe("Sorting Strategy", () => {
@@ -7,12 +7,12 @@ describe("Sorting Strategy", () => {
 
     beforeEach(() => {
         items = [
-            new SearchResult({}, ["1", "2", "3", "4", "5", "Attr 2"], "Value 1"),
-            new SearchResult({}, ["1", "2", "3", "4", "Attr 1"], "Value 2"),
-            new SearchResult({}, ["1", "2", "3", "Attr 6"], "Value 3"),
-            new SearchResult({}, ["1", "2", "Attr 5"], "Value 4"),
-            new SearchResult({}, ["1", "Attr 4"], "Value 5"),
-            new SearchResult({}, ["Attr 3"], "Value 6")
+            new SearchResult({}, ["1", "2", "3", "4", "5", "Attr 2"], "Value 1", 1),
+            new SearchResult({}, ["1", "2", "3", "4", "Attr 1"], "Value 2", 0.8),
+            new SearchResult({}, ["1", "2", "3", "Attr 6"], "Value 3", 0.7),
+            new SearchResult({}, ["1", "2", "Attr 5"], "Value 4", 0.6),
+            new SearchResult({}, ["1", "Attr 4"], "Value 5", 0.5),
+            new SearchResult({}, ["Attr 3"], "Value 6", 0.4)
         ]
     })
 
@@ -28,10 +28,16 @@ describe("Sorting Strategy", () => {
         expect(result[5].value).toBe("Value 3")
     })
 
-    it("Sort by depth", () => {
+    it("Sorts by depth", () => {
         const result = items.sort(SORT_BY_DEPTH)
         expect(result[0].value).toBe("Value 6")
         expect(result[5].value).toBe("Value 1")
+    })
+
+    it("Sorts by relevance", () => {
+        const result = items.sort(SORT_BY_RELEVANCE)
+        expect(result[0].relevance).toBe(1)
+        expect(result[5].relevance).toBe(0.4)
     })
 
 })

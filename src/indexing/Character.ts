@@ -3,18 +3,24 @@ import Shard from "../Model/Shard"
 
 export default class FullTextIndex extends Index {
     tag: string
-
+    
     constructor(shards: Shard[]) {
         super(shards)
-        this.tag = "FULL_TEXT"
+        this.tag = "CHARACTER"
     }
 
     build() {
         const extractStringTokens = (string: string) => {
-            let tokens: string[] = []
-            string.toUpperCase().split(" ").forEach(subString => {
-                tokens.push(subString)
-            })
+            let tokens = []
+            let token = null
+            const length = string.length
+            for (let i = 0; i < length; i++) {
+                token = ""
+                for (let j = i; j < length; j++) {
+                    token += string.charAt(j)
+                    tokens.push(token)
+                }
+            }
             return tokens
         }
 
