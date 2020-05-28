@@ -30,8 +30,8 @@ const generateBitMask = (term: string, context: string) => {
 }
 
 export default (termIn: string, contextIn: string, maxErrors: number = 2) => {
-    const term = termIn.toUpperCase()
-    const context = contextIn.toUpperCase()
+    const term = `${termIn}`.toUpperCase()
+    const context = `${contextIn}`.toUpperCase()
     const numberOfStates = maxErrors + 1 //+1 is the 0 state (no errors!)
     const contextLength = context.length
     const termLength = term.length
