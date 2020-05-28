@@ -11,18 +11,20 @@
 
 const generateBitMask = (term, context) => {
     let characterMap = {}
-    context.split("").forEach(contextCharacter => {
-        characterMap[contextCharacter] = 0
-    })
+    const contextCharacters = context.split("")
+    for (let i = 0; i < contextCharacters.length; i++) {
+        characterMap[contextCharacters[i]] = 0
+    }
     const finish = 1 << term.length - 1
     for (let i = 0; i < term.length; i++) {
         const termCharacter = term.charAt(i)
-        Object.keys(characterMap).forEach(key => {
-            characterMap[key] >>= 1
-            if (termCharacter === key) {
-                characterMap[key] |= finish
+        const objectKeys = Object.keys(characterMap)
+        for (let j = 0; j < objectKeys.length; j++) {
+            characterMap[objectKeys[j]] >>= 1
+            if (termCharacter === objectKeys[j]) {
+                characterMap[objectKeys[j]] |= finish
             }
-        })
+        }
     }
     return characterMap
 }
@@ -59,7 +61,7 @@ export default (termIn, contextIn, maxErrors=2) => {
             nextRString |= state[j] << 1 | 1
             rStringMask = nextRString               //Handle Removal
         }
-        if ((state[numberOfStates - 1] & finish) === finish) {
+        if ((state[maxErrors] & finish) === finish) {
             return true
         }
     }
