@@ -13,7 +13,7 @@ Jhaystack is modular, and built on configurable traversal and comparison strateg
 To use Jhaystack you need to supply a traversal strategy, an array of comparison strategies, as well as an array of objects to be searched (a.k.a. the "dataset").
 
 #### Typical Usage
-Typically you would use the library by creating an instance of Jhaystack and setting it up using the built in functions. This involves providing a traversal strategy, an array of comparison strategies, an (optional) result limit in the form of an integer, an (optional) sorting algorithm, and a dataset. The search function can then be used to execute a search.
+Typically you would use the library by creating an instance of Jhaystack and setting it up using the built in functions. This involves providing a traversal strategy, an array of comparison strategies, an (optional) result limit in the form of an integer, an (optional) array of sorting algorithms, and a dataset. The search function can then be used to execute a search.
 
 The result of a search will be an array of objects. Each object has the item itself (.item) where a match was found, a path (.path) to where in the object the match was found, the actual value (.value) that was matched, as well as a depth (.depth) specifying how many steps into the structure the match was found.
 
@@ -30,7 +30,7 @@ const data = [
 const se = new Jhaystack()
     .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH_ORDERED)
     .setComparisonStrategy([ComparisonStrategy.STARTS_WITH, ComparisonStrategy.FUZZY_SEQUENCE])
-    .setSortingStrategy(SortingStrategy.SORT_BY_ATTRIBUTE)
+    .setSortingStrategy([SortingStrategy.SORT_BY_ATTRIBUTE])
     .setLimit(2)
     .setDataset(data)
 const results = se.search("tm")

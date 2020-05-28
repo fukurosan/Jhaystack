@@ -49,3 +49,16 @@ export const getLastNonNumericItemInArray = (array) => {
     }
     return lastValidKey
 }
+
+export const mergeArraySortFunctions = (sortFunctionArray) => {
+    return (a, b) => {
+        let result = 0
+        for (let i = 0; i < sortFunctionArray.length; i++) {
+            let sortValue = sortFunctionArray[i](a, b)
+            if (sortValue !== 0) {
+                return sortValue
+            }
+        }
+        return result
+    }
+}
