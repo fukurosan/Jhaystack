@@ -106,6 +106,14 @@ describe("Comparison Strategy Module", () => {
         const error2Term = "elephant"
         const error3Term = "elephantt"
 
+        const secondContext = "Altavista"
+        const unrelatedTerm = "Bing"
+
+        it("Does not match unrelated term", () => {
+            expect(BITAP_FUZZY(unrelatedTerm, secondContext, 0)).toBe(false)
+            expect(BITAP_FUZZY(unrelatedTerm, secondContext, 1)).toBe(false)
+        })
+
         it("Handles exact match", () => {
             expect(BITAP_FUZZY(error0Term, context, 0)).toBe(true)
             expect(BITAP_FUZZY(error0Term, context, 1)).toBe(true)
