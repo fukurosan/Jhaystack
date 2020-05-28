@@ -1,4 +1,4 @@
-import { deepCopyObject, flattenObject, getLastNonNumericItemInArray } from "./JsonUtility"
+import { deepCopyObject, flattenObject, getLastNonNumericItemInArray, mergeArraySortFunctions } from "./JsonUtility"
 
 describe("JSON Utility Module", () => {
     const data = {
@@ -41,5 +41,63 @@ describe("JSON Utility Module", () => {
         expect(getLastNonNumericItemInArray(path1)).toBe("something else")
         expect(getLastNonNumericItemInArray(path2)).toBe("something")
         expect(getLastNonNumericItemInArray(path3)).toBe(null)
+    })
+    
+    it("Sorting arrays by multiple criteria works", () => {
+        const dataArray = [
+            {
+                number: 3,
+                letter: "a"
+            },
+            {
+                number: 1,
+                letter: "a"
+            },
+            {
+                number: 2,
+                letter: "c"
+            },
+            {
+                number: 2,
+                letter: "b"
+            }
+        ]
+        const sortByNumber = (a: any, b: any) => {
+            if (a.number < b.number) return -1
+            if (a.number > b.number) return 1
+            return 0
+        }
+        const sortByLetter = (a: any, b: any) => {
+            if (a.letter < b.letter) return -1
+            if (a.letter > b.letter) return 1
+            return 0
+        }
+
+        const numberLetter = mergeArraySortFunctions([sortByNumber, sortByLetter])
+        const letterNumber = mergeArraySortFunctions([sortByLetter, sortByNumber])
+        const letter = mergeArraySortFunctions([sortByLetter])
+
+        let result = []
+
+        result = [...dataArray].sort(numberLetter)
+        expect(result[0].letter).toBe("a")
+        expect(result[1].letter).toBe("b")
+        expect(result[2].letter).toBe("c")
+        expect(result[3].letter).toBe("a")
+
+        result = [...dataArray].sort(letterNumber)
+        expect(result[0].letter).toBe("a")
+        expect(result[0].number).toBe(1)
+        expect(result[1].letter).toBe("a")
+        expect(result[2].letter).toBe("b")
+        expect(result[3].letter).toBe("c")
+
+        result = [...dataArray].sort(letter)
+        expect(result[0].letter).toBe("a")
+        expect(result[0].number).toBe(3)
+        expect(result[1].letter).toBe("a")
+        expect(result[2].letter).toBe("b")
+        expect(result[3].letter).toBe("c")
+        
     })
 })

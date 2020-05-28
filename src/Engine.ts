@@ -1,6 +1,6 @@
 import { BITAP_FUZZY } from "./Comparison/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./Traversal/TraversalStrategy"
-import { deepCopyObject } from "./Utility/JsonUtility"
+import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 import Index from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
@@ -8,7 +8,7 @@ import SearchResult from "./Model/SearchResult"
 export default class SearchEngine {
   private comparisonStrategy: ((term: any, context: any) => boolean)[]
   private traversalStrategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
-  private sortingStrategy: ((a: SearchResult, b: SearchResult) => number) | null
+  private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
   private items: Item[]
   private originalData: object[]
   private indexes: Index[]
@@ -19,7 +19,7 @@ export default class SearchEngine {
   constructor() {
     this.comparisonStrategy = [BITAP_FUZZY]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH_ORDERED
-    this.sortingStrategy = null
+    this.sortingStrategy = []
     this.items = []
     this.originalData = []
     this.indexes = []
@@ -41,8 +41,13 @@ export default class SearchEngine {
     this.traversalStrategy = strategy
   }
 
-  setSortingStrategy(strategy: (a: SearchResult, b: SearchResult) => number) {
-    this.sortingStrategy = strategy
+  setSortingStrategy(strategy: ((a: SearchResult, b: SearchResult) => number)[]) {
+    if(!Array.isArray(strategy)) {
+      this.sortingStrategy = [strategy]
+    }
+    else {
+      this.sortingStrategy = strategy
+    }
   }
 
   setExcludedPaths(paths: string[]) {
@@ -93,8 +98,8 @@ export default class SearchEngine {
 
   search(searchString: string) {
     let searchResult = this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit)
-    if(this.sortingStrategy) {
-      searchResult.sort(this.sortingStrategy)
+    if(this.sortingStrategy.length > 0) {
+      searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))
     }
     return searchResult
   }
