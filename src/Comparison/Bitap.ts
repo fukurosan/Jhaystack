@@ -41,8 +41,8 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2) => {
     //First doing an exact search will in most cases speed things up
     let r = 0
     for (let i = 0; i < contextLength; i++) {
-        r = (r << 1) | ~bitMask[context.charAt(i)]
-        if ((r & finish) === 0) {
+        r = (r << 1 | 1) & bitMask[context.charAt(i)]
+        if ((r & finish) === finish) {
             return true
         }
     }
