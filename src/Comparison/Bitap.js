@@ -11,25 +11,17 @@
 
 const generateBitMask = (term, context) => {
     let characterMap = {}
-    const contextCharacters = context.split("")
-    for (let i = 0; i < contextCharacters.length; i++) {
-        characterMap[contextCharacters[i]] = 0
-    }
-    const finish = 1 << term.length - 1
+    context.split("").forEach(contextCharacter => {
+        characterMap[contextCharacter] = 0
+    })
     for (let i = 0; i < term.length; i++) {
-        const termCharacter = term.charAt(i)
-        const objectKeys = Object.keys(characterMap)
-        for (let j = 0; j < objectKeys.length; j++) {
-            characterMap[objectKeys[j]] >>= 1
-            if (termCharacter === objectKeys[j]) {
-                characterMap[objectKeys[j]] |= finish
-            }
-        }
+        const char = term.charAt(i)
+        characterMap[char] = (characterMap[char] || 0) | (1 << i)
     }
     return characterMap
 }
 
-export default (termIn, contextIn, maxErrors=2) => {
+export default (termIn, contextIn, maxErrors = 2) => {
     const term = `${termIn}`.toUpperCase()
     const context = `${contextIn}`.toUpperCase()
     const numberOfStates = maxErrors + 1 //+1 is the 0 state (no errors!)
