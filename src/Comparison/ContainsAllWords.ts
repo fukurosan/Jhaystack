@@ -1,4 +1,4 @@
-export default (term: string, context: any): boolean => {
+export default (term: string, context: any): number => {
     let found = 0
     const termWords = (`${term}`).toUpperCase().split(" ")
     const contextWords = (`${context}`).toUpperCase().split(" ")
@@ -7,5 +7,5 @@ export default (term: string, context: any): boolean => {
             found++
         }
     })
-    return found === termWords.length
+    return found === termWords.length ? 1 : 0
 }

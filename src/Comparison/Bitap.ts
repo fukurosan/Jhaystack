@@ -23,26 +23,30 @@ const generateBitMask = (term: string, context: string) => {
     return characterMap
 }
 
-export default (termIn: string, contextIn: string, maxErrors: number = 2) => {
+export default (termIn: string, contextIn: string, maxErrors: number = 2): number => {
     const term = `${termIn}`.toUpperCase()
     const context = `${contextIn}`.toUpperCase()
-    const numberOfStates = maxErrors + 1 //+1 is the 0 state (no errors!)
     const contextLength = context.length
     const termLength = term.length
+    if (termLength - maxErrors > contextLength) { 
+        return 0
+    }
+    const numberOfStates = maxErrors + 1 //+1 is the 0 state (no errors!)
     const bitMask = generateBitMask(term, context)
     const finish = 1 << termLength - 1
 
-    //First doing an exact search will in most cases speed things up
+    //First doing an exact search will in many cases speed things up
     let r = 0
     for (let i = 0; i < contextLength; i++) {
         r = (r << 1 | 1) & bitMask[context.charAt(i)]
         if ((r & finish) === finish) {
-            return true
+            return 1
         }
     }
 
     //Fuzzy search
     let state = [...new Array(numberOfStates)].map(() => 0)
+    let matchKDepth = null
     for (let i = 0; i < contextLength; i++) {
         let rStringMask = 0
         for (let j = 0; j < state.length; j++) {
@@ -55,9 +59,24 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2) => {
             nextRString |= state[j] << 1 | 1
             rStringMask = nextRString               //Handle Removal
         }
-        if ((state[numberOfStates - 1] & finish) === finish) {
-            return true
+        if(matchKDepth) {
+            matchKDepth--
+            if ((state[matchKDepth] & finish) !== finish) {
+                //Last cycle was the best match
+                matchKDepth++
+                //K value always takes precendce in score. Secondarily relevance is based on vicinity to context index 0
+                let distance = i - termLength - matchKDepth
+                distance < 0 && (distance = 0)
+                const kMultiplier = 1 / (matchKDepth + 1)
+                const lowerKMultiplier = 1 / (matchKDepth)
+                const tweenedRelevance = kMultiplier + ((distance / contextLength) * (lowerKMultiplier * kMultiplier))
+                return tweenedRelevance
+            }
+        }
+        else if ((state[maxErrors] & finish) === finish) {
+            matchKDepth = maxErrors
         }
     }
-    return false
+
+    return 0
 }

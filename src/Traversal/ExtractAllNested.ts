@@ -2,7 +2,7 @@ import SearchResult from "../Model/SearchResult"
 import Item from "../Model/Item"
 import { ObjectLiteral } from "../Utility/JsonUtility"
 
-export default (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => boolean)[], limit?: number): SearchResult[] => {
+export default (itemArray: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => number)[], limit?: number): SearchResult[] => {
     let result: SearchResult[] = []
     let numberOfFound = 0
     itemArray.forEach(item => {

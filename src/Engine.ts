@@ -1,4 +1,4 @@
-import { BITAP_FUZZY } from "./Comparison/ComparisonStrategy"
+import { BITAP } from "./Comparison/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./Traversal/TraversalStrategy"
 import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
@@ -6,7 +6,7 @@ import Index from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
 
 export default class SearchEngine {
-  private comparisonStrategy: ((term: any, context: any) => boolean)[]
+  private comparisonStrategy: ((term: any, context: any) => number)[]
   private traversalStrategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
   private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
   private items: Item[]
@@ -17,7 +17,7 @@ export default class SearchEngine {
   private includedPaths: (RegExp|string)[]|null
 
   constructor() {
-    this.comparisonStrategy = [BITAP_FUZZY]
+    this.comparisonStrategy = [BITAP]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH_ORDERED
     this.sortingStrategy = []
     this.items = []
@@ -28,7 +28,7 @@ export default class SearchEngine {
     this.includedPaths = null
   }
 
-  setComparisonStrategy(strategy: ((term: any, context: any) => boolean)[]) {
+  setComparisonStrategy(strategy: ((term: any, context: any) => number)[]) {
     if (!Array.isArray(strategy)) {
       this.comparisonStrategy = [strategy]
     }

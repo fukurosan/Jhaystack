@@ -1,3 +1,3 @@
-export default (term: string, context: any): boolean => {
-    return (`${context}`) === (`${term}`)
+export default (term: string, context: any): number => {
+    return (`${context}`) === (`${term}`) ? 1 : 0
 }

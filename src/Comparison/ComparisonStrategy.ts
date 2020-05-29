@@ -4,11 +4,11 @@ import STARTS_WITH_CASE_INSENSITIVE from "./StartsWithCaseInsensitive"
 import ENDS_WITH from "./EndsWith"
 import ENDS_WITH_CASE_INSENSITIVE from "./EndsWithCaseInsensitive"
 import CONTAINS from "./Contains"
-import CONTAINS_CASE_INSENSITIVE from "./ContainsInsensitive"
+import CONTAINS_CASE_INSENSITIVE from "./ContainsCaseInsensitive"
 import EQUALS from "./Equals"
 import EQUALS_CASE_INSENSITIVE from "./EqualsCaseInsensitive"
 import CONTAINS_ALL_WORDS from "./ContainsAllWords"
-import BITAP_FUZZY from "./Bitap"
+import BITAP from "./Bitap"
 
 export {
     FUZZY_SEQUENCE,
@@ -21,7 +21,7 @@ export {
     EQUALS,
     EQUALS_CASE_INSENSITIVE,
     CONTAINS_ALL_WORDS,
-    BITAP_FUZZY
+    BITAP
 }
 
 export default {
@@ -35,5 +35,5 @@ export default {
     EQUALS,
     EQUALS_CASE_INSENSITIVE,
     CONTAINS_ALL_WORDS,
-    BITAP_FUZZY
+    BITAP
 }

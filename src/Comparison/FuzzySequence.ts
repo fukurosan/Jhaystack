@@ -1,25 +1,25 @@
-export default (term: string, context: any): boolean => {
-    term = (`${term}`).toUpperCase().replace(/ /g, "")
-    context = (`${context}`).toUpperCase().replace(/ /g, "")
-    const clen = context.length
-    const tlen = term.length
-    if (tlen > clen) {
-        return false
+export default (termIn: string, contextIn: any): number => {
+    const term = (`${termIn}`).toUpperCase().replace(/ /g, "")
+    const context = (`${contextIn}`).toUpperCase().replace(/ /g, "")
+    const termLength = term.length
+    const contextLength = context.length
+    let distance = 0
+    let counting = false
+    if (termLength > contextLength) {
+        return 0
     }
-    if (tlen === clen) {
-        return term === context
-    }
-    if (context.indexOf(term) !== -1) {
-        return true
-    }
-    outer: for (let i = 0, j = 0; i < tlen; i++) {
-        let nch = term.charCodeAt(i)
-        while (j < clen) {
-            if (context.charCodeAt(j++) === nch) {
+    outer: for (let i = 0, j = 0; i < termLength; i++) {
+        let termCharacter = term.charAt(i)
+        while (j < contextLength) {
+            if (context.charAt(j++) === termCharacter) {
+                counting = true
                 continue outer
             }
+            if (counting) {
+                distance++
+            }
         }
-        return false
+        return 0
     }
-    return true
+    return 1 / (distance + 1)
 }
