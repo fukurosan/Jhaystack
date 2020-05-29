@@ -16,15 +16,9 @@ const generateBitMask = (term: string, context: string) => {
     context.split("").forEach(contextCharacter => {
         characterMap[contextCharacter] = 0
     })
-    const finish = 1 << term.length - 1
     for (let i = 0; i < term.length; i++) {
-        const termCharacter = term.charAt(i)
-        Object.keys(characterMap).forEach(key => {
-            characterMap[key] >>= 1
-            if (termCharacter === key) {
-                characterMap[key] |= finish
-            }
-        })
+        const char = term.charAt(i)
+        characterMap[char] = (characterMap[char] || 0) | (1 << i)
     }
     return characterMap
 }
