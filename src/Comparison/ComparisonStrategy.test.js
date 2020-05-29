@@ -9,7 +9,7 @@ import {
     EQUALS,
     EQUALS_CASE_INSENSITIVE,
     CONTAINS_ALL_WORDS,
-    BITAP_FUZZY
+    BITAP
 } from "./ComparisonStrategy"
 
 describe("Comparison Strategy Module", () => {
@@ -18,91 +18,92 @@ describe("Comparison Strategy Module", () => {
         const containsNonCapitalTerm = "ald du"
         const wayApartTerm = "ddk"
         const invalidTerm = "kcud dlanod"
-        expect(FUZZY_SEQUENCE(containsNonCapitalTerm, context)).toBe(true)
-        expect(FUZZY_SEQUENCE(invalidTerm, context)).toBe(false)
-        expect(FUZZY_SEQUENCE(wayApartTerm, context)).toBe(true)
+        expect(FUZZY_SEQUENCE(containsNonCapitalTerm, context)).toBe(1)
+        expect(FUZZY_SEQUENCE(invalidTerm, context)).toBe(0)
+        expect(FUZZY_SEQUENCE(wayApartTerm, context)).toBe(0.125)
     })
 
     it("Starts with comparison works", () => {
         const context = "Donald Duck"
         const startsWithNonCapitalTerm = "donald"
         const invalidTerm = "duck"
-        expect(STARTS_WITH(startsWithNonCapitalTerm, context)).toBe(false)
-        expect(STARTS_WITH(startsWithNonCapitalTerm.toUpperCase(), context.toUpperCase())).toBe(true)
-        expect(STARTS_WITH(invalidTerm, context)).toBe(false)
+        expect(STARTS_WITH(startsWithNonCapitalTerm, context)).toBe(0)
+        expect(STARTS_WITH(startsWithNonCapitalTerm.toUpperCase(), context.toUpperCase())).toBe(1)
+        expect(STARTS_WITH(invalidTerm, context)).toBe(0)
     })
 
     it("Starts with case insensitive comparison works", () => {
         const context = "Donald Duck"
         const startsWithNonCapitalTerm = "donald"
         const invalidTerm = "duck"
-        expect(STARTS_WITH_CASE_INSENSITIVE(startsWithNonCapitalTerm, context)).toBe(true)
-        expect(STARTS_WITH_CASE_INSENSITIVE(invalidTerm, context)).toBe(false)
+        expect(STARTS_WITH_CASE_INSENSITIVE(startsWithNonCapitalTerm, context)).toBe(1)
+        expect(STARTS_WITH_CASE_INSENSITIVE(invalidTerm, context)).toBe(0)
     })
 
     it("Ends with comparison works", () => {
         const context = "Donald Duck"
         const endsWithNonCapitalTerm = "duck"
         const invalidTerm = "donald"
-        expect(ENDS_WITH(endsWithNonCapitalTerm, context)).toBe(false)
-        expect(ENDS_WITH(endsWithNonCapitalTerm.toUpperCase(), context.toUpperCase())).toBe(true)
-        expect(ENDS_WITH(invalidTerm, context)).toBe(false)
+        expect(ENDS_WITH(endsWithNonCapitalTerm, context)).toBe(0)
+        expect(ENDS_WITH(endsWithNonCapitalTerm.toUpperCase(), context.toUpperCase())).toBe(1)
+        expect(ENDS_WITH(invalidTerm, context)).toBe(0)
     })
 
     it("Ends with case insensitive comparison works", () => {
         const context = "Donald Duck"
         const endsWithNonCapitalTerm = "duck"
         const invalidTerm = "donald"
-        expect(ENDS_WITH_CASE_INSENSITIVE(endsWithNonCapitalTerm, context)).toBe(true)
-        expect(ENDS_WITH_CASE_INSENSITIVE(invalidTerm, context)).toBe(false)
+        expect(ENDS_WITH_CASE_INSENSITIVE(endsWithNonCapitalTerm, context)).toBe(1)
+        expect(ENDS_WITH_CASE_INSENSITIVE(invalidTerm, context)).toBe(0)
     })
 
     it("Contains comparison works", () => {
         const context = "Donald Duck"
         const containsNonCapitalTerm = "ald du"
         const invalidTerm = "kcud"
-        expect(CONTAINS(containsNonCapitalTerm, context)).toBe(false)
-        expect(CONTAINS(containsNonCapitalTerm.toUpperCase(), context.toUpperCase())).toBe(true)
-        expect(CONTAINS(invalidTerm, context)).toBe(false)
+        expect(CONTAINS(containsNonCapitalTerm, context)).toBe(0)
+        expect(CONTAINS(containsNonCapitalTerm.toUpperCase(), context.toUpperCase())).toBe(1)
+        expect(CONTAINS(invalidTerm, context)).toBe(0)
     })
 
     it("Contains case insensitive comparison works", () => {
         const context = "Donald Duck"
         const containsNonCapitalTerm = "ald du"
         const invalidTerm = "kcud"
-        expect(CONTAINS_CASE_INSENSITIVE(containsNonCapitalTerm, context)).toBe(true)
-        expect(CONTAINS_CASE_INSENSITIVE(invalidTerm, context)).toBe(false)
+        expect(CONTAINS_CASE_INSENSITIVE(containsNonCapitalTerm, context)).toBe(1)
+        expect(CONTAINS_CASE_INSENSITIVE(invalidTerm, context)).toBe(0)
     })
 
     it("Equals comparison works", () => {
         const context = "Donald Duck"
         const exactMatchTerm = "Donald Duck"
         const invalidTerm = "donald duck"
-        expect(EQUALS(exactMatchTerm, context)).toBe(true)
-        expect(EQUALS(invalidTerm, context)).toBe(false)
-        expect(EQUALS(invalidTerm.toUpperCase(), context.toUpperCase())).toBe(true)
+        expect(EQUALS(exactMatchTerm, context)).toBe(1)
+        expect(EQUALS(invalidTerm, context)).toBe(0)
+        expect(EQUALS(invalidTerm.toUpperCase(), context.toUpperCase())).toBe(1)
     })
 
     it("Equals case insensitive comparison works", () => {
         const context = "Donald Duck"
         const exactMatchTerm = "Donald Duck"
         const invalidTerm = "donald duck"
-        expect(EQUALS_CASE_INSENSITIVE(exactMatchTerm, context)).toBe(true)
-        expect(EQUALS_CASE_INSENSITIVE(invalidTerm, context)).toBe(true)
+        expect(EQUALS_CASE_INSENSITIVE(exactMatchTerm, context)).toBe(1)
+        expect(EQUALS_CASE_INSENSITIVE(invalidTerm, context)).toBe(1)
     })
 
     it("Contains all words comparison works", () => {
         const context = "Donald Quack Duck"
         const validTerm = "duck quack"
         const invalidTerm = "uck quack"
-        expect(CONTAINS_ALL_WORDS(validTerm, context)).toBe(true)
-        expect(CONTAINS_ALL_WORDS(invalidTerm, context)).toBe(false)
+        expect(CONTAINS_ALL_WORDS(validTerm, context)).toBe(1)
+        expect(CONTAINS_ALL_WORDS(invalidTerm, context)).toBe(0)
     })
 
     describe("Bitap comparison works", () => {
         const context = "I have phoned the guy on a telephone"
         const error0Term = "telephone"
         const error0CapitalTerm = "TELEPHONE"
+        const error1Term = "elephan"
         const error2Term = "elephant"
         const error3Term = "elephantt"
 
@@ -110,29 +111,33 @@ describe("Comparison Strategy Module", () => {
         const unrelatedTerm = "Bing"
 
         it("Does not match unrelated term", () => {
-            expect(BITAP_FUZZY(unrelatedTerm, secondContext, 0)).toBe(false)
-            expect(BITAP_FUZZY(unrelatedTerm, secondContext, 1)).toBe(false)
+            expect(BITAP(unrelatedTerm, secondContext, 0)).toBe(0)
+            expect(BITAP(unrelatedTerm, secondContext, 1)).toBe(0)
         })
 
         it("Handles exact match", () => {
-            expect(BITAP_FUZZY(error0Term, context, 0)).toBe(true)
-            expect(BITAP_FUZZY(error0Term, context, 1)).toBe(true)
+            expect(BITAP(error0Term, context, 0)).toBe(1)
+            expect(BITAP(error0Term, context, 1)).toBe(1)
         })
 
         it("Handles capital letters", () => {
-            expect(BITAP_FUZZY(error0CapitalTerm, context, 0)).toBe(true)
-            expect(BITAP_FUZZY(error0CapitalTerm, context, 1)).toBe(true)
+            expect(BITAP(error0CapitalTerm, context, 0)).toBe(1)
+            expect(BITAP(error0CapitalTerm, context, 1)).toBe(1)
         })
 
         it("Handles fuzzy match with k distance configured", () => {
-            expect(BITAP_FUZZY(error2Term, context, 0)).toBe(false)
-            expect(BITAP_FUZZY(error2Term, context, 1)).toBe(false)
-            expect(BITAP_FUZZY(error2Term, context, 2)).toBe(true)
+            expect(BITAP(error2Term, context, 0)).toBe(0)
+            expect(BITAP(error2Term, context, 1)).toBe(0)
+            expect(BITAP(error1Term, context, 1)).toBeGreaterThan(1/2)
+            expect(BITAP(error1Term, context, 1)).toBeLessThan(1/1)
+            expect(BITAP(error2Term, context, 2)).toBeGreaterThan(1/3)
+            expect(BITAP(error2Term, context, 2)).toBeLessThan(1/2)
         })
 
         it("Default distance is 2", () => {
-            expect(BITAP_FUZZY(error2Term, context)).toBe(true)
-            expect(BITAP_FUZZY(error3Term, context)).toBe(false)
+            expect(BITAP(error2Term, context)).toBeGreaterThan(1/3)
+            expect(BITAP(error2Term, context)).toBeLessThan(1/2)
+            expect(BITAP(error3Term, context)).toBe(0)
         })
     })
 })

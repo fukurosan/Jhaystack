@@ -7,5 +7,5 @@ export default (term, context) => {
             found++
         }
     })
-    return found === termWords.length
+    return found === termWords.length ? 1 : 0
 }

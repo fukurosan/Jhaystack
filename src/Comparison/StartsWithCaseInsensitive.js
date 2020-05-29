@@ -1,3 +1,3 @@
 export default (term, context) => {
-    return (`${context}`).toUpperCase().startsWith((`${term}`).toUpperCase())
+    return (`${context}`).toUpperCase().startsWith((`${term}`).toUpperCase()) ? 1 : 0
 }

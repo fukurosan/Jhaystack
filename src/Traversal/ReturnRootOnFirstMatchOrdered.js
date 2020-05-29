@@ -11,13 +11,17 @@ export default (itemArrayIn, searchString, comparisonStrategy, limit) => {
             if (limit && numberOfFound >= limit) {
                 break
             }
-            const foundShard = itemArray[itemIndex].shards.find(shard => comparisonFunction(searchString, shard.value))
+            let comparisonScore = 0
+            const foundShard = itemArray[itemIndex].shards.find(shard => {
+                comparisonScore = comparisonFunction(searchString, shard.value)
+                return comparisonScore
+            })
             if (foundShard) {
                 matches[strategyIndex].push(new SearchResult(
                     itemArray.splice(itemIndex, 1)[0].original,
                     foundShard.path,
                     foundShard.value,
-                    ((1 / comparisonStrategy.length) * (comparisonStrategy.length - strategyIndex))
+                    getRelevanceScore(comparisonStrategy.length, strategyIndex, comparisonScore)
                 ))
                 numberOfFound++
                 itemIndex--
@@ -31,4 +35,12 @@ export default (itemArrayIn, searchString, comparisonStrategy, limit) => {
     })
 
     return result
+}
+
+const getRelevanceScore = (strategyLength, matchStrategyIndex, comparisonScore) => {
+    const scoreStartPosition = (1 / strategyLength) * (strategyLength - matchStrategyIndex + 1)
+    const scoreEndPosition = (1 / strategyLength) * (strategyLength - matchStrategyIndex)
+    const maximumMatchScore = scoreEndPosition - scoreStartPosition
+    const score = maximumMatchScore * comparisonScore
+    return scoreStartPosition + score
 }

@@ -1,4 +1,4 @@
-import { BITAP_FUZZY } from "./Comparison/ComparisonStrategy"
+import { BITAP } from "./Comparison/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./Traversal/TraversalStrategy"
 import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
@@ -6,7 +6,7 @@ import Item from "./Model/Item"
 export default class SearchEngine {
 
   constructor() {
-    this.comparisonStrategy = [BITAP_FUZZY]
+    this.comparisonStrategy = [BITAP]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH_ORDERED
     this.sortingStrategy = []
     this.items = []
