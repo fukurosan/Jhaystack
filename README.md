@@ -116,8 +116,6 @@ Changing included/excluded paths will cause the engine to have to revalidate the
 
 ### Future work
 There are quite a few things that I hope to do moving forward:
-- Implement search indexes
-- Implement relevance scoring
 - Make more detailed tests
 - Chunk comparison execution into web workers
 - Convert certain heavy operations to WebAssembly

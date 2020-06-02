@@ -6,7 +6,7 @@ interface IndexMap {
 }
 
 export default abstract class Index {
-    abstract tag: string = "NOT SET"
+    abstract tag: string
     abstract extractStringTokens(string: string): string[]
 
     shards: Shard[] = []
@@ -32,7 +32,7 @@ export default abstract class Index {
         })
     }
 
-    evaluate(term: string) {
+    evaluate(term: string): IndexEvaluationResult {
         const termTokens = this.extractStringTokens(`${term}`.toUpperCase())
         let indexQueryResult = new Map()
         for (let i = 0; i < termTokens.length; i++) {
@@ -66,7 +66,7 @@ export default abstract class Index {
             return new IndexEvaluationResult(bestMatch.shard, 1)
         }
 
-        const matchRatio = bestMatch.relevance / (termTokens.length - 2)
+        const matchRatio = bestMatch.relevance / (termTokens.length)
         return matchRatio > 0.25 ? new IndexEvaluationResult(bestMatch.shard, matchRatio) : new IndexEvaluationResult(null, 0)
     }
 

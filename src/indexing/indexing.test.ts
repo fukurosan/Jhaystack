@@ -1,4 +1,4 @@
-import { VALUE, WORD, TRIGRAM } from "./IndexingStrategy"
+import { VALUE, WORD, TRIGRAM } from "./IndexStrategy"
 import { flattenObject } from "../Utility/JsonUtility"
 
 describe("Indexing module", () => {
@@ -60,7 +60,7 @@ describe("Indexing module", () => {
         expect(index.evaluate("RI").relevance).toBe(0)
         expect(index.evaluate("BIT").shard?.path.toString()).toBe(["items", "2", "lastName"].toString())
         expect(index.evaluate("BIT").shard?.value).toEqual("Ribbity")
-        expect(index.evaluate("Come to space and join us!").relevance).toBe(12/22)
+        expect(index.evaluate("Come to space and join us!").relevance).toBe(12/24)
         expect(index.tag).toBe("TRIGRAM")
     })
 

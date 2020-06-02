@@ -11,7 +11,7 @@ export default class SearchEngine {
   private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
   private items: Item[]
   private originalData: object[]
-  private indexes: Index[]
+  private indexStrategy: any[]
   private limit: number|null
   private excludedPaths: (RegExp|string)[]|null
   private includedPaths: (RegExp|string)[]|null
@@ -19,10 +19,10 @@ export default class SearchEngine {
   constructor() {
     this.comparisonStrategy = [BITAP]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH_ORDERED
+    this.indexStrategy = []
     this.sortingStrategy = []
     this.items = []
     this.originalData = []
-    this.indexes = []
     this.limit = null
     this.excludedPaths = null
     this.includedPaths = null
@@ -79,12 +79,12 @@ export default class SearchEngine {
     this.limit = limit
   }
 
-  setIndexes(indexes: Index[]) {
-    if (!indexes || !Array.isArray(indexes)) {
-      this.indexes = []
+  setIndexStrategy(indexStrategy: any[]) {
+    if (!indexStrategy || !Array.isArray(indexStrategy)) {
+      this.indexStrategy = []
     }
     else {
-      this.indexes = indexes
+      this.indexStrategy = indexStrategy
     }
     this.prepareDataset()
   }
@@ -92,7 +92,7 @@ export default class SearchEngine {
   prepareDataset() {
     delete this.items
     this.items = this.originalData.map(item => {
-      return new Item(item, this.includedPaths, this.excludedPaths, this.indexes)
+      return new Item(item, this.includedPaths, this.excludedPaths, this.indexStrategy)
     })
   }
 
@@ -102,6 +102,12 @@ export default class SearchEngine {
       searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))
     }
     return searchResult
+  }
+
+  indexLookup(searchString: string) {
+    return this.items
+    .map(item => item.indexLookup(searchString))
+    .filter(result => result)
   }
 
 }

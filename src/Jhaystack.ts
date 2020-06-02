@@ -10,7 +10,7 @@ export default class Jhaystack {
     this.engine = new Engine()
   }
 
-  setComparisonStrategy(strategy: ((term: string, context: any) => boolean)[]) {
+  setComparisonStrategy(strategy: ((term: string, context: any) => number)[]) {
     this.engine.setComparisonStrategy(strategy)
     return this
   }
@@ -20,7 +20,7 @@ export default class Jhaystack {
     return this
   }
 
-  setSortingStrategy(strategy: (a: SearchResult, b: SearchResult) => number) {
+  setSortingStrategy(strategy: ((a: SearchResult, b: SearchResult) => number)[]) {
     this.engine.setSortingStrategy(strategy)
     return this
   }
@@ -40,8 +40,8 @@ export default class Jhaystack {
     return this
   }
 
-  setIndexes(indexes: Index[]) {
-    this.engine.setIndexes(indexes)
+  setIndexStrategy(indexes: any[]) {
+    this.engine.setIndexStrategy(indexes)
     return this
   }
 
@@ -52,6 +52,10 @@ export default class Jhaystack {
 
   search(searchString: string) {
     return this.engine.search(searchString)
+  }
+
+  indexLookup(searchString: string) {
+    return this.engine.indexLookup(searchString)
   }
 
 }
