@@ -1,4 +1,5 @@
 import Index from "../Model/Index"
+import IndexEvaluationResult from "../Model/IndexEvaluationResult"
 
 export default class WordIndex extends Index {
     constructor(shards) {
@@ -6,25 +7,7 @@ export default class WordIndex extends Index {
         this.tag = "WORD"
     }
 
-    build() {
-        const extractStringTokens = (string) => {
-            let tokens = []
-            string.toUpperCase().split(" ").forEach(subString => {
-                tokens.push(subString)
-            })
-            return tokens
-        }
-
-        this.index = {}
-        this.shards.forEach(shard => {
-            const value = ("" + shard.value).toUpperCase()
-            const tokens = extractStringTokens(value)
-            tokens.forEach(token => {
-                if (!this.index[token]) {
-                    this.index[token] = []
-                }
-                this.index[token].push(shard)
-            })
-        })
+    extractStringTokens(string) {
+        return string.toUpperCase().split(" ")
     }
 }

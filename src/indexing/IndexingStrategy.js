@@ -1,18 +1,15 @@
-import CHARACTER from "./Character"
 import VALUE from "./Value"
 import WORD from "./Word"
-import NGRAM from "./Ngram"
+import TRIGRAM from "./TriGram"
 
 export {
-    CHARACTER,
     VALUE,
     WORD,
-    NGRAM
+    TRIGRAM
 }
 
 export default {
-    CHARACTER,
     VALUE,
     WORD,
-    NGRAM
+    TRIGRAM
 }

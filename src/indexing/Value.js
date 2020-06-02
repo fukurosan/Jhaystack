@@ -6,14 +6,7 @@ export default class ValueIndex extends Index {
         this.tag = "VALUE"
     }
 
-    build() {
-        this.index = {}
-        this.shards.forEach(shard => {
-            const value = ("" + shard.value).toUpperCase()
-            if (!this.index[value]) {
-                this.index[value] = []
-            }
-            this.index[value].push(shard)
-        })
+    extractStringTokens(string) {
+        return [string]
     }
 }
