@@ -1,7 +1,7 @@
 import Index from "../Model/Index"
 import Shard from "../Model/Shard"
 
-export default class EqualsIndex extends Index {
+export default class ValueIndex extends Index {
     tag: string
     
     constructor(shards: Shard[]) {
@@ -9,14 +9,7 @@ export default class EqualsIndex extends Index {
         this.tag = "VALUE"
     }
 
-    build() {
-        this.index = {}
-        this.shards.forEach(shard => {
-            const value = ("" + shard.value).toUpperCase()
-            if (!this.index[value]) {
-                this.index[value] = []
-            }
-            this.index[value].push(shard)
-        })
+    extractStringTokens(string: string) {
+        return [string]
     }
 }
