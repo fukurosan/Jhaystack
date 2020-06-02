@@ -59,7 +59,7 @@ export default class Index {
             return new IndexEvaluationResult(bestMatch.shard, 1)
         }
 
-        const matchRatio = bestMatch.relevance / (termTokens.length - 2)
+        const matchRatio = bestMatch.relevance / (termTokens.length)
         return matchRatio > 0.25 ? new IndexEvaluationResult(bestMatch.shard, matchRatio) : new IndexEvaluationResult(null, 0)
     }
 

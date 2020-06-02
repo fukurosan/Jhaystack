@@ -113,8 +113,6 @@ You can easily build your own strategy as well, by supplying Jhaystack with a cu
 
 ### Future work
 There are quite a few things that I hope to do moving forward:
-- Implement search indexes
-- Implement relevance scoring
 - Make more detailed tests
 - Convert the project codebase to Typescript
 - Chunk comparison execution into web workers

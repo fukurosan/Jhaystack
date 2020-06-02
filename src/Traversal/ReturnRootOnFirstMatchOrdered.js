@@ -1,4 +1,5 @@
 import SearchResult from "../Model/SearchResult"
+import { findReverseTweenPoint } from "../Utility/Mathematics"
 
 export default (itemArrayIn, searchString, comparisonStrategy, limit) => {
     const itemArray = [...itemArrayIn]
@@ -21,7 +22,7 @@ export default (itemArrayIn, searchString, comparisonStrategy, limit) => {
                     itemArray.splice(itemIndex, 1)[0].original,
                     foundShard.path,
                     foundShard.value,
-                    getRelevanceScore(comparisonStrategy.length, strategyIndex, comparisonScore)
+                    findReverseTweenPoint(comparisonStrategy.length, strategyIndex + 1, comparisonScore)
                 ))
                 numberOfFound++
                 itemIndex--
@@ -35,12 +36,4 @@ export default (itemArrayIn, searchString, comparisonStrategy, limit) => {
     })
 
     return result
-}
-
-const getRelevanceScore = (strategyLength, matchStrategyIndex, comparisonScore) => {
-    const scoreStartPosition = (1 / strategyLength) * (strategyLength - matchStrategyIndex + 1)
-    const scoreEndPosition = (1 / strategyLength) * (strategyLength - matchStrategyIndex)
-    const maximumMatchScore = scoreEndPosition - scoreStartPosition
-    const score = maximumMatchScore * comparisonScore
-    return scoreStartPosition + score
 }

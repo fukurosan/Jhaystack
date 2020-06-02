@@ -37,8 +37,8 @@ export default class Jhaystack {
     return this
   }
 
-  setIndexes(indexes) {
-    this[s_Engine].setIndexes(indexes)
+  setIndexStrategy(indexes) {
+    this[s_Engine].setIndexStrategy(indexes)
     return this
   }
 
@@ -49,6 +49,10 @@ export default class Jhaystack {
 
   search(searchString) {
     return this[s_Engine].search(searchString)
+  }
+
+  indexLookup(searchString) {
+    return this[s_Engine].indexLookup(searchString)
   }
 
 }
