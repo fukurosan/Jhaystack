@@ -1,4 +1,4 @@
-import { SORT_BY_VALUE, SORT_BY_ATTRIBUTE, SORT_BY_DEPTH, SORT_BY_RELEVANCE } from "./SortingStrategy"
+import { VALUE, ATTRIBUTE, DEPTH, RELEVANCE } from "./SortingStrategy"
 import SearchResult from "../Model/SearchResult"
 
 describe("Sorting Strategy", () => {
@@ -17,25 +17,25 @@ describe("Sorting Strategy", () => {
     })
 
     it("Sorts by value", () => {
-        const result = items.sort(SORT_BY_VALUE)
+        const result = items.sort(VALUE)
         expect(result[0].value).toBe("Value 1")
         expect(result[5].value).toBe("Value 6")
     })
 
     it("Sorts by attribute", () => {
-        const result = items.sort(SORT_BY_ATTRIBUTE)
+        const result = items.sort(ATTRIBUTE)
         expect(result[0].value).toBe("Value 2")
         expect(result[5].value).toBe("Value 3")
     })
 
     it("Sorts by depth", () => {
-        const result = items.sort(SORT_BY_DEPTH)
+        const result = items.sort(DEPTH)
         expect(result[0].value).toBe("Value 6")
         expect(result[5].value).toBe("Value 1")
     })
 
     it("Sorts by relevance", () => {
-        const result = items.sort(SORT_BY_RELEVANCE)
+        const result = items.sort(RELEVANCE)
         expect(result[0].relevance).toBe(1)
         expect(result[5].relevance).toBe(0.4)
     })

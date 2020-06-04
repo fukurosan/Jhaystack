@@ -1,18 +1,18 @@
-import SORT_BY_VALUE from "./SortByValue"
-import SORT_BY_ATTRIBUTE from "./SortByAttribute"
-import SORT_BY_DEPTH from "./SortByDepth"
-import SORT_BY_RELEVANCE from "./SortByRelevance"
+import VALUE from "./Value"
+import ATTRIBUTE from "./Attribute"
+import DEPTH from "./Depth"
+import RELEVANCE from "./Relevance"
 
 export {
-        SORT_BY_VALUE,
-        SORT_BY_ATTRIBUTE,
-        SORT_BY_DEPTH,
-        SORT_BY_RELEVANCE
+        VALUE,
+        ATTRIBUTE,
+        DEPTH,
+        RELEVANCE
 }
 
 export default {
-        SORT_BY_VALUE,
-        SORT_BY_ATTRIBUTE,
-        SORT_BY_DEPTH,
-        SORT_BY_RELEVANCE
+        VALUE,
+        ATTRIBUTE,
+        DEPTH,
+        RELEVANCE
 }

@@ -1,11 +1,14 @@
 {
   "name": "jhaystack",
-  "version": "0.0.26",
-  "description": "A simple JSON search utility",
-  "main": "./build/index.js",
+  "version": "0.0.27",
+  "description": "A JSON search utility",
+  "main": "./build/index.ts",
   "scripts": {
-    "build": "tsc",
-    "clean": "rimraf build",
+    "clean": "rimraf build && rimraf lib && rimraf buildts",
+    "build": "npm run build:lib && npm run build:wbp",
+    "build:ts": "tsc",
+    "build:lib": "babel src --out-dir lib --copy-files",
+    "build:wbp": "webpack --config webpack.config.js",
     "prepublish": "npm run clean && npm run build",
     "test": "jest --coverage --verbose"
   },
@@ -21,10 +24,19 @@
   "author": "Henrik Olofsson",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-typescript": "^7.10.1",
     "@types/jest": "^25.2.2",
+    "babel-loader": "^8.1.0",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^25.5.1"
+    "ts-jest": "^25.5.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
     "typescript": "^3.9.2"

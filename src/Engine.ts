@@ -2,8 +2,18 @@ import { BITAP } from "./Comparison/ComparisonStrategy"
 import { RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./Traversal/TraversalStrategy"
 import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
-import Index from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
+
+interface IOptions {
+  comparison?: ((term: any, context: any) => number)[]
+  traversal?: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
+  sorting?: ((a: SearchResult, b: SearchResult) => number)[]
+  limit?: number
+  index?: any[]
+  includedPaths?: (RegExp | string)[]
+  excludedPaths?: (RegExp | string)[]
+  data?: object[]
+}
 
 export default class SearchEngine {
   private comparisonStrategy: ((term: any, context: any) => number)[]
@@ -12,11 +22,11 @@ export default class SearchEngine {
   private items: Item[]
   private originalData: object[]
   private indexStrategy: any[]
-  private limit: number|null
-  private excludedPaths: (RegExp|string)[]|null
-  private includedPaths: (RegExp|string)[]|null
+  private limit: number | null
+  private excludedPaths: (RegExp | string)[]
+  private includedPaths: (RegExp | string)[]
 
-  constructor() {
+  constructor(options?: IOptions) {
     this.comparisonStrategy = [BITAP]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH_ORDERED
     this.indexStrategy = []
@@ -24,8 +34,19 @@ export default class SearchEngine {
     this.items = []
     this.originalData = []
     this.limit = null
-    this.excludedPaths = null
-    this.includedPaths = null
+    this.excludedPaths = []
+    this.includedPaths = []
+
+    if (options) {
+      options.comparison && this.setComparisonStrategy(options.comparison)
+      options.traversal && this.setTraversalStrategy(options.traversal)
+      options.sorting && this.setSortingStrategy(options.sorting)
+      options.limit && this.setLimit(options.limit)
+      options.index && this.setIndexStrategy(options.index)
+      options.includedPaths && this.setIncludedPaths(options.includedPaths)
+      options.excludedPaths && this.setExcludedPaths(options.excludedPaths)
+      options.data && this.setDataset(options.data)
+    }
   }
 
   setComparisonStrategy(strategy: ((term: any, context: any) => number)[]) {
@@ -42,7 +63,7 @@ export default class SearchEngine {
   }
 
   setSortingStrategy(strategy: ((a: SearchResult, b: SearchResult) => number)[]) {
-    if(!Array.isArray(strategy)) {
+    if (!Array.isArray(strategy)) {
       this.sortingStrategy = [strategy]
     }
     else {
@@ -50,9 +71,9 @@ export default class SearchEngine {
     }
   }
 
-  setExcludedPaths(paths: string[]) {
+  setExcludedPaths(paths: (RegExp | string)[]) {
     if (!paths || !Array.isArray(paths)) {
-      this.excludedPaths = null
+      this.excludedPaths = []
     }
     else {
       this.excludedPaths = paths
@@ -60,9 +81,9 @@ export default class SearchEngine {
     this.prepareDataset()
   }
 
-  setIncludedPaths(paths: string[]) {
+  setIncludedPaths(paths: (RegExp | string)[]) {
     if (!paths || !Array.isArray(paths)) {
-      this.includedPaths = null
+      this.includedPaths = []
     }
     else {
       this.includedPaths = paths
@@ -98,7 +119,7 @@ export default class SearchEngine {
 
   search(searchString: string) {
     let searchResult = this.traversalStrategy(this.items, searchString, this.comparisonStrategy, this.limit)
-    if(this.sortingStrategy.length > 0) {
+    if (this.sortingStrategy.length > 0) {
       searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))
     }
     return searchResult
@@ -106,8 +127,8 @@ export default class SearchEngine {
 
   indexLookup(searchString: string) {
     return this.items
-    .map(item => item.indexLookup(searchString))
-    .filter(result => result)
+      .map(item => item.indexLookup(searchString))
+      .filter(result => result)
   }
 
 }

@@ -16,10 +16,10 @@ describe("Validation Module", () => {
     it("Validates paths", () => {
         const path = ["A"]
         const wildPath = ["G"]
-        const resultIncluded = pathValidator(path, includedPaths, null)
-        const resultNotIncluded = pathValidator(wildPath, includedPaths, null)
-        const resultExcluded = pathValidator(path, null, excludedPaths)
-        const resultWildCard = pathValidator(path, null, null)
+        const resultIncluded = pathValidator(path, includedPaths, [])
+        const resultNotIncluded = pathValidator(wildPath, includedPaths, [])
+        const resultExcluded = pathValidator(path, [], excludedPaths)
+        const resultWildCard = pathValidator(path, [], [])
         expect(resultIncluded).toBe(true)
         expect(resultNotIncluded).toBe(false)
         expect(resultExcluded).toBe(false)
@@ -29,7 +29,7 @@ describe("Validation Module", () => {
     it("Converts provided path string to regex", () => {
         const includedPaths = ["hello"]
         const path = ["hello", "0"]
-        const resultIncluded = pathValidator(path, includedPaths, null)
+        const resultIncluded = pathValidator(path, includedPaths, [])
         expect(resultIncluded).toBe(true)
     })
 })

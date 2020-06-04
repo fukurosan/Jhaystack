@@ -10,7 +10,7 @@ export default class Item {
     shards: Shard[]
     indexes: Index[]
 
-    constructor(original: object, includedPaths: (RegExp|string)[]|null, excludedPaths: (RegExp|string)[]|null, indexes: any[]) {
+    constructor(original: object, includedPaths: (RegExp|string)[], excludedPaths: (RegExp|string)[], indexes: any[]) {
         this.original = deepCopyObject(original)
         this.shards = flattenObject(this.original).filter(shard => pathValidator(shard.path, includedPaths, excludedPaths))
         this.indexes = indexes.map(IndexImplementation => new IndexImplementation(this.shards))
