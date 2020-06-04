@@ -25,7 +25,7 @@ const data = [
 ]
 const se = new Jhaystack({data: data})
 const results = se.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, value= "tom" }, { path: ["name"], depth: 1, item: { name: "tim" }, value: "tom" }]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 0.5 }, { path: ["name"], depth: 1, item: { name: "tim" }, value: "tom", relevance: 0.5 }]
 ```
 
 #### Results
@@ -83,9 +83,9 @@ const optionsExc = {
 const seExc = new Jhaystack(optionsExc)
 
 const resultsIncluded = seInc.search("tm")
-//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tim" }, value: "tim" }]
+//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tim" }, value: "tim", relevance: 0.5 }]
 const resultsExcluded = seExc.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom" }]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 0.5 }]
 ```
 
 
@@ -115,8 +115,7 @@ const options = {
 
 const se = new Jhaystack(options)
 const result = se.search("ton")
-//[{ path: ["name"], depth: 1, item: { name: "tony" }, value= "tony" }, { path: ["name"], depth: 1, item: { name: "paddington" }, value: "paddington" }]
-
+//[{ path: ["name"], depth: 1, item: { name: "tony" }, value: "tony", relevance: 0.99 }, { path: ["name"], depth: 1, item: { name: "paddington" }, value: "paddington", relevance: 0.49 }]
 ```
 
 Jhaystack currently comes with the following comparison strategies:
@@ -160,12 +159,12 @@ const data = [
 
 const options = {
     data: data,
-    traversal: [TraversalStrategy.EXTRACT_ALL_NESTED]
+    traversal: TraversalStrategy.EXTRACT_ALL_NESTED
 }
 
 const se = new Jhaystack(options)
 const result = se.search("tom")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, value= "tom" }]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 1 }]
 ```
 
 Jhaystack currently comes with the following traversal strategies:
@@ -186,14 +185,14 @@ import { Jhaystack, SortingStrategy } from "jhaystack"
 const data = [
     {
         child: {
-            name: "tommy"
+            name: "timmy"
         }
     },
     {
         name: "tony"
     },
     {
-        name: "tommy"
+        name: "timmy"
     }
 ]
 
@@ -204,7 +203,7 @@ const options = {
 
 const se = new Jhaystack(options)
 const result = se.search("toy")
-//[{ path: ["name"], depth: 1, item: { name: "tony" }, value= "tony" }, { path: ["name"], depth: 1, item: { name: "tommy" }, value: "tommy" }, { path: ["child", "name"], depth: 2, item: { child: { name: "tommy" } }, value: "tommy" }]
+//[{ path: ["name"], depth: 1, item: { name: "tony" }, value: "tony", relevance: 0.5 }, { path: ["name"], depth: 1, item: { name: "timmy" }, value: "timmy", relevance: 0.3333333333333333 }, { path: ["child", "name"], depth: 2, item: { child: { name: "timmy" } }, value: "timmy", relevance: 0.3333333333333333 }]
 ```
 
 Jhaystack currently comes with the following sorting strategies:
@@ -242,7 +241,7 @@ const options = {
 
 const se = new Jhaystack(options)
 const result = se.indexLookup("Can you call me Tommy?")
-//[{ path: ["phrase"], depth: 1, item: { phrase: "You can call me Timmy!" }, value: You can call me Timmy!"}]
+//[{ path: ["phrase"], depth: 1, item: { phrase: "You can call me Timmy!" }, value: You can call me Timmy!", relevance: 0.75 }]
 ```
 
 Jhaystack currently comes with the following index strategies:
@@ -256,4 +255,5 @@ VALUE   |   Creates an index of exact matches (not case sensitive!). Great for w
 ### Roadmap
 The current roadmap moving forward:
 - Make more detailed tests
+- Convert the project codebase to Typescript (see "typescript" branch)
 - Chunk comparison execution into web workers
