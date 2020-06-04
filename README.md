@@ -25,7 +25,7 @@ const data = [
 ]
 const se = new Jhaystack({data: data})
 const results = se.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 0.5 }, { path: ["name"], depth: 1, item: { name: "tim" }, value: "tom", relevance: 0.5 }]
+//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 0.5 }, { path: ["name"], depth: 1, item: { name: "tim" }, value: "tim", relevance: 0.5 }]
 ```
 
 #### Results
