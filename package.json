@@ -2,12 +2,12 @@
   "name": "jhaystack",
   "version": "0.0.29",
   "description": "A JSON search utility",
-  "main": "./build/index.ts",
+  "main": "./bundle/bundle.js",
+  "types": "./lib/index.d.ts",
   "scripts": {
-    "clean": "rimraf build && rimraf lib && rimraf buildts",
+    "clean": "rimraf bundle && rimraf lib",
     "build": "npm run build:lib && npm run build:wbp",
-    "build:ts": "tsc",
-    "build:lib": "babel src --out-dir lib --copy-files",
+    "build:lib": "tsc",
     "build:wbp": "webpack --config webpack.config.js",
     "prepublish": "npm run clean && npm run build",
     "test": "jest --coverage --verbose"

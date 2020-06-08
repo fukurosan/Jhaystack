@@ -3,13 +3,14 @@ import { RETURN_ROOT_ON_FIRST_MATCH_ORDERED } from "./Traversal/TraversalStrateg
 import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 import SearchResult from "./Model/SearchResult"
+import { IIndex } from "./Model/Index"
 
 interface IOptions {
   comparison?: ((term: any, context: any) => number)[]
   traversal?: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
   sorting?: ((a: SearchResult, b: SearchResult) => number)[]
   limit?: number
-  index?: any[]
+  index?: IIndex[]
   includedPaths?: (RegExp | string)[]
   excludedPaths?: (RegExp | string)[]
   data?: object[]
@@ -21,7 +22,7 @@ export default class SearchEngine {
   private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
   private items: Item[]
   private originalData: object[]
-  private indexStrategy: any[]
+  private indexStrategy: IIndex[]
   private limit: number | null
   private excludedPaths: (RegExp | string)[]
   private includedPaths: (RegExp | string)[]
@@ -100,7 +101,7 @@ export default class SearchEngine {
     this.limit = limit
   }
 
-  setIndexStrategy(indexStrategy: any[]) {
+  setIndexStrategy(indexStrategy: IIndex[]) {
     if (!indexStrategy || !Array.isArray(indexStrategy)) {
       this.indexStrategy = []
     }

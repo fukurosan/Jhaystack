@@ -5,6 +5,10 @@ interface IndexMap {
     [key: string]: Shard[]
 }
 
+export interface IIndex {
+    new (shards: Shard[]): Index
+}
+
 export default abstract class Index {
     abstract tag: string
     abstract extractStringTokens(string: string): string[]

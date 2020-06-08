@@ -1,5 +1,5 @@
 import Engine from "./Engine"
-import Index from "./Model/Index"
+import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
 
 export default class Jhaystack {
@@ -40,7 +40,7 @@ export default class Jhaystack {
     return this
   }
 
-  setIndexStrategy(indexes: any[]) {
+  setIndexStrategy(indexes: IIndex[]) {
     this.engine.setIndexStrategy(indexes)
     return this
   }
