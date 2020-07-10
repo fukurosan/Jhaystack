@@ -6,7 +6,6 @@ Install using NPM:
 
 ```
 npm install jhaystack
-
 ```
 
 ### Get started
