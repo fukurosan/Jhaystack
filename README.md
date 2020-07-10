@@ -255,5 +255,4 @@ VALUE   |   Creates an index of exact matches (not case sensitive!). Great for w
 ### Roadmap
 The current roadmap moving forward:
 - Make more detailed tests
-- Convert the project codebase to Typescript (see "typescript" branch)
 - Chunk comparison execution into web workers
