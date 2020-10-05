@@ -23,7 +23,7 @@ module.exports = {
           else {
               return Function('return this')()
           }
-        })`
+        })()`
     },
     module: {
         rules: [
