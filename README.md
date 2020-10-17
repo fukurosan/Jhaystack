@@ -8,6 +8,23 @@ Install using NPM:
 npm install jhaystack
 ```
 
+Load using a script element:
+```html
+<script src="https://unpkg.com/jhaystack/bundle/bundle.js"></script>
+```
+
+If you load the library bundle using a script element then you will be able to access a variable called "Jhaystack". All examples below use standard ES import statements, but in this case you can omit these and instead access the necessary parts of the library by using "Jhaystack.X".
+In other words:
+```html
+<script>
+//No
+import { Jhaystack, ComparisonStrategy } from "jhaystack"
+//Yes
+Jhaystack.Jhaystack
+Jhaystack.ComparisonStrategy
+</script>
+```
+
 ### Get started
 Using the library in its simplest form is extremely easy:
 
