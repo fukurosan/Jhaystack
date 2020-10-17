@@ -197,7 +197,7 @@ const data = [
 
 const options = {
     data: data,
-    sorting: [SortingStrategy.RELEVANCE, SortingStrategy.DEPTH]
+    sorting: [SortingStrategy.RELEVANCE.DESCENDING, SortingStrategy.DEPTH.ASCENDING]
 }
 
 const se = new Jhaystack(options)
@@ -208,10 +208,10 @@ const result = se.search("toy")
 Jhaystack currently comes with the following sorting strategies:
 Strategy | Description
 --- | ---
-VALUE   |   Sorts by the value of the found match, descending.
-ATTRIBUTE   |   Sorts by the name of the attribute where the match was found, descending.
-DEPTH   |   Sorts by the depth of the match, descending.
-RELEVANCE   |   Sorts by the relevance of the match, descending.
+VALUE   |   Sorts by the value of the found match.
+ATTRIBUTE   |   Sorts by the name of the attribute where the match was found.
+DEPTH   |   Sorts by the depth of the match.
+RELEVANCE   |   Sorts by the relevance of the match.
 
 You can easily provide your own custom sorting function as well by specifying a valid javascript array sorting function.
 

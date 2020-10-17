@@ -4,17 +4,8 @@ import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 import SearchResult from "./Model/SearchResult"
 import { IIndex } from "./Model/Index"
-
-interface IOptions {
-  comparison?: ((term: any, context: any) => number)[]
-  traversal?: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
-  sorting?: ((a: SearchResult, b: SearchResult) => number)[]
-  limit?: number
-  index?: IIndex[]
-  includedPaths?: (RegExp | string)[]
-  excludedPaths?: (RegExp | string)[]
-  data?: object[]
-}
+import RELEVANCE from "./Sorting/Relevance"
+import IOptions from "./Options"
 
 export default class SearchEngine {
   private comparisonStrategy: ((term: any, context: any) => number)[]
@@ -31,7 +22,7 @@ export default class SearchEngine {
     this.comparisonStrategy = [BITAP]
     this.traversalStrategy = RETURN_ROOT_ON_FIRST_MATCH_ORDERED
     this.indexStrategy = []
-    this.sortingStrategy = []
+    this.sortingStrategy = [RELEVANCE.DESCENDING]
     this.items = []
     this.originalData = []
     this.limit = null

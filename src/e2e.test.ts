@@ -71,7 +71,7 @@ describe("End to end", () => {
             .setComparisonStrategy([ComparisonStrategy.CONTAINS])
             .setTraversalStrategy(TraversalStrategy.RETURN_ROOT_ON_FIRST_MATCH)
             .setDataset(data)
-            .setSortingStrategy([SortingStrategy.ATTRIBUTE])
+            .setSortingStrategy([SortingStrategy.ATTRIBUTE.ASCENDING])
         let result = se.search("min")
         expect(result.length).toBe(2)
         expect(result[0].item.firstName).toBe("Benjamin")

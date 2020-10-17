@@ -1,13 +1,14 @@
 import Engine from "./Engine"
 import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
+import IOptions from "./Options"
 
 export default class Jhaystack {
 
   private engine: Engine
 
-  constructor() {
-    this.engine = new Engine()
+  constructor(options?: IOptions) {
+    this.engine = new Engine(options)
   }
 
   setComparisonStrategy(strategy: ((term: string, context: any) => number)[]) {
