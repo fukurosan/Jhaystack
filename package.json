@@ -1,6 +1,6 @@
 {
   "name": "jhaystack",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "description": "A JSON search utility",
   "main": "./bundle/bundle.js",
   "types": "./lib/index.d.ts",

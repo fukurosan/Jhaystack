@@ -17,8 +17,7 @@ const generateBitMask = (term: string, context: string) => {
         characterMap[contextCharacter] = 0
     })
     for (let i = 0; i < term.length; i++) {
-        const termCharacter = term.charAt(i)
-        characterMap[termCharacter] = (characterMap[termCharacter] || 0) | (1 << i)
+        characterMap[term.charAt(i)] = (characterMap[term.charAt(i)] || 0) | (1 << i)
     }
     return characterMap
 }
@@ -35,7 +34,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
     const bitMask = generateBitMask(term, context)
     const finish = 1 << termLength - 1
 
-    //First doing an exact search will in many cases speed things up
+    //Exact Search
     let r = 0
     for (let i = 0; i < contextLength; i++) {
         r = (r << 1 | 1) & bitMask[context.charAt(i)]
