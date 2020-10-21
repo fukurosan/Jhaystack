@@ -58,7 +58,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
     }
 
     //Fuzzy search
-    let state = new Array(numberOfStates).map(() => 0)
+    let state = new Array(numberOfStates).fill(0)
     let matchKDepth = null
     for (let i = 0; i < contextLength; i++) {
         let rStringMask = 0

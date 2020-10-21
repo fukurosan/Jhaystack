@@ -49,7 +49,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
     }
 
     //Search
-    let state = new Array(numberOfStates).map(() => 0)
+    let state = new Array(numberOfStates).fill(0)
     let tempMatchKDepth = null
     let tempMatchDistance = null
     let matchKDepth = null
