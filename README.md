@@ -138,6 +138,7 @@ Jhaystack currently comes with the following comparison strategies:
 Strategy | Description
 --- | ---
 BITAP (default)   |   Determines if the term can be found inside of the context within a Levenshtein distance of 2. (not case sensitive!)
+BITAP_FULL   |   Determines the best possible match of the term inside of the context, within a maximum Levenshtein distance of 2. (not case sensitive!)
 FUZZY_SEQUENCE   |   Determines if all letters of the term exist somewhere inside the context, in the given order but not necessarily right after each other. (not case sensitive!)
 STARTS_WITH   |   Determines if the context starts with the term.
 STARTS_WITH_CASE_INSENSITIVE   |   Determines if the context starts with the term.  (not case sensitive!)

@@ -1,15 +1,6 @@
 import { ObjectLiteral } from "../Utility/JsonUtility"
 
-//Fantastic Japanese wiki article on Bitap (shift-and, shift-or): 
-//https://ja.m.wikipedia.org/wiki/Bitapアルゴリズム
-//The implementation in this file includes Wu & Mander's changes:
-//https://dl.acm.org/doi/pdf/10.1145/135239.135244
-//Navarro's implementation for reference: 
-//https://www.researchgate.net/publication/2437209_A_Faster_Algorithm_for_Approximate_String_Matching
-//Myer's implementation for reference:
-//http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.332.9395&rep=rep1&type=pdf
-//This implementation does not include Navarro's changes.
-//The default maximum Levenshtein distance of this implementation is 2
+//This bitap version will scan the entire context string to ensure the absolute best hit is always captured.
 
 const generateBitMask = (term: string, context: string) => {
     let characterMap: ObjectLiteral = {}
@@ -46,7 +37,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
     const finish = 1 << termLength - 1
 
     if (maxErrors === 0) {
-        //This basically becomes a contains search
+        //This basically becomes a contains search, which is much faster
         let r = 0
         for (let i = 0; i < contextLength; i++) {
             r = (r << 1 | 1) & bitMask[context.charAt(i)]
@@ -57,9 +48,13 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
         return 0
     }
 
-    //Fuzzy search
+    //Search
     let state = new Array(numberOfStates).map(() => 0)
+    let tempMatchKDepth = null
+    let tempMatchDistance = null
     let matchKDepth = null
+    let matchDistance = null
+    search:
     for (let i = 0; i < contextLength; i++) {
         let rStringMask = 0
         for (let j = 0; j < state.length; j++) {
@@ -72,24 +67,43 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
             nextRString |= state[j] << 1 | 1
             rStringMask = nextRString               //Handle Removal
         }
-        if (matchKDepth !== null) {
-            matchKDepth--
-            if ((state[matchKDepth] & finish) !== finish) {
+        if (tempMatchKDepth !== null) {
+            tempMatchKDepth--
+            let found = false
+            if ((state[tempMatchKDepth] & finish) !== finish || tempMatchKDepth === -1) {
                 //Last cycle was the best match
-                matchKDepth++
-                return getTweenedRelevance(i - (termLength - 1) - matchKDepth, matchKDepth)
+                tempMatchKDepth++
+                found = true
             }
-            else if (matchKDepth === 0 || i === context.length - 1) {
-                return getTweenedRelevance(i - (termLength - 1) - matchKDepth, matchKDepth)
+            else if (i === context.length - 1) {
+                found = true
+            }
+            if (found) {
+                if (matchKDepth === null || matchKDepth > tempMatchKDepth) {
+                    matchKDepth = tempMatchKDepth
+                    matchDistance = tempMatchDistance
+                    if (matchKDepth === 0) {
+                        break search
+                    }
+                }
+                tempMatchKDepth = null
             }
         }
         else if ((state[maxErrors] & finish) === finish) {
-            matchKDepth = maxErrors
-            if (i === context.length - 1) {
-                //This is the end of the context, so there won't be a better match
-                return getTweenedRelevance(i - (termLength - 1) - matchKDepth, matchKDepth)
+            tempMatchKDepth = maxErrors
+            tempMatchDistance = i - (termLength - 1) - tempMatchKDepth
+            if (matchKDepth === null && matchDistance === null) {
+                matchKDepth = maxErrors
+                matchDistance = i - (termLength - 1) - tempMatchKDepth
             }
         }
+    }
+
+    if (matchKDepth !== null && matchDistance !== null) {
+        if (matchKDepth === 0) {
+            return getTweenedRelevance(matchDistance, matchKDepth)
+        }
+        return getTweenedRelevance(matchDistance, matchKDepth)
     }
 
     return 0

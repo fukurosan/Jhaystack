@@ -9,6 +9,7 @@ import EQUALS from "./Equals"
 import EQUALS_CASE_INSENSITIVE from "./EqualsCaseInsensitive"
 import CONTAINS_ALL_WORDS from "./ContainsAllWords"
 import BITAP from "./Bitap"
+import BITAP_FULL from "./BitapFull"
 
 export {
     FUZZY_SEQUENCE,
@@ -21,7 +22,8 @@ export {
     EQUALS,
     EQUALS_CASE_INSENSITIVE,
     CONTAINS_ALL_WORDS,
-    BITAP
+    BITAP,
+    BITAP_FULL
 }
 
 export default {
@@ -35,5 +37,6 @@ export default {
     EQUALS,
     EQUALS_CASE_INSENSITIVE,
     CONTAINS_ALL_WORDS,
-    BITAP
+    BITAP,
+    BITAP_FULL
 }

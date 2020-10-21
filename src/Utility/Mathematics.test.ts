@@ -6,7 +6,7 @@ describe("Mathematics Utility Module", () => {
         let length = 3
         let point = 1
         let divider = 1
-        expect(findReverseTweenPoint(length, point, divider)).toBe(0.99)
+        expect(findReverseTweenPoint(length, point, divider)).toBe(0.99999999)
         length = 3
         point = 1
         divider = 0.5

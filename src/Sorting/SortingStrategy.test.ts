@@ -17,27 +17,39 @@ describe("Sorting Strategy", () => {
     })
 
     it("Sorts by value", () => {
-        const result = items.sort(VALUE.ASCENDING)
+        let result = items.sort(VALUE.ASCENDING)
         expect(result[0].value).toBe("Value 1")
         expect(result[5].value).toBe("Value 6")
+        result = items.sort(VALUE.DESCENDING)
+        expect(result[0].value).toBe("Value 6")
+        expect(result[5].value).toBe("Value 1")
     })
 
     it("Sorts by attribute", () => {
-        const result = items.sort(ATTRIBUTE.DESCENDING)
+        let result = items.sort(ATTRIBUTE.DESCENDING)
         expect(result[0].path[result[0].path.length - 1]).toBe("Attr 6")
         expect(result[5].path[result[5].path.length - 1]).toBe("Attr 1")
+        result = items.sort(ATTRIBUTE.ASCENDING)
+        expect(result[0].path[result[0].path.length - 1]).toBe("Attr 1")
+        expect(result[5].path[result[5].path.length - 1]).toBe("Attr 6")
     })
 
     it("Sorts by depth", () => {
-        const result = items.sort(DEPTH.ASCENDING)
+        let result = items.sort(DEPTH.ASCENDING)
         expect(result[0].depth).toBe(1)
         expect(result[5].depth).toBe(6)
+        result = items.sort(DEPTH.DESCENDING)
+        expect(result[0].depth).toBe(6)
+        expect(result[5].depth).toBe(1)
     })
 
     it("Sorts by relevance", () => {
-        const result = items.sort(RELEVANCE.DESCENDING)
+        let result = items.sort(RELEVANCE.DESCENDING)
         expect(result[0].relevance).toBe(1)
         expect(result[5].relevance).toBe(0.4)
+        result = items.sort(RELEVANCE.ASCENDING)
+        expect(result[0].relevance).toBe(0.4)
+        expect(result[5].relevance).toBe(1)
     })
 
 })

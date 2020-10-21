@@ -9,7 +9,8 @@ import {
     EQUALS,
     EQUALS_CASE_INSENSITIVE,
     CONTAINS_ALL_WORDS,
-    BITAP
+    BITAP,
+    BITAP_FULL
 } from "./ComparisonStrategy"
 
 describe("Comparison Strategy Module", () => {
@@ -101,6 +102,7 @@ describe("Comparison Strategy Module", () => {
 
     describe("Bitap comparison works", () => {
         const context = "I have phoned the guy on a telephone"
+        const endingContext = "I have phoned the guy on a ephant"
         const error0Term = "telephone"
         const error0CapitalTerm = "TELEPHONE"
         const error1Term = "elephan"
@@ -116,28 +118,94 @@ describe("Comparison Strategy Module", () => {
         })
 
         it("Handles exact match", () => {
-            expect(BITAP(error0Term, context, 0)).toBe(1)
-            expect(BITAP(error0Term, context, 1)).toBe(1)
+            expect(BITAP(error0Term, error0Term, 0)).toBe(0.99999999)
+            expect(BITAP(error0Term, context, 1)).toBeGreaterThan(1 / 2)
+            expect(BITAP(error0Term, context, 1)).toBeLessThan(1 / 1)
         })
 
         it("Handles capital letters", () => {
-            expect(BITAP(error0CapitalTerm, context, 0)).toBe(1)
-            expect(BITAP(error0CapitalTerm, context, 1)).toBe(1)
+            expect(BITAP(error0CapitalTerm, error0Term, 0)).toBe(0.99999999)
+            expect(BITAP(error0CapitalTerm, context, 1)).toBeGreaterThan(1 / 2)
+            expect(BITAP(error0CapitalTerm, context, 1)).toBeLessThan(1 / 1)
         })
 
         it("Handles fuzzy match with k distance configured", () => {
             expect(BITAP(error2Term, context, 0)).toBe(0)
             expect(BITAP(error2Term, context, 1)).toBe(0)
-            expect(BITAP(error1Term, context, 1)).toBeGreaterThan(1/2)
-            expect(BITAP(error1Term, context, 1)).toBeLessThan(1/1)
-            expect(BITAP(error2Term, context, 2)).toBeGreaterThan(1/3)
-            expect(BITAP(error2Term, context, 2)).toBeLessThan(1/2)
+            expect(BITAP(error1Term, context, 1)).toBeGreaterThan(1 / 3)
+            expect(BITAP(error1Term, context, 1)).toBeLessThan(1 / 2)
+            expect(BITAP(error2Term, context, 2)).toBeGreaterThan(1 / 4)
+            expect(BITAP(error2Term, context, 2)).toBeLessThan(1 / 3)
         })
 
         it("Default distance is 2", () => {
-            expect(BITAP(error2Term, context)).toBeGreaterThan(1/3)
-            expect(BITAP(error2Term, context)).toBeLessThan(1/2)
+            expect(BITAP(error2Term, context)).toBeGreaterThan(1 / 4)
+            expect(BITAP(error2Term, context)).toBeLessThan(1 / 3)
             expect(BITAP(error3Term, context)).toBe(0)
         })
+
+        it("Handles the hit being the final part of the context", () => {
+            expect(BITAP(error2Term, endingContext, 2)).toBeGreaterThan(1 / 4)
+            expect(BITAP(error2Term, endingContext, 2)).toBeLessThan(1 / 3)
+        })
+
+    })
+
+    describe("BitapFull comparison works", () => {
+        const context = "I have phoned the guy on a telephone"
+        const endingContext = "I have phoned the guy on a ephant"
+        const error0Term = "telephone"
+        const error0CapitalTerm = "TELEPHONE"
+        const error1Term = "elephan"
+        const error2Term = "elephant"
+        const error3Term = "elephantt"
+
+        const secondContext = "Altavista"
+        const unrelatedTerm = "Bing"
+
+        it("Does not match unrelated term", () => {
+            expect(BITAP_FULL(unrelatedTerm, secondContext, 0)).toBe(0)
+            expect(BITAP_FULL(unrelatedTerm, secondContext, 1)).toBe(0)
+        })
+
+        it("Handles exact match", () => {
+            expect(BITAP_FULL(error0Term, error0Term, 0)).toBe(0.99999999)
+            expect(BITAP_FULL(error0Term, context, 1)).toBeGreaterThan(1 / 2)
+            expect(BITAP_FULL(error0Term, context, 1)).toBeLessThan(1 / 1)
+        })
+
+        it("Handles capital letters", () => {
+            expect(BITAP_FULL(error0CapitalTerm, error0Term, 0)).toBe(0.99999999)
+            expect(BITAP_FULL(error0CapitalTerm, context, 1)).toBeGreaterThan(1 / 2)
+            expect(BITAP_FULL(error0CapitalTerm, context, 1)).toBeLessThan(1 / 1)
+        })
+
+        it("Handles fuzzy match with k distance configured", () => {
+            expect(BITAP_FULL(error2Term, context, 0)).toBe(0)
+            expect(BITAP_FULL(error2Term, context, 1)).toBe(0)
+            expect(BITAP_FULL(error1Term, context, 1)).toBeGreaterThan(1 / 3)
+            expect(BITAP_FULL(error1Term, context, 1)).toBeLessThan(1 / 2)
+            expect(BITAP_FULL(error2Term, context, 2)).toBeGreaterThan(1 / 4)
+            expect(BITAP_FULL(error2Term, context, 2)).toBeLessThan(1 / 3)
+        })
+
+        it("Default distance is 2", () => {
+            expect(BITAP_FULL(error2Term, context)).toBeGreaterThan(1 / 4)
+            expect(BITAP_FULL(error2Term, context)).toBeLessThan(1 / 3)
+            expect(BITAP_FULL(error3Term, context)).toBe(0)
+        })
+
+        it("Handles the hit being the final part of the context", () => {
+            expect(BITAP_FULL(error2Term, endingContext, 2)).toBeGreaterThan(1 / 4)
+            expect(BITAP_FULL(error2Term, endingContext, 2)).toBeLessThan(1 / 3)
+        })
+
+        it("Finds a more relevant result later in the context", () => {
+            const laterInStringContext = "It's called telephone, not telephane"
+            const laterInStringSearchTerm = "elephant"
+            expect(BITAP_FULL(laterInStringSearchTerm, laterInStringContext, 2)).toBeGreaterThan(1 / 3)
+            expect(BITAP_FULL(laterInStringSearchTerm, laterInStringContext, 2)).toBeLessThan(1 / 2)
+        })
+
     })
 })
