@@ -1,5 +1,5 @@
 import SearchResult from "../Model/SearchResult"
-import { findReverseTweenPoint } from "../Utility/Mathematics"
+import { getStackedRelevance } from "../Utility/Mathematics"
 import Item from "../Model/Item"
 
 export default (itemArrayIn: Item[], searchString: string, comparisonStrategy: ((term: string, context: any) => number)[], limit?: number): SearchResult[] => {
@@ -23,7 +23,7 @@ export default (itemArrayIn: Item[], searchString: string, comparisonStrategy: (
                     itemArray.splice(itemIndex, 1)[0].original,
                     foundShard.path,
                     foundShard.value,
-                    findReverseTweenPoint(comparisonStrategy.length, strategyIndex + 1, comparisonScore)
+                    getStackedRelevance(strategyIndex, comparisonScore)
                 ))
                 numberOfFound++
                 itemIndex--

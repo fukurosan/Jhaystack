@@ -1,5 +1,5 @@
 import { flattenObject, deepCopyObject } from "../Utility/JsonUtility"
-import { findReverseTweenPoint } from "../Utility/Mathematics"
+import { getRelativeRelevance } from "../Utility/Mathematics"
 import { pathValidator } from "../Validation/Validation"
 import Shard from "./Shard"
 import Index, { IIndex } from "./Index"
@@ -20,7 +20,7 @@ export default class Item {
         for (let i = 0; i < this.indexes.length; i++) {
             let result = this.indexes[i].evaluate(term)
             if (result.relevance && result.shard) {
-                return new SearchResult(this.original, result.shard.path, result.shard.value, findReverseTweenPoint(this.indexes.length, i + 1, result.relevance))
+                return new SearchResult(this.original, result.shard.path, result.shard.value, getRelativeRelevance(this.indexes.length, i + 1, result.relevance))
             }
         }
         return null

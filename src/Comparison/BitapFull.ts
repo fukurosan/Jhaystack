@@ -1,4 +1,5 @@
 import { ObjectLiteral } from "../Utility/JsonUtility"
+import { getTweenedRelevance } from "../Utility/Mathematics"
 
 //This bitap version will scan the entire context string to ensure the absolute best hit is always captured.
 
@@ -11,17 +12,6 @@ const generateBitMask = (term: string, context: string) => {
         characterMap[term.charAt(i)] = (characterMap[term.charAt(i)] || 0) | (1 << i)
     }
     return characterMap
-}
-
-const getTweenedRelevance = (distance: number, matchKDepth: number) => {
-    //K value always takes precendce in score. Secondarily relevance is based on absolute vicinity to context index 0
-    matchKDepth++
-    distance < 0 && (distance = 0)
-    const lowestPossibleScore = 1 / (matchKDepth + 1)
-    const highestPossibleScore = 1 / matchKDepth
-    const distanceMultiplier = 1 / (distance + 1)
-    const tweenedRelevance = lowestPossibleScore + (distanceMultiplier * (highestPossibleScore * lowestPossibleScore))
-    return tweenedRelevance === highestPossibleScore ? tweenedRelevance - 0.00000001 : tweenedRelevance === lowestPossibleScore ? tweenedRelevance + 0.00000001 : tweenedRelevance
 }
 
 export default (termIn: string, contextIn: string, maxErrors: number = 2): number => {
@@ -42,7 +32,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
         for (let i = 0; i < contextLength; i++) {
             r = (r << 1 | 1) & bitMask[context.charAt(i)]
             if ((r & finish) === finish) {
-                return getTweenedRelevance(i - (termLength - 1), 0)
+                return getTweenedRelevance(0, i - (termLength - 1))
             }
         }
         return 0
@@ -101,9 +91,9 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
 
     if (matchKDepth !== null && matchDistance !== null) {
         if (matchKDepth === 0) {
-            return getTweenedRelevance(matchDistance, matchKDepth)
+            return getTweenedRelevance(matchKDepth, matchDistance)
         }
-        return getTweenedRelevance(matchDistance, matchKDepth)
+        return getTweenedRelevance(matchKDepth, matchDistance)
     }
 
     return 0

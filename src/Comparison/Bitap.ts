@@ -1,4 +1,5 @@
 import { ObjectLiteral } from "../Utility/JsonUtility"
+import { getTweenedRelevance }  from "../Utility/Mathematics"
 
 //Fantastic Japanese wiki article on Bitap (shift-and, shift-or): 
 //https://ja.m.wikipedia.org/wiki/Bitapアルゴリズム
@@ -10,6 +11,7 @@ import { ObjectLiteral } from "../Utility/JsonUtility"
 //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.332.9395&rep=rep1&type=pdf
 //This implementation does not include Navarro's changes.
 //The default maximum Levenshtein distance of this implementation is 2
+//K value always takes precendce in score. Secondarily relevance is based on absolute vicinity to context index 0
 
 const generateBitMask = (term: string, context: string) => {
     let characterMap: ObjectLiteral = {}
@@ -20,17 +22,6 @@ const generateBitMask = (term: string, context: string) => {
         characterMap[term.charAt(i)] = (characterMap[term.charAt(i)] || 0) | (1 << i)
     }
     return characterMap
-}
-
-const getTweenedRelevance = (distance: number, matchKDepth: number) => {
-    //K value always takes precendce in score. Secondarily relevance is based on absolute vicinity to context index 0
-    matchKDepth++
-    distance < 0 && (distance = 0)
-    const lowestPossibleScore = 1 / (matchKDepth + 1)
-    const highestPossibleScore = 1 / matchKDepth
-    const distanceMultiplier = 1 / (distance + 1)
-    const tweenedRelevance = lowestPossibleScore + (distanceMultiplier * (highestPossibleScore * lowestPossibleScore))
-    return tweenedRelevance === highestPossibleScore ? tweenedRelevance - 0.00000001 : tweenedRelevance === lowestPossibleScore ? tweenedRelevance + 0.00000001 : tweenedRelevance
 }
 
 export default (termIn: string, contextIn: string, maxErrors: number = 2): number => {
@@ -51,7 +42,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
         for (let i = 0; i < contextLength; i++) {
             r = (r << 1 | 1) & bitMask[context.charAt(i)]
             if ((r & finish) === finish) {
-                return getTweenedRelevance(i - (termLength - 1), 0)
+                return getTweenedRelevance(0, i - (termLength - 1))
             }
         }
         return 0
@@ -77,17 +68,17 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
             if ((state[matchKDepth] & finish) !== finish) {
                 //Last cycle was the best match
                 matchKDepth++
-                return getTweenedRelevance(i - (termLength - 1) - matchKDepth, matchKDepth)
+                return getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
             }
             else if (matchKDepth === 0 || i === context.length - 1) {
-                return getTweenedRelevance(i - (termLength - 1) - matchKDepth, matchKDepth)
+                return getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
             }
         }
         else if ((state[maxErrors] & finish) === finish) {
             matchKDepth = maxErrors
             if (i === context.length - 1) {
                 //This is the end of the context, so there won't be a better match
-                return getTweenedRelevance(i - (termLength - 1) - matchKDepth, matchKDepth)
+                return getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
             }
         }
     }

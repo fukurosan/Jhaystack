@@ -1,6 +1,6 @@
 {
   "name": "jhaystack",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "description": "A JSON search utility",
   "main": "./bundle/bundle.js",
   "types": "./lib/index.d.ts",
@@ -10,7 +10,7 @@
     "build:lib": "tsc",
     "build:wbp": "webpack --config webpack.config.js",
     "prepublish": "npm run clean && npm run build",
-    "test": "jest --coverage --verbose"
+    "test": "jest --coverage --verbose --no-cache"
   },
   "repository": {
     "type": "git",
