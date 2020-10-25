@@ -1,18 +1,24 @@
 import VALUE from "./Value"
-import ATTRIBUTE from "./Attribute"
+import PROPERTY from "./Property"
 import DEPTH from "./Depth"
 import RELEVANCE from "./Relevance"
+import COMPARISON_SCORE from "./ComparisonScore"
+import COMPARISON_INDEX from "./ComparisonIndex"
 
 export {
         VALUE,
-        ATTRIBUTE,
+        PROPERTY,
         DEPTH,
-        RELEVANCE
+        RELEVANCE,
+        COMPARISON_SCORE,
+        COMPARISON_INDEX
 }
 
 export default {
         VALUE,
-        ATTRIBUTE,
+        PROPERTY,
         DEPTH,
-        RELEVANCE
+        RELEVANCE,
+        COMPARISON_SCORE,
+        COMPARISON_INDEX
 }

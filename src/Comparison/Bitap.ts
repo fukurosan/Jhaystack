@@ -10,9 +10,13 @@ import { getTweenedRelevance }  from "../Utility/Mathematics"
 //Myer's implementation for reference:
 //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.332.9395&rep=rep1&type=pdf
 //This implementation does not include Navarro's changes.
-//The default maximum Levenshtein distance of this implementation is 2
-//K value always takes precendce in score. Secondarily relevance is based on absolute vicinity to context index 0
 
+/**
+ * Creates a bit mask of the context based on the position of characters found in the term.
+ * @param {string} term - The term to be matched
+ * @param {string} context - The context to search
+ * @return {object} - A bit mask map where the keys are the characters in the term.
+ */
 const generateBitMask = (term: string, context: string) => {
     let characterMap: ObjectLiteral = {}
     context.split("").forEach(contextCharacter => {
@@ -24,7 +28,15 @@ const generateBitMask = (term: string, context: string) => {
     return characterMap
 }
 
-export default (termIn: string, contextIn: string, maxErrors: number = 2): number => {
+/**
+ * Finds first match of the term contained in the context that is within the given levenshtein distance.
+ * @param {any} termIn - The term to be matched
+ * @param {any} contextIn - The context to search
+ * @param {number} maxErrors - Maximum levenshtein distance (integer)
+ * @param {boolean} isPositionRelevant - If true relevance will secondarily be based on term's absolute vicinity to index 0 in context
+ * @return {number} - Resulting score. Score is primarily based on the levenshtein distance.
+ */
+export default (termIn: any, contextIn: any, maxErrors: number = 2, isPositionRelevant: boolean = true): number => {
     const term = `${termIn}`.toUpperCase()
     const context = `${contextIn}`.toUpperCase()
     const contextLength = context.length
@@ -42,7 +54,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
         for (let i = 0; i < contextLength; i++) {
             r = (r << 1 | 1) & bitMask[context.charAt(i)]
             if ((r & finish) === finish) {
-                return getTweenedRelevance(0, i - (termLength - 1))
+                return isPositionRelevant ? getTweenedRelevance(0, i - (termLength - 1)) : 1
             }
         }
         return 0
@@ -68,17 +80,17 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
             if ((state[matchKDepth] & finish) !== finish) {
                 //Last cycle was the best match
                 matchKDepth++
-                return getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
+                return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
             }
             else if (matchKDepth === 0 || i === context.length - 1) {
-                return getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
+                return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
             }
         }
         else if ((state[maxErrors] & finish) === finish) {
             matchKDepth = maxErrors
             if (i === context.length - 1) {
                 //This is the end of the context, so there won't be a better match
-                return getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
+                return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
             }
         }
     }

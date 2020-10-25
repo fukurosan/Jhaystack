@@ -30,8 +30,9 @@ describe("JSON Utility Module", () => {
     })
 
     it("Object flattening works", () => {
-        const flattened = flattenObject(data)
-        expect(flattened.length).toBe(5)
+        expect(flattenObject(data).length).toBe(5)
+        expect(flattenObject("One")[0].value).toBe("One")
+        expect(flattenObject(2)[0].value).toBe(2)
     })
 
     it("Extracting last non-numeric item from array works", () => {
@@ -42,7 +43,7 @@ describe("JSON Utility Module", () => {
         expect(getLastNonNumericItemInArray(path2)).toBe("something")
         expect(getLastNonNumericItemInArray(path3)).toBe(null)
     })
-    
+
     it("Sorting arrays by multiple criteria works", () => {
         const dataArray = [
             {
@@ -98,6 +99,6 @@ describe("JSON Utility Module", () => {
         expect(result[1].letter).toBe("a")
         expect(result[2].letter).toBe("b")
         expect(result[3].letter).toBe("c")
-        
+
     })
 })

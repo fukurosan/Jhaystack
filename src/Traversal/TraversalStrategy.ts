@@ -1,15 +1,15 @@
-import EXTRACT_ALL_NESTED from "./ExtractAllNested"
-import RETURN_ROOT_ON_FIRST_MATCH from "./ReturnRootOnFirstMatch"
-import RETURN_ROOT_ON_FIRST_MATCH_ORDERED from "./ReturnRootOnFirstMatchOrdered"
+import FIND_NESTED_OBJECTS from "./FindNestedObjects"
+import FIND_OBJECTS from "./FindObjects"
+import FIND_VALUES from "./FindValues"
 
 export {
-    EXTRACT_ALL_NESTED,
-    RETURN_ROOT_ON_FIRST_MATCH,
-    RETURN_ROOT_ON_FIRST_MATCH_ORDERED
+    FIND_NESTED_OBJECTS,
+    FIND_OBJECTS,
+    FIND_VALUES
 }
 
 export default {
-    EXTRACT_ALL_NESTED,
-    RETURN_ROOT_ON_FIRST_MATCH,
-    RETURN_ROOT_ON_FIRST_MATCH_ORDERED
+    FIND_NESTED_OBJECTS,
+    FIND_OBJECTS,
+    FIND_VALUES
 }

@@ -1,4 +1,11 @@
-export default (termIn: string, contextIn: any): number => {
+/**
+ * Checks if all term characters exists within the context in their given sequence. (not case sensitive!)
+ * Score is secondarily based on the total space bewteen the characters.
+ * @param {any} term - The term to be matched
+ * @param {any} context - The context to searched
+ * @return {number} - Resulting score
+ */
+export default (termIn: any, contextIn: any): number => {
     const term = (`${termIn}`).toUpperCase().replace(/ /g, "")
     const context = (`${contextIn}`).toUpperCase().replace(/ /g, "")
     const termLength = term.length

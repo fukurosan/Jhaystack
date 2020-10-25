@@ -6,11 +6,18 @@ interface IndexMap {
 }
 
 export interface IIndex {
-    new (shards: Shard[]): Index
+    new(shards: Shard[]): Index
 }
 
 export default abstract class Index {
+    /** A tag that labels the index (essentially a name) */
     abstract tag: string
+    /** 
+     * Takes a string and breaks it down into sub-components.
+     * Every index works slightly different, so the implementation of this is left up to the extended class.
+     * @param {string} string - The string to be broken down
+     * @return {string[]} - An array of sub-component strings
+     */
     abstract extractStringTokens(string: string): string[]
 
     shards: Shard[] = []
@@ -22,6 +29,10 @@ export default abstract class Index {
         this.build()
     }
 
+    /** 
+     * Builds the index map using the extractStringTokens function.
+     * Each extracted sub-component becomes a key to an array, containing all shards that match said sub-component.
+     **/
     build() {
         this.index = {}
         this.shards.forEach(shard => {
@@ -36,7 +47,12 @@ export default abstract class Index {
         })
     }
 
-    evaluate(term: string): IndexEvaluationResult {
+    /** 
+     * Evaluates a search value against the index.
+     * Score is evaluated by building an index of the term, and then seeing if any shards match the same index keys within a certain range.
+     * @param {Shard[]} shards - Array of shards that the index should be built on
+     */
+    evaluate(term: any): IndexEvaluationResult {
         const termTokens = this.extractStringTokens(`${term}`.toUpperCase())
         let indexQueryResult = new Map()
         for (let i = 0; i < termTokens.length; i++) {
@@ -54,8 +70,8 @@ export default abstract class Index {
             }
         }
 
-        let bestMatch = [...indexQueryResult.keys()].reduce((acc, key) => {
-            if (indexQueryResult.get(key) > acc.relevance) {
+        let bestMatch = [...indexQueryResult.keys()].reduce((acc: IndexEvaluationResult, key) => {
+            if (indexQueryResult.get(key) > acc.score) {
                 return new IndexEvaluationResult(key, indexQueryResult.get(key)) //This is not really a result, but the data structure is identical
             }
             else {
@@ -63,17 +79,21 @@ export default abstract class Index {
             }
         }, new IndexEvaluationResult(null, 0))
 
-        if (bestMatch.relevance === 0) {
+        if (bestMatch.score === 0) {
             return new IndexEvaluationResult(null, 0)
         }
-        else if (bestMatch.relevance === termTokens.length) {
+        else if (bestMatch.score === termTokens.length) {
             return new IndexEvaluationResult(bestMatch.shard, 1)
         }
 
-        const matchRatio = bestMatch.relevance / (termTokens.length)
+        const matchRatio = bestMatch.score / (termTokens.length)
         return matchRatio > 0.25 ? new IndexEvaluationResult(bestMatch.shard, matchRatio) : new IndexEvaluationResult(null, 0)
     }
 
+    /** 
+     * Removes any existing index and builds a new index based on the provided shards.
+     * @param {Shard[]} shards - Array of shards that the index should be built on
+     */
     setShards(shards: Shard[]) {
         this.shards = shards
         this.build()

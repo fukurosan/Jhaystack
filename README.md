@@ -1,5 +1,5 @@
 # Jhaystack
-A zero dependency JSON search utility. Jhaystack is built to be customizable, modular and fast. Jhaystack also works really well with data exploration or where data structures are only partially known in advance.
+A zero dependency JSON search engine. Jhaystack is built to be customizable, modular and fast. Jhaystack also works really well with data exploration or where data structures are only partially known in advance.
 
 ### Installation
 Install using NPM:
@@ -25,6 +25,11 @@ Jhaystack.ComparisonStrategy
 </script>
 ```
 
+You can also use commonjs like so:
+```javascript
+const { Jhaystack, ComparisonStrategy } = require("jhaystack")
+```
+
 ### Get started
 Using the library in its simplest form is extremely easy:
 
@@ -41,18 +46,20 @@ const data = [
 ]
 const se = new Jhaystack({data: data})
 const results = se.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 0.5 }, { path: ["name"], depth: 1, item: { name: "tim" }, value: "tim", relevance: 0.5 }]
+//[{ path: ["name"], item: { name: "tom" }, value: "tom", relevance: 0.749999995, comparisonScore: 0.49999999, comparisonIndex: 0}, { path: ["name"], item: { name: "tim" }, value: "tim", relevance: 0.749999995, comparisonScore: 0.49999999, comparisonIndex: 0 }]
 ```
 
 #### Results
-The result of a search will be an array of objects. Each object has the item itself (.item) where a match was found, a path (.path) to where in the object the match was found, the actual value (.value) that was matched, a depth (.depth) specifying how many steps into the structure the match was found, and finally the relevance (.relevance) of the match.
+The result of a search will be an array of objects. Each object has the item itself (.item) where a match was found, a path (.path) to where in the object the match was found, the actual value (.value) that was matched, a comparison score showing the score that the comparison function gave it (.comparisonScore), the index of the comparison function that gave the score (.comparisonIndex), and finally the relevance (.relevance) of the match.
 
 #### Relevance
 Relevance is a score of how relevant a matched result is. Jhaystack provides the relevance score in the form of a number between 0 and 1, 0 being a complete mismatch, and 1 being a perfect match.
 
-Relevance is based on multiple criteria in each specific setup, and should not be considered an absolute number. 0.5 does not mean that the match is half as relevant than 1, instead it simply means that the match is *less* relevant. Furthermore it is worth noting that, depending on how you have configured Jhaystack, a match from the same comparison strategy can in different scenarios result in a different relevance. This is simply because in some scenarios the order of comparison strategies provided to Jhaystack matters when determining match relevance. And, in fact, in some traversal strategies the relevance is considered to be binary.
+Relevance is based on multiple criteria, and should not be considered an absolute number. 0.5 does not mean that the match is half as relevant than 1, instead it simply means that the match is *less* relevant. Furthermore it is worth noting that, depending on how you have configured Jhaystack, a match from the same comparison strategy can in different scenarios result in a different relevance. This is simply because the order of comparison functions provided to Jhaystack matters when determining match relevance. 
 
-To learn more about scary words like comparison strategy and traversal strategy, keep reading. (Secret: it’s about as scary and a jar of marmalade, the sugary kind.)
+When relevance is calculated the order of comparison function will always takes precedence. Secondarily relevance will be based on the score of the comparison function. And thirdly, there may be parts of the comparison function that scores values differently depending on different criteria.
+
+To learn more about scary words like comparison strategy, keep reading. (Secret: it’s about as scary and a jar of marmalade, the sugary kind.)
 
 #### Options
 Jhaystack’s constructor accepts an options object where you can specify your configuration settings. Below is a description of the different options. Note that you can also change these options using the built in functions on the Jhaystack instance after instantiation. This way you can change things after the fact that you’ve already created your instance. Note, though, that changing certain options can cause indexes to have to be rebuilt resulting in load times.
@@ -99,9 +106,9 @@ const optionsExc = {
 const seExc = new Jhaystack(optionsExc)
 
 const resultsIncluded = seInc.search("tm")
-//[{ path: ["otherNameAttribute"], depth: 1, item: { otherNameAttribute: "tim" }, value: "tim", relevance: 0.5 }]
+//[{ path: ["otherNameAttribute"], item: { otherNameAttribute: "tim" }, value: "tim", relevance: 0.749999995, comparisonScore: 0.49999999, comparisonIndex: 0 }]
 const resultsExcluded = seExc.search("tm")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 0.5 }]
+//[{ path: ["name"], item: { name: "tom" }, value: "tom", relevance: 0.749999995, comparisonScore: 0.49999999, comparisonIndex: 0 }]
 ```
 
 
@@ -131,7 +138,7 @@ const options = {
 
 const se = new Jhaystack(options)
 const result = se.search("ton")
-//[{ path: ["name"], depth: 1, item: { name: "tony" }, value: "tony", relevance: 0.99 }, { path: ["name"], depth: 1, item: { name: "paddington" }, value: "paddington", relevance: 0.49 }]
+//[{ path: ["name"], item: { name: "tony" }, value: "tony", relevance: 0.99999999, comparisonScore: 1, comparisonIndex: 0 }, { path: ["name"], item: { name: "paddington" }, value: "paddington", relevance: 0.49999999, comparisonScore: 1, comparisonIndex: 1 }]
 ```
 
 Jhaystack currently comes with the following comparison strategies:
@@ -156,7 +163,6 @@ Argument | Description
 term*   |   The value to be searched for.
 context*   |   The value to be searched.
 
-
 ### Traversal Strategy
 The traversal strategy defines how Jhaystack traverses the object tree while searching for value matches, as well as what makes it stop traversal, and what it returns as a result item.
 
@@ -176,20 +182,20 @@ const data = [
 
 const options = {
     data: data,
-    traversal: TraversalStrategy.EXTRACT_ALL_NESTED
+    traversal: TraversalStrategy.FIND_NESTED_OBJECTS
 }
 
 const se = new Jhaystack(options)
 const result = se.search("tom")
-//[{ path: ["name"], depth: 1, item: { name: "tom" }, value: "tom", relevance: 1 }]
+//[{ path: ["name"], item: { name: "tom" }, value: "tom", relevance: 0.999999995, comparisonScore: 0.99999999, comparisonIndex: 0 }]
 ```
 
 Jhaystack currently comes with the following traversal strategies:
 Strategy | Description
 --- | ---
-RETURN_ROOT_ON_FIRST_MATCH_ORDERED (default)   |   Stops traversal of an object as soon as a value match is found. Returns the entire root object in the result. Guarantees matches in order of provided comparison strategy read from left to right. Relevance will also take the order of comparison strategy into account, and a higher prioritized comparison match will *always* be considered more relevant than its lower priority counterparts.
-RETURN_ROOT_ON_FIRST_MATCH   |   Stops traversal of an object as soon as a value match is found. Returns the entire root object in the result. Considers all comparison strategies to be of equal worth. The latter means that this strategy in scenarios with multiple provided comparison strategies will perform faster than the above, ordered, strategy, but could potentially generate less accurate results.
-EXTRACT_ALL_NESTED   |   This strategy will continue traversal until every single branch object has been checked, and will return the nested object where the match was actually found (i.e. not the root!). This is great if you want to locate and extract branch/leaf objects from complex JSON objects. Considers all comparison strategies to be of equal worth.
+FIND_VALUES (default)   |   Finds all matching values nested inside of the search item. Returns the entire root object in the result. Useful if you're looking for values.
+FIND_OBJECTS   |   Finds the best matching value nested inside of the search item. Returns the entire root object in the result. Useful if you're looking for objects.
+FIND_NESTED_OBJECTS   |   Splits each item into its nested objects and searches them separately. Finds the best matching value inside of each nested object. Returns only the nested object. The path of the value matched will be relative to the nested object. Useful if you're looking for objects that are part of other objects.
 
 
 ### Sorting Strategy
@@ -220,16 +226,20 @@ const options = {
 
 const se = new Jhaystack(options)
 const result = se.search("toy")
-//[{ path: ["name"], depth: 1, item: { name: "tony" }, value: "tony", relevance: 0.5 }, { path: ["name"], depth: 1, item: { name: "timmy" }, value: "timmy", relevance: 0.3333333333333333 }, { path: ["child", "name"], depth: 2, item: { child: { name: "timmy" } }, value: "timmy", relevance: 0.3333333333333333 }]
+//[{ path: ["name"], item: { name: "tony" }, value: "tony", relevance: 0.749999995, comparisonScore: 0.49999999, comparisonIndex: 0 }, { path: ["name"], item: { name: "timmy" }, value: "timmy", relevance: 0.6666666616666667, comparisonScore: 0.3333333233333333, comparisonIndex: 0 }, { path: ["child", "name"], item: { child: { name: "timmy" } }, value: "timmy", relevance: 0.6666666616666667, comparisonScore: 0.3333333233333333, comparisonIndex: 0 }]
 ```
 
 Jhaystack currently comes with the following sorting strategies:
 Strategy | Description
 --- | ---
+COMPARISON_INDEX   |   Sorts by the index of the comparison function that found the match
+COMPARISON_SCORE   |   Sorts by the score of the comparison function that found that match
 VALUE   |   Sorts by the value of the found match.
-ATTRIBUTE   |   Sorts by the name of the attribute where the match was found.
+PROPERTY   |   Sorts by the name of the property where the match was found.
 DEPTH   |   Sorts by the depth of the match.
 RELEVANCE   |   Sorts by the relevance of the match.
+
+Each sorting strategy can sort either in ascending or descending order. See the example above.
 
 You can easily provide your own custom sorting function as well by specifying a valid javascript array sorting function.
 
@@ -272,4 +282,8 @@ VALUE   |   Creates an index of exact matches (not case sensitive!). Great for w
 ### Roadmap
 The current roadmap moving forward:
 - Make more detailed tests
+- Implement value pattern filters
+- Implement property weighting
+- Create multiple builds for different purposes
+- Write better documentation
 - Chunk comparison execution into web workers

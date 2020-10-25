@@ -149,6 +149,12 @@ describe("Comparison Strategy Module", () => {
             expect(BITAP(error2Term, endingContext, 2)).toBeLessThan(1 / 3)
         })
 
+        it("Can ignore match position", () => {
+            expect(BITAP(error0Term, context, 1, false)).toBe(1)
+            expect(BITAP(error1Term, context, 1, false)).toBe(1 / 2)
+            expect(BITAP(error2Term, context, 2, false)).toBe(1 / 3)
+        })
+
     })
 
     describe("BitapFull comparison works", () => {
@@ -205,6 +211,12 @@ describe("Comparison Strategy Module", () => {
             const laterInStringSearchTerm = "elephant"
             expect(BITAP_FULL(laterInStringSearchTerm, laterInStringContext, 2)).toBeGreaterThan(1 / 3)
             expect(BITAP_FULL(laterInStringSearchTerm, laterInStringContext, 2)).toBeLessThan(1 / 2)
+        })
+
+        it("Can ignore match position", () => {
+            expect(BITAP_FULL(error0Term, context, 1, false)).toBe(1)
+            expect(BITAP_FULL(error1Term, context, 1, false)).toBe(1 / 2)
+            expect(BITAP_FULL(error2Term, context, 2, false)).toBe(1 / 3)
         })
 
     })

@@ -1,8 +1,12 @@
 import { ObjectLiteral } from "../Utility/JsonUtility"
 import { getTweenedRelevance } from "../Utility/Mathematics"
 
-//This bitap version will scan the entire context string to ensure the absolute best hit is always captured.
-
+/**
+ * Creates a bit mask of the context based on the position of characters found in the term.
+ * @param {string} term - The term to be matched
+ * @param {string} context - The context to search
+ * @return {object} - A bit mask map where the keys are the characters in the term.
+ */
 const generateBitMask = (term: string, context: string) => {
     let characterMap: ObjectLiteral = {}
     context.split("").forEach(contextCharacter => {
@@ -14,7 +18,15 @@ const generateBitMask = (term: string, context: string) => {
     return characterMap
 }
 
-export default (termIn: string, contextIn: string, maxErrors: number = 2): number => {
+/**
+ * Finds the best match of the term contained in the context that is within the given levenshtein distance.
+ * @param {any} termIn - The term to be matched
+ * @param {any} contextIn - The context to search
+ * @param {number} maxErrors - Maximum levenshtein distance (integer)
+ * @param {boolean} isPositionRelevant - If true relevance will secondarily be based on term's absolute vicinity to index 0 in context
+ * @return {number} - Resulting score. Score is primarily based on the levenshtein distance.
+ */
+export default (termIn: any, contextIn: any, maxErrors: number = 2, isPositionRelevant: boolean = true): number => {
     const term = `${termIn}`.toUpperCase()
     const context = `${contextIn}`.toUpperCase()
     const contextLength = context.length
@@ -32,7 +44,7 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
         for (let i = 0; i < contextLength; i++) {
             r = (r << 1 | 1) & bitMask[context.charAt(i)]
             if ((r & finish) === finish) {
-                return getTweenedRelevance(0, i - (termLength - 1))
+                return isPositionRelevant ? getTweenedRelevance(0, i - (termLength - 1)) : 1
             }
         }
         return 0
@@ -91,9 +103,9 @@ export default (termIn: string, contextIn: string, maxErrors: number = 2): numbe
 
     if (matchKDepth !== null && matchDistance !== null) {
         if (matchKDepth === 0) {
-            return getTweenedRelevance(matchKDepth, matchDistance)
+            return isPositionRelevant ? getTweenedRelevance(matchKDepth, matchDistance) : 1 / (matchKDepth + 1)
         }
-        return getTweenedRelevance(matchKDepth, matchDistance)
+        return isPositionRelevant ? getTweenedRelevance(matchKDepth, matchDistance) : 1 / (matchKDepth + 1)
     }
 
     return 0

@@ -4,19 +4,24 @@ export interface ObjectLiteral {
     [key: string]: any
 }
 
-export const deepCopyObject = <T>(o: T): any => {    
+/**
+ * Creates a deep copy of any object.
+ * @param {any} object - Object to copy
+ * @return {any} - Resulting copy
+ */
+export const deepCopyObject = (o: any): any => {
     if (o === null) {
         return o
     }
-    if (o instanceof Array) {
+    else if (o instanceof Array) {
         const out: any[] = []
         for (let key in o) {
             let v = o[key]
             out[key] = typeof v === "object" && v !== null ? deepCopyObject(v) : v
         }
-        return out 
+        return out
     }
-    if (typeof o === "object" && o !== {}) {
+    else if (typeof o === "object" && o !== {}) {
         const out: ObjectLiteral = {}
         for (let key in o) {
             let v = o[key]
@@ -24,18 +29,26 @@ export const deepCopyObject = <T>(o: T): any => {
         }
         return out
     }
-    if (o instanceof Date) {
+    else if (o instanceof Date) {
         return new Date(o.getTime())
+    }
+    else {
+        return o
     }
 }
 
-export const flattenObject = (object: ObjectLiteral): Shard[] => {
+/**
+ * Flattens any object into an array of shards, and sorts them by depth.
+ * @param {any} object - Object to flatten
+ * @return {Shard[]} - Resulting array of shards
+ */
+export const flattenObject = (object: any): Shard[] => {
     let result: Shard[] = []
     const traverse = (o: ObjectLiteral, path: string[] = []) => {
         Object.keys(o).forEach(key => {
             const newPath = [...path, key]
             const thisItem = o[key]
-            if (thisItem !== null && typeof thisItem !== "object") {
+            if (thisItem !== null && thisItem !== undefined && typeof thisItem !== "object") {
                 result.push(new Shard(o[key], newPath))
             }
             else if (thisItem !== null && typeof thisItem === "object") {
@@ -43,16 +56,25 @@ export const flattenObject = (object: ObjectLiteral): Shard[] => {
             }
         })
     }
+    if (object !== null && object !== undefined && typeof object !== "object") {
+        result.push(new Shard(object, []))
+        return result
+    }
     traverse(object)
     result.sort((a, b) => {
-        if (a.depth < b.depth) return -1
-        if (a.depth > b.depth) return 1
+        if (a.path.length < b.path.length) return -1
+        if (a.path.length > b.path.length) return 1
         return 0
     })
     return result
 }
 
-export const getLastNonNumericItemInArray = (array: (string|number)[]): string|null => {
+/**
+ * Finds the last non-numeric value in an array.
+ * @param {(string | number)[]} array - Array to search
+ * @return {string | null} - Found value
+ */
+export const getLastNonNumericItemInArray = (array: (string | number)[]): string | null => {
     let lastValidKey
     let index = array.length - 1
     while (!lastValidKey) {
@@ -61,7 +83,7 @@ export const getLastNonNumericItemInArray = (array: (string|number)[]): string|n
             break
         }
         if (Number.isNaN(+array[index])) {
-            lastValidKey = <string> array[index]
+            lastValidKey = <string>array[index]
         }
         else {
             index--
@@ -70,7 +92,12 @@ export const getLastNonNumericItemInArray = (array: (string|number)[]): string|n
     return lastValidKey
 }
 
-export const mergeArraySortFunctions = (sortFunctionArray: ((a: any, b: any) => number)[]) => {
+/**
+ * Merges multiple sorting functions into one function. If one sorting function resolves to 0, then the next sorting function will be executed.
+ * @param {((a: any, b: any) => number)[]} sortFunctionArray - Array of functions to merge
+ * @return {(a: any, b: any) => number} - Merged function
+ */
+export const mergeArraySortFunctions = (sortFunctionArray: ((a: any, b: any) => number)[]): (a: any, b: any) => number => {
     return (a: any, b: any) => {
         let result = 0
         for (let i = 0; i < sortFunctionArray.length; i++) {
