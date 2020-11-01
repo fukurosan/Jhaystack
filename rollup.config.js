@@ -117,5 +117,130 @@ export default [
 				}
 			})
 		]
+	},
+	{
+		input: "./src/index.ts",
+		output: [
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.cjs.legacy.js`,
+				format: "cjs",
+				banner: BANNER,
+				exports: "auto"
+			},
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.esm.legacy.js`,
+				format: "esm",
+				banner: BANNER
+			},
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.umd.legacy.js`,
+				format: "umd",
+				banner: BANNER,
+				name: LIBRARY_NAME,
+				globals: {}
+			},
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.iife.legacy.js`,
+				format: "iife",
+				banner: BANNER,
+				name: LIBRARY_NAME,
+				globals: {}
+			}
+		],
+		external: [],
+		plugins: [
+			resolve({
+				extensions: [".ts", ".js"]
+			}),
+			commonjs(),
+			babel({
+				exclude: "node_modules/**",
+				extensions: [".ts", ".js"],
+				babelHelpers: "bundled",
+				presets: [
+					"@babel/preset-typescript",
+					[
+						"@babel/env",
+						{
+							modules: false,
+							targets: {
+								browsers: "> 0.25%, ie 11, not op_mini all, not dead",
+								node: 8
+							},
+							useBuiltIns: "usage",
+							corejs: 3
+						}
+					]
+				],
+			})
+		]
+	},
+	{
+		input: "./src/index.ts",
+		output: [
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.cjs.legacy.min.js`,
+				format: "cjs",
+				banner: BANNER,
+				exports: "auto"
+			},
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.esm.legacy.min.js`,
+				format: "esm",
+				banner: BANNER
+			},
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.umd.legacy.min.js`,
+				format: "umd",
+				banner: BANNER,
+				name: LIBRARY_NAME,
+				globals: {}
+			},
+			{
+				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.iife.legacy.min.js`,
+				format: "iife",
+				banner: BANNER,
+				name: LIBRARY_NAME,
+				globals: {}
+			}
+		],
+		external: [],
+		plugins: [
+			resolve({
+				extensions: [".ts", ".js"]
+			}),
+			commonjs(),
+			babel({
+				exclude: "node_modules/**",
+				extensions: [".ts", ".js"],
+				babelHelpers: "bundled",
+				presets: [
+					"@babel/preset-typescript",
+					[
+						"@babel/env",
+						{
+							modules: false,
+							targets: {
+								browsers: "> 0.25%, ie 11, not op_mini all, not dead",
+								node: 8
+							},
+							useBuiltIns: "usage",
+							corejs: 3
+						}
+					]
+				],
+			}),
+			terser({
+				format: {
+					comments(node, comment) {
+						const text = comment.value
+						const type = comment.type
+						if (type == "comment2") {
+							return /@preserve|@license|@cc_on/i.test(text)
+						}
+					}
+				}
+			})
+		]
 	}
 ]

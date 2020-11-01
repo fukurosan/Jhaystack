@@ -50,7 +50,7 @@ export default abstract class Index {
 	/**
 	 * Evaluates a search value against the index.
 	 * Score is evaluated by building an index of the term, and then seeing if any shards match the same index keys within a certain range.
-	 * @param {Shard[]} shards - Array of shards that the index should be built on
+	 * @param {any} term - The term that should be evaluated
 	 */
 	evaluate(term: any): IndexEvaluationResult {
 		const termTokens = this.extractStringTokens(`${term}`.toUpperCase())

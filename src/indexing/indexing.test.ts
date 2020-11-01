@@ -1,4 +1,4 @@
-import { VALUE, WORD, TRIGRAM } from "./IndexStrategy"
+import { VALUE, WORD, TRIGRAM, STARTS_WITH } from "./IndexStrategy"
 import { flattenObject } from "../Utility/JsonUtility"
 
 describe("Indexing module", () => {
@@ -61,5 +61,15 @@ describe("Indexing module", () => {
 		expect(index.evaluate("BIT").shard?.value).toEqual("Ribbity")
 		expect(index.evaluate("Come to space and join us!").score).toBe(12 / 24)
 		expect(index.tag).toBe("TRIGRAM")
+	})
+
+	it("Creates prefix index", () => {
+		const index = new STARTS_WITH(data)
+		expect(index.evaluate("We").score).toBe(1)
+		expect(index.evaluate("WEL").score).toBe(1)
+		expect(index.evaluate("Welme").score).toBe(0)
+		expect(index.evaluate("RI").score).toBe(1)
+		expect(index.evaluate("Come to space and join us!").score).toBe(0)
+		expect(index.tag).toBe("STARTS_WITH")
 	})
 })
