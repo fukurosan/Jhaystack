@@ -10,7 +10,9 @@ import {
 	EQUALS_CASE_INSENSITIVE,
 	CONTAINS_ALL_WORDS,
 	BITAP,
-	BITAP_FULL
+	BITAP_FULL,
+	REGULAR_EXPRESSION,
+	REGULAR_EXPRESSION_CASE_INSENSITIVE
 } from "./ComparisonStrategy"
 
 describe("Comparison Strategy Module", () => {
@@ -98,6 +100,22 @@ describe("Comparison Strategy Module", () => {
 		const invalidTerm = "uck quack"
 		expect(CONTAINS_ALL_WORDS(validTerm, context)).toBe(1)
 		expect(CONTAINS_ALL_WORDS(invalidTerm, context)).toBe(0)
+	})
+
+	it("Regular expression comparison works", () => {
+		const context = "Donald Quack Duck"
+		const validTerm = /Quack Duck$/
+		const invalidTerm = /Duck Quack/
+		expect(REGULAR_EXPRESSION(validTerm, context)).toBe(1)
+		expect(REGULAR_EXPRESSION(invalidTerm, context)).toBe(0)
+	})
+
+	it("Regular expression case insensitive comparison works", () => {
+		const context = "Donald Quack Duck"
+		const validTerm = /QUACK DUCK$/
+		const invalidTerm = /DUCK QUACK/
+		expect(REGULAR_EXPRESSION_CASE_INSENSITIVE(validTerm, context)).toBe(1)
+		expect(REGULAR_EXPRESSION_CASE_INSENSITIVE(invalidTerm, context)).toBe(0)
 	})
 
 	describe("Bitap comparison works", () => {

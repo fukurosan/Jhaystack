@@ -1,16 +1,16 @@
 [//]: <> (This is also a comment.)
-![logo-placeholder](_media/icon.svg)
+![logo](logo_small.svg)
 
 # Jhaystack
 
 > Finding a Needle in a JS-Stack.
 
-- Simple and lightweight.
+- Simple and lightweight with zero dependencies.
 - Modular and customizable.
 - Blazing fast.
 
 [GitHub](https://github.com/fukurosan/Jhaystack)
-[Get Started](#headline)
+[Get Started](#getting-started)
 
 <!-- background color -->
 
