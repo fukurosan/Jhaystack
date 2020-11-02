@@ -5,14 +5,14 @@
 - *TODO* Move search execution off the main thread
   
   
-### 0.0.39 TBR
+### 0.0.40 TBR
 
 - *TODO* Implement weighted paths
 - *TODO* Implement pattern filters
 - *TODO* Implement search meta data
   
   
-### 0.0.38
+### 0.0.39
 
 - Switched bundler from webpack to rollup
 - Added additional builds for different purposes
