@@ -1,5 +1,5 @@
-import { ObjectLiteral } from "../Utility/JsonUtility"
 import { getTweenedRelevance } from "../Utility/Mathematics"
+import { bitapGenerateBitMask, bitapGetTweenValue } from "./Common"
 
 //Fantastic Japanese wiki article on Bitap (shift-and, shift-or):
 //https://ja.m.wikipedia.org/wiki/Bitapアルゴリズム
@@ -12,23 +12,6 @@ import { getTweenedRelevance } from "../Utility/Mathematics"
 //This implementation does not include Navarro's changes.
 
 /**
- * Creates a bit mask of the context based on the position of characters found in the term.
- * @param {string} term - The term to be matched
- * @param {string} context - The context to search
- * @return {object} - A bit mask map where the keys are the characters in the term.
- */
-const generateBitMask = (term: string, context: string) => {
-	const characterMap: ObjectLiteral = {}
-	context.split("").forEach(contextCharacter => {
-		characterMap[contextCharacter] = 0
-	})
-	for (let i = 0; i < term.length; i++) {
-		characterMap[term.charAt(i)] = (characterMap[term.charAt(i)] || 0) | (1 << i)
-	}
-	return characterMap
-}
-
-/**
  * Finds first match of the term contained in the context that is within the given levenshtein distance.
  * @param {unknown} termIn - The term to be matched
  * @param {unknown} contextIn - The context to search
@@ -36,7 +19,7 @@ const generateBitMask = (term: string, context: string) => {
  * @param {boolean} isPositionRelevant - If true relevance will secondarily be based on term's absolute vicinity to index 0 in context
  * @return {number} - Resulting score. Score is primarily based on the levenshtein distance.
  */
-export default (termIn: unknown, contextIn: unknown, maxErrors = 2, isPositionRelevant = true): number => {
+export default (termIn: unknown, contextIn: unknown, maxErrors = 2, isPositionRelevant = true, isContextSizeRelevant = true): number => {
 	const term = `${termIn}`.toUpperCase()
 	const context = `${contextIn}`.toUpperCase()
 	const contextLength = context.length
@@ -45,7 +28,7 @@ export default (termIn: unknown, contextIn: unknown, maxErrors = 2, isPositionRe
 		return 0
 	}
 	const numberOfStates = maxErrors + 1 //+1 is the 0 state (no errors!)
-	const bitMask = generateBitMask(term, context)
+	const bitMask = bitapGenerateBitMask(term, context)
 	const finish = 1 << (termLength - 1)
 
 	if (maxErrors === 0) {
@@ -54,7 +37,10 @@ export default (termIn: unknown, contextIn: unknown, maxErrors = 2, isPositionRe
 		for (let i = 0; i < contextLength; i++) {
 			r = ((r << 1) | 1) & bitMask[context.charAt(i)]
 			if ((r & finish) === finish) {
-				return isPositionRelevant ? getTweenedRelevance(0, i - (termLength - 1)) : 1
+				if (!isPositionRelevant && !isContextSizeRelevant) {
+					return 1
+				}
+				return getTweenedRelevance(0, bitapGetTweenValue(termLength, contextLength, i, isPositionRelevant, isContextSizeRelevant))
 			}
 		}
 		return 0
@@ -80,15 +66,21 @@ export default (termIn: unknown, contextIn: unknown, maxErrors = 2, isPositionRe
 			if ((state[matchKDepth] & finish) !== finish) {
 				//Last cycle was the best match
 				matchKDepth++
-				return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
-			} else if (matchKDepth === 0 || i === context.length - 1) {
-				return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
+				return isPositionRelevant || isContextSizeRelevant
+					? getTweenedRelevance(matchKDepth, bitapGetTweenValue(termLength, contextLength, i, isPositionRelevant, isContextSizeRelevant))
+					: 1 / (matchKDepth + 1)
+			} else if (matchKDepth === 0 || i === contextLength - 1) {
+				return isPositionRelevant || isContextSizeRelevant
+					? getTweenedRelevance(matchKDepth, bitapGetTweenValue(termLength, contextLength, i, isPositionRelevant, isContextSizeRelevant))
+					: 1 / (matchKDepth + 1)
 			}
 		} else if ((state[maxErrors] & finish) === finish) {
 			matchKDepth = maxErrors
-			if (i === context.length - 1) {
+			if (i === contextLength - 1) {
 				//This is the end of the context, so there won't be a better match
-				return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
+				return isPositionRelevant || isContextSizeRelevant
+					? getTweenedRelevance(matchKDepth, bitapGetTweenValue(termLength, contextLength, i, isPositionRelevant, isContextSizeRelevant))
+					: 1 / (matchKDepth + 1)
 			}
 		}
 	}

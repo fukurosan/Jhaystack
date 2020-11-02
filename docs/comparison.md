@@ -67,7 +67,7 @@ Levenshtein distance is a way of describing the number of differences between tw
 
 This implementation will find the first best result inside of the context. This means that if there is a better match later on in the context this will be missed. If your use case requires a perfectly evaluated result then refer to `BITAP_FULL`.
 
-Relevance is primarily based on the levenshtein distance of the match, and secondarily on the match distance from context index 0.
+Relevance is primarily based on the levenshtein distance of the match, and secondarily on the size of the context as well as the match distance from context index 0.
 
 The following additional arguments can be passed to this function:
  - **maxErrors** 
@@ -75,7 +75,11 @@ The following additional arguments can be passed to this function:
   - **Type**: `Integer`
   - **Default**: `2`
  - **isPositionRelevant**
-  - **Description**: *Should the position in the context where the match was found be taken into account when calculating the relevance?*
+  - **Description**: *Should the position in the context where the match was found be taken into account when calculating the relevance? Usually a match is more relevant the closer to the beginning of the context that it is found.*
+  - **Type**: `Boolean`
+  - **Default**: `true`
+ - **isContextSizeRelevant**
+  - **Description**: *Should the size of the context where the match was found be taken into account when calculating the relevance? Usually a smaller context will mean a more relevant match. This could be names, titles, and so on.*
   - **Type**: `Boolean`
   - **Default**: `true`
 
@@ -87,7 +91,7 @@ The following additional arguments can be passed to this function:
 
 Determines the best possible match of the term inside of the context, within a given levenshtein distance. This implementation will find the best possible result inside of the context. This may be necessary in some scenarios, but be weary that it may have an impact on search performance with long values.
 
-Relevance is primarily based on the levenshtein distance of the match, and secondarily on the match distance from context index 0.
+Relevance is primarily based on the levenshtein distance of the match, and secondarily on the size of the context as well as the match distance from context index 0.
 
 The following additional arguments can be passed to this function:
  - **maxErrors** 
@@ -96,6 +100,10 @@ The following additional arguments can be passed to this function:
   - **Default**: `2`
  - **isPositionRelevant**
   - **Description**: *Should the position in the context where the match was found be taken into account when calculating the relevance?*
+  - **Type**: `Boolean`
+  - **Default**: `true`
+ - **isContextSizeRelevant**
+  - **Description**: *Should the size of the context where the match was found be taken into account when calculating the relevance? Usually a smaller context will mean a more relevant match. This could be names, titles, and so on.*
   - **Type**: `Boolean`
   - **Default**: `true`
 

@@ -168,9 +168,9 @@ describe("Comparison Strategy Module", () => {
 		})
 
 		it("Can ignore match position", () => {
-			expect(BITAP(error0Term, context, 1, false)).toBe(1)
-			expect(BITAP(error1Term, context, 1, false)).toBe(1 / 2)
-			expect(BITAP(error2Term, context, 2, false)).toBe(1 / 3)
+			expect(BITAP(error0Term, context, 1, false, false)).toBe(1)
+			expect(BITAP(error1Term, context, 1, false, false)).toBe(1 / 2)
+			expect(BITAP(error2Term, context, 2, false, false)).toBe(1 / 3)
 		})
 	})
 
@@ -231,9 +231,9 @@ describe("Comparison Strategy Module", () => {
 		})
 
 		it("Can ignore match position", () => {
-			expect(BITAP_FULL(error0Term, context, 1, false)).toBe(1)
-			expect(BITAP_FULL(error1Term, context, 1, false)).toBe(1 / 2)
-			expect(BITAP_FULL(error2Term, context, 2, false)).toBe(1 / 3)
+			expect(BITAP_FULL(error0Term, context, 1, false, false)).toBe(1)
+			expect(BITAP_FULL(error1Term, context, 1, false, false)).toBe(1 / 2)
+			expect(BITAP_FULL(error2Term, context, 2, false, false)).toBe(1 / 3)
 		})
 	})
 })

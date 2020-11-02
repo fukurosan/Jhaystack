@@ -23,8 +23,7 @@
 - Added new startsWith index strategy
 - Added new regular expression comparison strategy
 - Created better docs
-- *TODO* Clean up "any" types in the project code base
-- *TODO* Remove code duplication
-- *TODO* Better relevance from bitap (length of context)
+- Improved typings
+- Improve relevance score from bitap
 - *TODO* Add badges
 - *TODO* Create release
