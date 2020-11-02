@@ -1,7 +1,7 @@
 # Getting started
 
 ## What is Jhaystack?
-Jhaystack is a lightweight JavaScript JSON search engine.
+Jhaystack is a lightweight JavaScript search engine.
 
 ?> The word Jhaystack is a play of words with "JS-Stack", and was coined because it `helps you find a needle in a JS-Stack`.
 

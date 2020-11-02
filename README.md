@@ -1,12 +1,13 @@
 # Jhaystack
-A JavaScript JSON search engine with zero dependencies. Find a needle in a JS-Stack!
 
 <div align="center">
+  A JavaScript search engine with zero dependencies. Find a needle in a JS-Stack!
+  <br>
   Check out the <a target="_blank" href="https://fukurosan.github.io/Jhaystack/docs/index.html">Documentation</a> to learn more!
 </div>
 
 ## What is this?
-Jhaystack is a lightweight JavaScript JSON search engine.
+Jhaystack is a lightweight JavaScript search engine.
 
 The word Jhaystack is a play of words with "JS-Stack", and was coined because it `helps you find a needle in a JS-Stack`.
 
