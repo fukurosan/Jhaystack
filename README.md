@@ -25,3 +25,4 @@ Jhaystack allows you to search through not just values but also objects and arra
 - Fast searches
 - Simple to use
 - No dedicated search backend needed
+
