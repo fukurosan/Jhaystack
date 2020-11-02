@@ -1,3 +1,4 @@
+# Logs
 *.log
 npm-debug.log*
 
@@ -6,14 +7,24 @@ node_modules
 
 # npm package lock
 package-lock.json
-yarn.lock
 
 # project files
 .babelrc
+.editorconfig
+.eslintignore
+.eslintrc
 .gitignore
+.prettierignore
+.prettierrc
+jest.config.js
+rollup.config.js
+tsconfig.json
 
 # Sources
 src
 
 # Coverage
 coverage
+
+# Docs
+docs

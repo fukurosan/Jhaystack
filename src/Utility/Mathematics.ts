@@ -6,11 +6,11 @@
  * @return {number} - The combined score (0.0 - 1.0)
  */
 export const getRelativeRelevance = (length: number, point: number, secondaryValue: number): number => {
-    const increment = 1 / length
-    const startPosition = increment * (length - point)
-    const endPosition = startPosition + increment
-    const tween = (increment * secondaryValue) + startPosition
-    return tween === endPosition ? (tween - 0.00000001) : tween === startPosition ? (tween + 0.00000001) : tween
+	const increment = 1 / length
+	const startPosition = increment * (length - point)
+	const endPosition = startPosition + increment
+	const tween = increment * secondaryValue + startPosition
+	return tween === endPosition ? tween - 0.00000001 : tween === startPosition ? tween + 0.00000001 : tween
 }
 
 /**
@@ -20,10 +20,10 @@ export const getRelativeRelevance = (length: number, point: number, secondaryVal
  * @return {number} - Combined score (0.0 - 1.0)
  */
 export const getTweenedRelevance = (primaryScoreIn: number, secondaryScoreIn: number): number => {
-    let secondaryScore = secondaryScoreIn
-    secondaryScore < 0 && (secondaryScore = 0)
-    secondaryScore++
-    return getStackedRelevance(primaryScoreIn, 1 / secondaryScore)
+	let secondaryScore = secondaryScoreIn
+	secondaryScore < 0 && (secondaryScore = 0)
+	secondaryScore++
+	return getStackedRelevance(primaryScoreIn, 1 / secondaryScore)
 }
 
 /**
@@ -33,15 +33,19 @@ export const getTweenedRelevance = (primaryScoreIn: number, secondaryScoreIn: nu
  * @return {number} - Combined score (0.0 - 1.0)
  */
 export const getStackedRelevance = (primaryScoreIn: number, secondaryScoreIn: number): number => {
-    let primaryScore = primaryScoreIn
-    let secondaryScore = secondaryScoreIn
-    primaryScore < 0 && (primaryScore = 0)
-    secondaryScore < 0 && (secondaryScore = 0)
-    primaryScore++
-    const lowestPossibleScore = 1 / (primaryScore + 1)
-    const highestPossibleScore = 1 / primaryScore
-    const stackedRelevance = lowestPossibleScore + ((highestPossibleScore - lowestPossibleScore) * secondaryScore)
-    return stackedRelevance === highestPossibleScore ? stackedRelevance - 0.00000001 : stackedRelevance === lowestPossibleScore ? stackedRelevance + 0.00000001 : stackedRelevance
+	let primaryScore = primaryScoreIn
+	let secondaryScore = secondaryScoreIn
+	primaryScore < 0 && (primaryScore = 0)
+	secondaryScore < 0 && (secondaryScore = 0)
+	primaryScore++
+	const lowestPossibleScore = 1 / (primaryScore + 1)
+	const highestPossibleScore = 1 / primaryScore
+	const stackedRelevance = lowestPossibleScore + (highestPossibleScore - lowestPossibleScore) * secondaryScore
+	return stackedRelevance === highestPossibleScore
+		? stackedRelevance - 0.00000001
+		: stackedRelevance === lowestPossibleScore
+			? stackedRelevance + 0.00000001
+			: stackedRelevance
 }
 
 /**
@@ -50,22 +54,20 @@ export const getStackedRelevance = (primaryScoreIn: number, secondaryScoreIn: nu
  * @return {number} - Combined score (0.0 - 1.0)
  */
 export const getCombinedRelevanceScore = (scores: number[]): number => {
-    if (scores.length === 0) {
-        return 0
-    }
-    else if (scores.length === 1) {
-        if (scores[0] < 0) {
-            return 0
-        }
-        return 1 / (scores[0] + 1)
-    }
-    return scores.reverse().reduce((accumulatedScore: number, score: number, index: number): number => {
-        if (index === 0) {
-            accumulatedScore = 1 / (score + 1)
-        }
-        else {
-            accumulatedScore = getStackedRelevance(score, accumulatedScore)
-        }
-        return accumulatedScore
-    }, 0)
+	if (scores.length === 0) {
+		return 0
+	} else if (scores.length === 1) {
+		if (scores[0] < 0) {
+			return 0
+		}
+		return 1 / (scores[0] + 1)
+	}
+	return scores.reverse().reduce((accumulatedScore: number, score: number, index: number): number => {
+		if (index === 0) {
+			accumulatedScore = 1 / (score + 1)
+		} else {
+			accumulatedScore = getStackedRelevance(score, accumulatedScore)
+		}
+		return accumulatedScore
+	}, 0)
 }

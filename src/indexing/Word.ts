@@ -2,14 +2,14 @@ import Index from "../Model/Index"
 import Shard from "../Model/Shard"
 
 export default class WordIndex extends Index {
-    tag: string
+	tag: string
 
-    constructor(shards: Shard[]) {
-        super(shards)
-        this.tag = "WORD"
-    }
+	constructor(shards: Shard[]) {
+		super(shards)
+		this.tag = "WORD"
+	}
 
-    extractStringTokens(string: string) {
-        return string.toUpperCase().split(" ")
-    }
+	extractStringTokens(string: string) {
+		return string.toUpperCase().split(" ")
+	}
 }
