@@ -1,6 +1,6 @@
 {
   "name": "jhaystack",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "JavaScript search engine",
   "main": "dist/bundle.cjs.min.js",
   "module": "dist/bundle.esm.js",
@@ -22,9 +22,12 @@
     "url": "https://github.com/fukurosan/Jhaystack.git"
   },
   "keywords": [
-    "JSON",
+    "JavaScript",
     "search",
-    "engine"
+    "engine",
+    "search-engine",
+    "bitap",
+    "typescript"
   ],
   "author": "Henrik Olofsson",
   "license": "MIT",
