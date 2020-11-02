@@ -1,4 +1,3 @@
-[//]: <> (This is also a comment.)
 ![logo](logo_small.svg)
 
 # Jhaystack
