@@ -4,15 +4,15 @@
 
 #### Specifying Paths
 
-Jhaystack by default scans all values in the provided data set for matches. You can however instruct jhaystack to either only scan paths that match a given set of regular expressions, or scan everything *except* values that match a given set of regular expressions.
+Jhaystack by default scans all nested property values in the provided data set for matches. You can however instruct Jhaystack to either only scan paths that match a given set of regular expressions, or scan everything *except* values that match a given set of regular expressions.
 
 #### Comparison Strategy
 
-The comparison strategy governs how jhaystack determines if a value inside of the dataset is a match or not, as well as partly the relevance of the match. Comparison strategies could for example be "value x starts with search value y", or "value x contains search value y". You can provide multiple comparison strategies that have different relevance to you, or even write your own ones. Jhaystack comes with a bunch of built in strategies that should fit most needs, including fuzzy search.
+The comparison strategy governs how Jhaystack determines if a value inside of the dataset is a match or not, as well as partly the relevance of the match. Comparison strategies could for example be "value x starts with search value y", or "value x contains search value y". You can provide multiple comparison strategies that have different relevance to you, and even write your own ones. Jhaystack comes with a bunch of built in strategies that should fit most needs, including fuzzy search.
 
 #### Traversal Strategy
 
-The traversal strategy essentially governs what you are looking for, and what kind of results you want. For instance, you may in one scenario be looking for all values that match a given search term, while in another you may be interested in finding objects where at least one value match a given search term. Traversal strategies allow you to configure this.
+The traversal strategy describes what kind of results you are looking for, and how you want your dataset to be traversed. For instance, you may in one scenario be looking for all values that match a given search term, while in another you may be interested in finding objects where at least one value match a given search term. Traversal strategies allow you to configure this behaviour.
 
 #### Sorting Strategy
 
@@ -20,22 +20,22 @@ The sorting strategy lets you configure how the search results from a search sho
 
 #### Index Strategy
 
-Index strategies lets you to create search indexes that allow for offline searches. Offline searches are significantly faster than online searches, but allow for less configurability anf flexibility.
+Index strategies lets you to create search indexes that allow for offline searches. Offline searches are significantly faster than online searches, but allow for less configurability and flexibility.
 
 ---
 
 # Options
 
-Jhaystack’s constructor accepts an options object where you can specify your configuration settings. Below is a description of the different options. For more in depth information please check the configuration page. Note that you can also change these options using the built in functions on the Jhaystack instance after instantiation. This way you can change things after the fact that you’ve already created your instance. Note, though, that changing certain options can cause indexes to have to be rebuilt resulting in load times.
+Jhaystack’s constructor accepts an options object where you can specify your configuration settings. Below is a description of the different options. For more in depth information please check the corresponding pages.
 
-All options can be changed after jhaystack has been instantiated using functions on the jhaystack instance. The names of these functions are marked by "function" below.
+All options can be changed after Jhaystack has been instantiated using functions on the Jhaystack instance. The names of these functions are marked by "function" below. Note, though, that changing certain options can cause indexes to have to be rebuilt resulting in load times.
 
 > ## data
 - **Type**: `any[]`
 - **Default**: `[]`
 - **Function**: `setDataset`
 
-The data to be searched. Values can be of any type, or even mixed. Strings, objects, nested arrays and numbers. Whatever you may want to search. Note that when using the built in search functionality, though, the values will be converted to strings.
+The data to be searched. Values can be of any type, or even mixed. Strings, objects, nested arrays and numbers. Whatever you may want to search. Note that when using the built in comparison strategies, though, the values will be converted to strings.
 
 ```javascript
 const myData = [
@@ -52,7 +52,7 @@ const myData = [
 - **Default**: `[]`
 - **Function**: `setIncludedPaths`
 
-Array of regular expressions that evaluate valid value paths to be evaluated for matches. Not configuring this option means that all paths in the search data objects will be traversed and evaluated.
+Array of regular expressions that evaluate valid value paths to be evaluated for matches. Not configuring this option means that all paths in the provided data set objects will be traversed and evaluated.
 
 ```javascript
 const includedPaths = [
@@ -66,7 +66,6 @@ const includedPaths = [
 - **Function**: `setExcludedPaths`
 
 Array of regular expressions that evaluate invalid value paths that should not be evaluated for matches. This option always takes precedence over the included paths.
-Say for example that you configure included paths to scan everything that matches ".products.", but configure ".products.newProducts." to be excluded.
 
 ```javascript
 const excludedPaths = [
@@ -79,7 +78,7 @@ const excludedPaths = [
 - **Default**: `[ComparisonStrategy.BITAP]`
 - **Function**: `setComparisonStrategy`
 
-Array of comparison strategies to be used when evaluating if a value is a match or not.
+Array of comparison functions to be used when evaluating if a value is a match or not.
 
 ```javascript
 import { ComparisonStrategy } from "jhaystack"
@@ -104,7 +103,7 @@ const traversalStrategy = TraversalStrategy.FIND_NESTED_OBJECTS
 - **Default**: `[SortingStrategy.RELEVANCE.DESCENDING]`
 - **Function**: `setTraversalStrategy`
 
-Array of sorting functions that describe the order in which the results of a search should be sorted. Results will be ordered by the strategies provided from left to right.
+Array of sorting functions that describe the order in which the results of a search should be sorted. Results will be ordered by the functions provided from left to right.
 
 ```javascript
 import { SortingStrategy } from "jhaystack"

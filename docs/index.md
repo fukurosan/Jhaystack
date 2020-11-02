@@ -1,6 +1,6 @@
 # Index Strategy
 
-Jhaystack allows you to create indexes. This type of search is most often referred to as an offline search. An offline search is incredibly fast, but requires more memory in order to hold the index. Offline searches also usually work quite differently under the hood from how online searches work. Depending on your needs and setup this could be a great option for dealing with large datasets.
+Jhaystack allows you to create indexes. This type of search is often referred to as an offline search. An offline search is incredibly fast, but requires more memory in order to hold the index, as well as a larger initial executional load in order to create the index. Offline searches usually work quite differently under the hood from how online searches work. Depending on your needs and setup this could be a great option for dealing with large datasets.
 
 Index searching should be considered as an alternative to using traversal and comparison strategies (online searching). The two are not affected by each other in any way. This is simply because of how different the two approaches to searching is. 
 
@@ -26,11 +26,11 @@ const result = se.indexLookup("Can you call me Tommy?")
 //[{ path: ["phrase"], depth: 1, item: { phrase: "You can call me Timmy!" }, value: You can call me Timmy!", relevance: 0.75 }]
 ```
 
-Jhaystack currently comes with the following index strategies:
+Jhaystack currently comes with the following index types:
 
 > ## TRIGRAM
 
-An n-gram implementation where n=3. This index will perform fuzzy searches based on separating values into character sets of 3. Or, in other words, it’s your go to fuzzy search index.
+An n-gram implementation where n=3. This index will perform searches based on separating values into character sets of 3. Or, in other words, it’s your go to fuzzy search index.
 
 ---
 
@@ -42,7 +42,7 @@ Separates all words inside of values and compares them to words provided in a se
 
 > ## STARTS_WITH
 
-Creates an index of starts with matches (not case sensitive!).
+Creates an index of starts-with matches (not case sensitive!).
 
 ---
 

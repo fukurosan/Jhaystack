@@ -1,6 +1,6 @@
 # Sorting Strategy
 
-The sorting strategy defines how Jhaystack sorts the search result. If no strategy is provided you should consider the result items to be in random order. To configure the sorting you provide Jhaystack with an array of sorting strategies that will be evaluated in order of the array. In other words, first sort by A, then B, then C, and so on.
+The sorting strategy defines how Jhaystack sorts the search results. By default Jhaystack will order results by relevance. To configure the sorting strategy you provide Jhaystack with an array of sorting functions that will be evaluated in order of the array index. In other words, first sort by A, then B, then C, and so on.
 
 Example:
 ```javascript
@@ -43,7 +43,8 @@ RELEVANCE   |   Sorts by the relevance of the match.
 
 ?> Each built in sorting strategy can be executed in either ascending or descending order. This is done by adding ".ASCENDING" or ".DESCENDING" after the given strategy. See the example above.
 
-!> You can easily provide your own custom sorting function as well by specifying a valid javascript array sorting function.
+!> **Tip**  
+*You can easily provide your own custom sorting function as well by specifying a valid javascript array sorting function.*
 
 Example:
 ```javascript

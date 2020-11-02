@@ -5,9 +5,9 @@ Jhaystack is a lightweight JavaScript JSON search engine.
 
 ?> The word Jhaystack is a play of words with "JS-Stack", and was coined because it `helps you find a needle in a JS-Stack`.
 
-Jhaystack allows you to search through not just values but also objects and arrays, and fine tune your search in order to fit a variety of different use cases. Unlike most other search engines Jhaystack is not limited to evaluating strings, but can also be customized to evaluate other data types, like dates, numbers, or even regular expressions.
+Jhaystack allows you to search through not just values but also objects and arrays, and fine tune your search in order to fit a variety of different use cases. Jhaystack is not limited to only evaluating strings, but can also be customized to evaluate other data types like dates, numbers, or even regular expressions.
 
-## Why Jhaystack?
+## Why use Jhaystack?
 - Modular and customizable
 - Compatible with most runtime environments
 - Zero dependencies
@@ -30,7 +30,9 @@ Load using a script element:
 <script src="https://unpkg.com/jhaystack"></script>
 ```
 
-!> If you load the library bundle using a script element then a global variable called Jhaystack will be created. All examples in these docs use standard ES import statements, but in this case you can omit these and instead access the necessary parts of the library by using Jhaystack.X.
+!> **Tip**  
+*If you load the library bundle using a script element then a global variable called Jhaystack will be created. All examples in these docs use standard ES import statements, but in this case you can omit these and instead access the necessary parts of the library by using Jhaystack.X.*
+
 ```html
 <script>
 //No
@@ -41,7 +43,8 @@ Jhaystack.ComparisonStrategy
 </script>
 ```
 
-!> With the commonjs build you can also use require statements like so:
+!> **Tip**  
+*With the commonjs build you can also use require statements like so:*
 ```javascript
 const { Jhaystack, ComparisonStrategy } = require("jhaystack")
 ```
@@ -72,14 +75,21 @@ const results = se.search("tm")
 
 > ## Results
 
-The result of a search will be an array of objects. Each object has the item itself (.item) where a match was found, a path (.path) to where in the object the match was found, the actual value (.value) that was matched, a comparison score showing the score that the comparison function gave it (.comparisonScore), the index of the comparison function that gave the score (.comparisonIndex), and finally the relevance (.relevance) of the match.
+The result of a search will be an array of objects. Each search result object has the following properties:
+	
+- `item:` The item where the result was found
+- `path:` The path to the matched value inside of the item, expressed as an array of steps
+- `value:` The value that produced the match
+- `relevance:` The relevance of the match on a scale from 0-1
+- `comparisonScore:` The score from the value comparison function on a scale from 0-1
+- `comparisonIndex:` The index of the comparison function that found the match
 
 #### Relevance
 
-Relevance is a score of how relevant a matched result is. Jhaystack provides the relevance score in the form of a number between 0 and 1, 0 being a complete mismatch, and 1 being a perfect match.
+Relevance is a score of how relevant a matched result is believed to be. Jhaystack provides the relevance score in the form of a number between 0 and 1, 0 being a complete mismatch, and 1 being a perfect match.
 
-Relevance is based on multiple criteria, and should not be considered an absolute number. 0.5 does not mean that the match is half as relevant than 1, instead it simply means that the match is *less* relevant. Furthermore it is worth noting that, depending on how you have configured Jhaystack, a match from the same comparison strategy can in different scenarios result in a different relevance. This is simply because the order of comparison functions provided to Jhaystack matters when determining match relevance. 
+The relevance score should not be considered an absolute number. In other words, 0.5 does not mean that the match is half as relevant than 1 - instead it simply means that the match is *less* relevant.
 
-When relevance is calculated the order of comparison function will always takes precedence. Secondarily relevance will be based on the score of the comparison function. And thirdly, there may be parts of the comparison function that scores values differently depending on different criteria.
+When relevance is calculated the order of comparison function will always takes precedence. Secondarily relevance will be based on the score of the comparison function. And, thirdly, there may be parts of the comparison function that scores values differently based on different criteria and circumstances.
 
-To learn more about scary words like comparison strategy, keep reading. (Secret: it’s about as scary and a jar of marmalade, the sugary kind.)
+To learn more about scary words like comparison strategy, please check out the docs. (hint: its really not that scary!)

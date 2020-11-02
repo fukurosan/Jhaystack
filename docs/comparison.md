@@ -1,6 +1,6 @@
 # Comparison Strategy
 
-The comparison strategy defines how Jhaystack compares the search term with values to evaluate if it has found a match or not. You can configure Jhaystack to use different strategies depending on your needs by passing an array with the strategies that you want to use. The order of the provided strategies will help in determining the relevance of a match. A strategy with a lower index in the array will give a higher relevance.
+The comparison strategy defines how Jhaystack compares the search term with values to evaluate if it has found a match or not. You can configure Jhaystack to use different comparison functions depending on your needs. The order of the provided functions will help in determining the relevance of a match. A function with a lower index in the array will result in a higher relevance.
 
 Example:
 ```javascript
@@ -28,7 +28,8 @@ const result = se.search("ton")
 //[{ path: ["name"], item: { name: "tony" }, value: "tony", relevance: 0.99999999, comparisonScore: 1, comparisonIndex: 0 }, { path: ["name"], item: { name: "paddington" }, value: "paddington", relevance: 0.49999999, comparisonScore: 1, comparisonIndex: 1 }]
 ```
 
-!>Jhaystack comes with a bunch of built in strategies that you can use to fine tune your search. But you can also provide your own custom function. The function should return a number between 0 and 1 that determines the relevance of the match, 1 being a perfect match and 0 being no match at all.
+!> **Tip**  
+*Jhaystack comes with a bunch of built in comparison functions that you can use to fine tune your search. But you can also provide your own custom function. The function should return a number between 0 and 1 that determines the relevance of the match, 1 being a perfect match and 0 being no match at all.*
 
 A custom comparison function should take the following arguments:
 - **term** The value to be searched for.
@@ -42,7 +43,7 @@ const customStrategy = (term, context) => {
 ```
 Note that the data type of both the term and context could be anything.
 
-You can also nest the built in comparison functions in Jhaystack. This is useful if, for instance, you want to strategies to be of equal worth, or if you want to overwrite the default settings of the strategy. Joining strategies can often times have a positive impact on performance, since Jhaystack won't have to traverse through the dataset multiple times.
+You can also nest the built in comparison functions in Jhaystack. This is useful if, for instance, you want two comparison functions to be of equal worth, or if you want to overwrite the default settings of the built in function. Joining strategies can often times have a positive impact on performance, since Jhaystack won't have to traverse through the dataset multiple times.
 
 Example:
 ```javascript
@@ -54,7 +55,7 @@ const customStrategy = (term, context) => {
 
 ---
 
-Jhaystack currently comes with the following comparison strategies builtin:
+Jhaystack currently comes with the following comparison strategies built in:
 
 > ## BITAP (default)
 - **Case Sensitive**: `false`  
@@ -138,7 +139,7 @@ Determines if the context matches the regular expression pattern.
 
 This comparison strategy is only compatible with regular expression search values. What that means is that in order to use this strategy you need to pass a valid regular expression object to the search function, rather than a string, number or similar.
 
-This version of the strategy will convert the searched value to uppercase characters. Make sure that you take this into account when creating your regular expression
+This version of the strategy will convert the context to uppercase characters. Make sure that you take this into account when creating your regular expression
 
 Determines if the context matches the regular expression pattern.
 
@@ -196,7 +197,7 @@ Determines if the context contains the term.
 - **Case Sensitive**: `true`
 - **Scoring**: `Binary`  
 
-Determines if the term is exactly the context.
+Determines if the term equals the context.
 
 ---
 
@@ -204,4 +205,4 @@ Determines if the term is exactly the context.
 - **Case Sensitive**: `false`
 - **Scoring**: `Binary`  
 
-Determines if the term is exactly the context.
+Determines if the term equals the context.

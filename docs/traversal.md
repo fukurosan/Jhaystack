@@ -1,6 +1,6 @@
 # Traversal Strategy
 
-The traversal strategy defines how Jhaystack traverses the object tree while searching for value matches, as well as what makes it stop traversal, and what it returns as a result item.
+The traversal strategy defines how Jhaystack traverses the object tree while searching for value matches, as well as what makes it stop traversal, and what it returns as a search result item.
 
 Example:
 ```javascript
@@ -45,7 +45,7 @@ const data = {
 }
 ```
 
-If you executed a search for "jhaystack" you would get three results. One for id, one for name, and one for alias. This is useful if you're not necessarily interested in object composition, but rather just want to find anything that matches a given criteria.
+If you executed a search for "jhaystack" you would get three results. One for id, one for name, and one for alias. This is useful if you're not necessarily interested in object composition, but rather just want to find anything that matches the given criteria.
 
 ---
 
@@ -82,4 +82,4 @@ const data = { //match
     }
 }
 ```
-If you executed a search for "jhaystack" you would get two results, one for each object. And, again, jhaystack will always find the most relevant result on each nested object. This Useful if you're looking for objects that are part of other objects, but don't really care about the full object composition.
+If you executed a search for "jhaystack" you would get two results, one for each object. And, again, jhaystack will always find the most relevant result on each nested object. This is useful if you're looking for objects that are part of other objects, but don't really care about the full object composition.
