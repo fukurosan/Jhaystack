@@ -13,9 +13,16 @@ export default class Item {
 	/** All indexes used for offline searches of the item */
 	indexes: Index[]
 
-	constructor(original: any, includedPaths: (RegExp | string)[], excludedPaths: (RegExp | string)[], indexes: IIndex[]) {
+	constructor(
+		original: any,
+		includedPaths: (RegExp | string)[],
+		excludedPaths: (RegExp | string)[],
+		indexes: IIndex[]
+	) {
 		this.original = deepCopyObject(original)
-		this.shards = flattenObject(this.original).filter(shard => pathValidator(shard.path, includedPaths, excludedPaths))
+		this.shards = flattenObject(this.original).filter(shard =>
+			pathValidator(shard.path, includedPaths, excludedPaths)
+		)
 		this.indexes = indexes.map(IndexImplementation => new IndexImplementation(this.shards))
 	}
 

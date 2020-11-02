@@ -91,7 +91,9 @@ export const getLastNonNumericItemInArray = (array: (string | number)[]): string
  * @param {((a: any, b: any) => number)[]} sortFunctionArray - Array of functions to merge
  * @return {(a: any, b: any) => number} - Merged function
  */
-export const mergeArraySortFunctions = (sortFunctionArray: ((a: any, b: any) => number)[]): ((a: any, b: any) => number) => {
+export const mergeArraySortFunctions = (
+	sortFunctionArray: ((a: any, b: any) => number)[]
+): ((a: any, b: any) => number) => {
 	return (a: any, b: any) => {
 		const result = 0
 		for (let i = 0; i < sortFunctionArray.length; i++) {

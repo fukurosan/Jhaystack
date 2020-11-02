@@ -84,7 +84,9 @@ export default abstract class Index {
 		}
 
 		const matchRatio = bestMatch.score / termTokens.length
-		return matchRatio > 0.25 ? new IndexEvaluationResult(bestMatch.shard, matchRatio) : new IndexEvaluationResult(null, 0)
+		return matchRatio > 0.25
+			? new IndexEvaluationResult(bestMatch.shard, matchRatio)
+			: new IndexEvaluationResult(null, 0)
 	}
 
 	/**

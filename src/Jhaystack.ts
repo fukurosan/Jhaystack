@@ -26,7 +26,9 @@ export default class Jhaystack {
 	 * @param {(itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]} strategy - Traversal strategy to be used
 	 * @returns {Jhaystack} - this
 	 */
-	setTraversalStrategy(strategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]): Jhaystack {
+	setTraversalStrategy(
+		strategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
+	): Jhaystack {
 		this.engine.setTraversalStrategy(strategy)
 		return this
 	}

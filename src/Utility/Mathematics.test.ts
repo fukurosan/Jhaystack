@@ -1,4 +1,9 @@
-import { getRelativeRelevance, getStackedRelevance, getTweenedRelevance, getCombinedRelevanceScore } from "./Mathematics"
+import {
+	getRelativeRelevance,
+	getStackedRelevance,
+	getTweenedRelevance,
+	getCombinedRelevanceScore
+} from "./Mathematics"
 
 describe("Mathematics Utility Module", () => {
 	it("Correctly calculates relative relevance", () => {
