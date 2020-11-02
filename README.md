@@ -3,8 +3,10 @@
 <div align="center">
   <img src="https://img.shields.io/github/license/fukurosan/jhaystack" style="display:inline-block;">
   <img src="https://img.shields.io/npm/v/jhaystack?color=1" style="display:inline-block;">
+  <img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" style="display:inline-block;">
   <br />
   <img src="/docs/logo.png?raw=true" style="width:100px;">
+  <br />
   A JavaScript search engine with zero dependencies. Find a needle in a JS-Stack!
   <br>
   Check out the <a target="_blank" href="https://fukurosan.github.io/Jhaystack/docs/index.html">Documentation</a> to learn more!
