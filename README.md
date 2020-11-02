@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/npm/v/jhaystack?color=1" style="display:inline-block;">
   <img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" style="display:inline-block;">
   <br />
-  <img src="/docs/logo.png?raw=true" style="width:100px;">
+  <img src="https://fukurosan.github.io/Jhaystack/logo.png" style="width:100px;">
   <br />
   A JavaScript search engine with zero dependencies. Find a needle in a JS-Stack!
   <br>
