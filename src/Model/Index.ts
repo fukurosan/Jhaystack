@@ -50,9 +50,9 @@ export default abstract class Index {
 	/**
 	 * Evaluates a search value against the index.
 	 * Score is evaluated by building an index of the term, and then seeing if any shards match the same index keys within a certain range.
-	 * @param {any} term - The term that should be evaluated
+	 * @param {unknown} term - The term that should be evaluated
 	 */
-	evaluate(term: any): IndexEvaluationResult {
+	evaluate(term: unknown): IndexEvaluationResult {
 		const termTokens = this.extractStringTokens(`${term}`.toUpperCase())
 		const indexQueryResult = new Map()
 		for (let i = 0; i < termTokens.length; i++) {
@@ -84,9 +84,7 @@ export default abstract class Index {
 		}
 
 		const matchRatio = bestMatch.score / termTokens.length
-		return matchRatio > 0.25
-			? new IndexEvaluationResult(bestMatch.shard, matchRatio)
-			: new IndexEvaluationResult(null, 0)
+		return matchRatio > 0.25 ? new IndexEvaluationResult(bestMatch.shard, matchRatio) : new IndexEvaluationResult(null, 0)
 	}
 
 	/**

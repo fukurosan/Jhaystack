@@ -12,14 +12,14 @@ interface IComparisonMatch {
  * Finds all items in the given item array with matching shards. Always finds the best matching shard.
  * @param {Item[]} itemArray - Array of items to traverse
  * @param {any} searchValue - Value to search for
- * @param {((term: string, context: any) => number)[]} comparisonStrategy - Array of functions to use for value comparison
+ * @param {((term: unknown, context: unknown) => number)[]} comparisonStrategy - Array of functions to use for value comparison
  * @param {number} limit - Maximum number of matches
  * @return {SearchResult[]} - A list of search results
  */
 export default (
 	itemArrayIn: Item[],
 	searchValue: any,
-	comparisonStrategy: ((term: any, context: any) => number)[],
+	comparisonStrategy: ((term: unknown, context: unknown) => number)[],
 	limit?: null | number
 ): SearchResult[] => {
 	if (limit !== undefined && limit !== null && limit < 1) {

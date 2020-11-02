@@ -13,14 +13,14 @@ interface IComparisonMatch {
  * Calculates and finds all nested items in the given item array with matching shards. Always finds the best matching shard.
  * @param {Item[]} itemArray - Array of items to traverse
  * @param {any} searchValue - Value to search for
- * @param {((term: string, context: any) => number)[]} comparisonStrategy - Array of functions to use for value comparison
+ * @param {((term: unknown, context: unknown) => number)[]} comparisonStrategy - Array of functions to use for value comparison
  * @param {number} limit - Maximum number of matches
  * @return {SearchResult[]} - A list of search results
  */
 export default (
 	itemArray: Item[],
 	searchValue: any,
-	comparisonStrategy: ((term: any, context: any) => number)[],
+	comparisonStrategy: ((term: unknown, context: unknown) => number)[],
 	limit?: null | number
 ): SearchResult[] => {
 	if (limit !== undefined && limit !== null && limit < 1) {
@@ -50,10 +50,7 @@ export default (
 								}
 							}
 						}
-						shardNestedPathMap.set(
-							shard,
-							shard.path.slice(shard.path.length - path.length - (shard.path.length > 0 ? 1 : 0))
-						)
+						shardNestedPathMap.set(shard, shard.path.slice(shard.path.length - path.length - (shard.path.length > 0 ? 1 : 0)))
 						if (path.length > 0) {
 							path = path.slice(0, path.length - 1)
 						}

@@ -19,8 +19,8 @@ export default class StartsWithIndex extends Index {
 		return tokens
 	}
 
-	evaluate(term: any): IndexEvaluationResult {
-		const results = this.index[term.toUpperCase()]
+	evaluate(term: unknown): IndexEvaluationResult {
+		const results = this.index[`${term}`.toUpperCase()]
 		if (results) {
 			const resultShard = results.reduce((shortestShard: Shard, shard: Shard, index) => {
 				if (index === 0) {

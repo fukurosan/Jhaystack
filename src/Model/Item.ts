@@ -13,25 +13,18 @@ export default class Item {
 	/** All indexes used for offline searches of the item */
 	indexes: Index[]
 
-	constructor(
-		original: any,
-		includedPaths: (RegExp | string)[],
-		excludedPaths: (RegExp | string)[],
-		indexes: IIndex[]
-	) {
+	constructor(original: any, includedPaths: (RegExp | string)[], excludedPaths: (RegExp | string)[], indexes: IIndex[]) {
 		this.original = deepCopyObject(original)
-		this.shards = flattenObject(this.original).filter(shard =>
-			pathValidator(shard.path, includedPaths, excludedPaths)
-		)
+		this.shards = flattenObject(this.original).filter(shard => pathValidator(shard.path, includedPaths, excludedPaths))
 		this.indexes = indexes.map(IndexImplementation => new IndexImplementation(this.shards))
 	}
 
 	/**
 	 * Performs an offline search of the item for a given term. Always returns the best possible match.
-	 * @param {any} term - The term to be searched for
+	 * @param {unknown} term - The term to be searched for
 	 * @returns {SearchResult|null} - SearchResult or null if no result was found
 	 */
-	offlineSearch(term: any): SearchResult | null {
+	offlineSearch(term: unknown): SearchResult | null {
 		for (let i = 0; i < this.indexes.length; i++) {
 			const result = this.indexes[i].evaluate(term)
 			if (result.score && result.shard) {

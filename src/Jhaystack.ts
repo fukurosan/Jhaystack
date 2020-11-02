@@ -2,6 +2,7 @@ import Engine from "./Engine"
 import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
 import IOptions from "./Options"
+import { ITraversal } from "./Traversal/TraversalStrategy"
 
 export default class Jhaystack {
 	/** The internal engine object */
@@ -13,22 +14,20 @@ export default class Jhaystack {
 
 	/**
 	 * Sets the comparison strategy to be used.
-	 * @param {((term: string, context: any) => number)[]} strategy - Array of comparison functions to be used
+	 * @param {((term: unknown, context: unknown) => number)[]} strategy - Array of comparison functions to be used
 	 * @returns {Jhaystack} - this
 	 */
-	setComparisonStrategy(strategy: ((term: string, context: any) => number)[]): Jhaystack {
+	setComparisonStrategy(strategy: ((term: unknown, context: unknown) => number)[]): Jhaystack {
 		this.engine.setComparisonStrategy(strategy)
 		return this
 	}
 
 	/**
 	 * Sets the traversal strategy to be used.
-	 * @param {(itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]} strategy - Traversal strategy to be used
+	 * @param {ITraversal} strategy - Traversal strategy to be used
 	 * @returns {Jhaystack} - this
 	 */
-	setTraversalStrategy(
-		strategy: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
-	): Jhaystack {
+	setTraversalStrategy(strategy: ITraversal): Jhaystack {
 		this.engine.setTraversalStrategy(strategy)
 		return this
 	}
@@ -69,7 +68,7 @@ export default class Jhaystack {
 	/**
 	 * Sets the array of data to be searched.
 	 * Note that setting this can cause previously configured indexes and path configurations to have to be re-built.
-	 * @param {any[]} paths - Array of data to be searched.
+	 * @param {any[]} dataSet - Array of data to be searched.
 	 * @returns {Jhaystack} - this
 	 */
 	setDataset(dataSet: any[]): Jhaystack {

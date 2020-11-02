@@ -78,10 +78,7 @@ describe("End to end", () => {
 	})
 
 	it("Typical setup with a nested search result works", () => {
-		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.CONTAINS])
-			.setTraversalStrategy(TraversalStrategy.FIND_OBJECTS)
-			.setDataset(data)
+		const se = new Jhaystack().setComparisonStrategy([ComparisonStrategy.CONTAINS]).setTraversalStrategy(TraversalStrategy.FIND_OBJECTS).setDataset(data)
 		const result = se.search("Nested")
 		expect(result.length).toBe(1)
 		expect(result[0].item.id).toBe("1")

@@ -50,9 +50,9 @@
 		"object-curly-spacing": [2, "always", { "arraysInObjects": false }],
 		"lines-between-class-members": [2, "always", { "exceptAfterSingleLine": true }],
 
-		"@typescript-eslint/no-explicit-any": "off", //TODO:: Remove all references to "any" in the project
-		"@typescript-eslint/explicit-module-boundary-types": "off", //TODO:: Remove all references to "any" in the project
-		"@typescript-eslint/no-non-null-assertion": "off" //This has to be turned off for performance reasons in the traversal strategies
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"@typescript-eslint/no-non-null-assertion": "off"
 	},
 	"overrides": [
 		{

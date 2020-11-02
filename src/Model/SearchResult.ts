@@ -14,14 +14,7 @@ export default class SearchResult {
 	/** The index of the comparison function that found the match */
 	comparisonIndex: number
 
-	constructor(
-		item: ObjectLiteral,
-		path: (string | number)[],
-		value: any,
-		relevance: number,
-		comparisonScore: number,
-		comparisonIndex: number
-	) {
+	constructor(item: ObjectLiteral, path: (string | number)[], value: any, relevance: number, comparisonScore: number, comparisonIndex: number) {
 		this.item = item
 		this.path = path
 		this.value = value

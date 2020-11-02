@@ -1,5 +1,5 @@
 import { BITAP } from "./Comparison/ComparisonStrategy"
-import { FIND_VALUES } from "./Traversal/TraversalStrategy"
+import { FIND_VALUES, ITraversal } from "./Traversal/TraversalStrategy"
 import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 import SearchResult from "./Model/SearchResult"
@@ -9,15 +9,9 @@ import IOptions from "./Options"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
-	private comparisonStrategy: ((term: any, context: any) => number)[]
+	private comparisonStrategy: ((term: unknown, context: unknown) => number)[]
 	/** The traversal strategy to use */
-	private traversalStrategy: (
-		itemArray: any,
-		searchValue: any,
-		comparisonStrategy: ((term: any, context: any) => number)[],
-		limit?: null | number
-	) => SearchResult[]
-
+	private traversalStrategy: ITraversal
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
 	/** The processed dataset used for searching */
@@ -56,7 +50,7 @@ export default class SearchEngine {
 		}
 	}
 
-	setComparisonStrategy(strategy: ((term: any, context: any) => number)[]): void {
+	setComparisonStrategy(strategy: ((term: unknown, context: unknown) => number)[]): void {
 		if (!Array.isArray(strategy)) {
 			this.comparisonStrategy = [strategy]
 		} else {
@@ -64,14 +58,7 @@ export default class SearchEngine {
 		}
 	}
 
-	setTraversalStrategy(
-		strategy: (
-			itemArray: any,
-			searchValue: any,
-			comparisonStrategy: ((term: any, context: any) => number)[],
-			limit?: null | number
-		) => SearchResult[]
-	): void {
+	setTraversalStrategy(strategy: ITraversal): void {
 		this.traversalStrategy = strategy
 	}
 

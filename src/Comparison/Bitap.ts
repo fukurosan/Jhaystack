@@ -80,21 +80,15 @@ export default (termIn: unknown, contextIn: unknown, maxErrors = 2, isPositionRe
 			if ((state[matchKDepth] & finish) !== finish) {
 				//Last cycle was the best match
 				matchKDepth++
-				return isPositionRelevant
-					? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
-					: 1 / (matchKDepth + 1)
+				return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
 			} else if (matchKDepth === 0 || i === context.length - 1) {
-				return isPositionRelevant
-					? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
-					: 1 / (matchKDepth + 1)
+				return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
 			}
 		} else if ((state[maxErrors] & finish) === finish) {
 			matchKDepth = maxErrors
 			if (i === context.length - 1) {
 				//This is the end of the context, so there won't be a better match
-				return isPositionRelevant
-					? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth)
-					: 1 / (matchKDepth + 1)
+				return isPositionRelevant ? getTweenedRelevance(matchKDepth, i - (termLength - 1) - matchKDepth) : 1 / (matchKDepth + 1)
 			}
 		}
 	}
