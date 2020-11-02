@@ -19,8 +19,8 @@ interface IComparisonMatch {
 export default (
 	itemArray: Item[],
 	searchValue: any,
-	comparisonStrategy: ((term: string, context: any) => number)[],
-	limit?: number
+	comparisonStrategy: ((term: any, context: any) => number)[],
+	limit?: null | number
 ): SearchResult[] => {
 	if (limit !== undefined && limit !== null && limit < 1) {
 		return []

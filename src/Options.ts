@@ -5,7 +5,12 @@ export default interface IOptions {
 	/** Array containing the comparison functions to be used for evaluating matches */
 	comparison?: ((term: any, context: any) => number)[]
 	/** The traversal strategy to use */
-	traversal?: (itemArray: any, searchString: any, comparisonStrategy: any, limit: any) => any[]
+	traversal?: (
+		itemArray: any,
+		searchValue: any,
+		comparisonStrategy: ((term: any, context: any) => number)[],
+		limit?: null | number
+	) => SearchResult[]
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	sorting?: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Maximum number of matches before search ends */

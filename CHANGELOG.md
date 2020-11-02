@@ -22,7 +22,7 @@
 - Updated project to abide by new linting rules
 - Added new startsWith index strategy
 - Added new regular expression comparison strategy
-- *TODO* Create better docs
+- Created better docs
 - *TODO* Clean up "any" types in the project code base
 - *TODO* Remove code duplication
 - *TODO* Better relevance from bitap (length of context)

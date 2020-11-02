@@ -11,7 +11,13 @@ export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
 	private comparisonStrategy: ((term: any, context: any) => number)[]
 	/** The traversal strategy to use */
-	private traversalStrategy: (itemArray: any, searchValue: any, comparisonStrategy: any, limit: any) => any[]
+	private traversalStrategy: (
+		itemArray: any,
+		searchValue: any,
+		comparisonStrategy: ((term: any, context: any) => number)[],
+		limit?: null | number
+	) => SearchResult[]
+
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
 	/** The processed dataset used for searching */
@@ -58,7 +64,14 @@ export default class SearchEngine {
 		}
 	}
 
-	setTraversalStrategy(strategy: (itemArray: any, searchValue: any, comparisonStrategy: any, limit: any) => any[]): void {
+	setTraversalStrategy(
+		strategy: (
+			itemArray: any,
+			searchValue: any,
+			comparisonStrategy: ((term: any, context: any) => number)[],
+			limit?: null | number
+		) => SearchResult[]
+	): void {
 		this.traversalStrategy = strategy
 	}
 
