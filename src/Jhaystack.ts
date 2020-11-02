@@ -2,7 +2,8 @@ import Engine from "./Engine"
 import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
 import IOptions from "./Options"
-import { ITraversal } from "./Traversal/TraversalStrategy"
+import ITraversal from "./Traversal/ITraversal"
+import IComparison from "./Comparison/IComparison"
 
 export default class Jhaystack {
 	/** The internal engine object */
@@ -14,10 +15,10 @@ export default class Jhaystack {
 
 	/**
 	 * Sets the comparison strategy to be used.
-	 * @param {((term: unknown, context: unknown) => number)[]} strategy - Array of comparison functions to be used
+	 * @param {IComparison[]} strategy - Array of comparison functions to be used
 	 * @returns {Jhaystack} - this
 	 */
-	setComparisonStrategy(strategy: ((term: unknown, context: unknown) => number)[]): Jhaystack {
+	setComparisonStrategy(strategy: IComparison[]): Jhaystack {
 		this.engine.setComparisonStrategy(strategy)
 		return this
 	}

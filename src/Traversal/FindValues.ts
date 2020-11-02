@@ -2,6 +2,7 @@ import SearchResult from "../Model/SearchResult"
 import { getStackedRelevance } from "../Utility/Mathematics"
 import Item from "../Model/Item"
 import Shard from "../Model/Shard"
+import IComparison from "../Comparison/IComparison"
 
 interface IComparisonMatch {
 	shard: Shard | null
@@ -12,16 +13,11 @@ interface IComparisonMatch {
  * Finds all matching shards inside of a given item array.
  * @param {Item[]} itemArray - Array of items to traverse
  * @param {any} searchValue - Value to search for
- * @param {((term: unknown, context: unknown) => number)[]} comparisonStrategy - Array of functions to use for value comparison
+ * @param {IComparison[]} comparisonStrategy - Array of functions to use for value comparison
  * @param {number} limit - Maximum number of matches
  * @return {SearchResult[]} - A list of search results
  */
-export default (
-	itemArray: Item[],
-	searchValue: any,
-	comparisonStrategy: ((term: unknown, context: unknown) => number)[],
-	limit?: null | number
-): SearchResult[] => {
+export default (itemArray: Item[], searchValue: any, comparisonStrategy: IComparison[], limit?: null | number): SearchResult[] => {
 	if (limit !== undefined && limit !== null && limit < 1) {
 		return []
 	}

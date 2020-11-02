@@ -1,10 +1,11 @@
 import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
-import { ITraversal } from "./Traversal/TraversalStrategy"
+import ITraversal from "./Traversal/ITraversal"
+import IComparison from "./Comparison/IComparison"
 
 export default interface IOptions {
 	/** Array containing the comparison functions to be used for evaluating matches */
-	comparison?: ((term: unknown, context: unknown) => number)[]
+	comparison?: IComparison[]
 	/** The traversal strategy to use */
 	traversal?: ITraversal
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */

@@ -1,15 +1,17 @@
 import { BITAP } from "./Comparison/ComparisonStrategy"
-import { FIND_VALUES, ITraversal } from "./Traversal/TraversalStrategy"
+import { FIND_VALUES } from "./Traversal/TraversalStrategy"
 import { deepCopyObject, mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 import SearchResult from "./Model/SearchResult"
 import { IIndex } from "./Model/Index"
 import RELEVANCE from "./Sorting/Relevance"
 import IOptions from "./Options"
+import ITraversal from "./Traversal/ITraversal"
+import IComparison from "./Comparison/IComparison"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
-	private comparisonStrategy: ((term: unknown, context: unknown) => number)[]
+	private comparisonStrategy: IComparison[]
 	/** The traversal strategy to use */
 	private traversalStrategy: ITraversal
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
@@ -50,7 +52,7 @@ export default class SearchEngine {
 		}
 	}
 
-	setComparisonStrategy(strategy: ((term: unknown, context: unknown) => number)[]): void {
+	setComparisonStrategy(strategy: IComparison[]): void {
 		if (!Array.isArray(strategy)) {
 			this.comparisonStrategy = [strategy]
 		} else {
