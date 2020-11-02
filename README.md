@@ -8,7 +8,7 @@
   <br />
   A JavaScript search engine with zero dependencies. Find a needle in a JS-Stack!
   <br>
-  Check out the <a target="_blank" href="https://fukurosan.github.io/Jhaystack/docs/index.html">Documentation</a> to learn more!
+  Check out the <a target="_blank" href="https://fukurosan.github.io/Jhaystack/">Documentation</a> to learn more!
 </div>
 
 ## What is this?
