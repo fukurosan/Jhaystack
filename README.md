@@ -1,6 +1,8 @@
 # Jhaystack
 
 <div align="center">
+  <img src="https://img.shields.io/github/license/fukurosan/jhaystack" style="display:inline-block;">
+  <img src="https://img.shields.io/npm/v/jhaystack?color=1" style="display:inline-block;">
   A JavaScript search engine with zero dependencies. Find a needle in a JS-Stack!
   <br>
   Check out the <a target="_blank" href="https://fukurosan.github.io/Jhaystack/docs/index.html">Documentation</a> to learn more!

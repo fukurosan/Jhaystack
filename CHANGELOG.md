@@ -12,7 +12,8 @@
 - *TODO* Implement search meta data
   
   
-### 0.0.38 TBR
+### 0.0.38
+
 - Switched bundler from webpack to rollup
 - Added additional builds for different purposes
 - Added eslint to project
@@ -25,5 +26,3 @@
 - Created better docs
 - Improved typings
 - Improve relevance score from bitap
-- *TODO* Add badges
-- *TODO* Create release
