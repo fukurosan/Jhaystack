@@ -1,6 +1,5 @@
-# Jhaystack
-
 <div align="center">
+  <h1>Jhaystack</h1>
   <img src="https://img.shields.io/github/license/fukurosan/jhaystack" style="display:inline-block;">
   <img src="https://img.shields.io/npm/v/jhaystack?color=1" style="display:inline-block;">
   <img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" style="display:inline-block;">
