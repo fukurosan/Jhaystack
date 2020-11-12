@@ -21,17 +21,15 @@ import { getRelativeRelevance, sigmoidPositive } from "../Utility/Relevance"
 const generateBitMask = (term: string, context: string) => {
 	const characterMap: ObjectLiteral = {}
 	const seen: ObjectLiteral = {}
-	const termCharacters = term.split("")
 	const termLength = term.length
 	for (let i = 0; i < termLength; i++) {
-		const character = termCharacters[i]
+		const character = term.charAt(i)
 		seen[character] = 1
 		characterMap[character] = (characterMap[character] || 0) | (1 << i)
 	}
-	const contextCharacters = context.split("")
-	const characterLength = contextCharacters.length
+	const characterLength = context.length
 	for (let i = 0; i < characterLength; i++) {
-		const character = contextCharacters[i]
+		const character = context.charAt(i)
 		!seen[character] && (characterMap[character] = 0) && (seen[character] = 1)
 	}
 	return characterMap
