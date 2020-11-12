@@ -5,7 +5,7 @@
 - *TODO* Move search execution off the main thread
   
   
-### 0.0.40 TBR
+### 0.0.40
 
 - Added ability to add and remove individual items from search data set
 - Added value preprocessors
