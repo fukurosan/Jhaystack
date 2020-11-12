@@ -1,4 +1,5 @@
 import { Jhaystack, ComparisonStrategy, TraversalStrategy, SortingStrategy, IndexStrategy } from "./index"
+import SearchResult from "./Model/SearchResult"
 
 describe("End to end", () => {
 	const data = [
@@ -13,6 +14,14 @@ describe("End to end", () => {
 		{
 			firstName: "Elisa",
 			lastName: "Flamingo"
+		},
+		{
+			firstName: "Space Man",
+			lastName: "Dingo"
+		},
+		{
+			firstName: "Alfred",
+			lastName: "Amigo"
 		},
 		{
 			id: "1",
@@ -51,6 +60,18 @@ describe("End to end", () => {
 		expect(result[0].item.firstName).toBe("Arnold")
 		expect(result[0].path[0]).toBe("lastName")
 		expect(result[0].path.length).toBe(1)
+	})
+
+	it("Typical weighted setup works", () => {
+		const se = new Jhaystack()
+			.setComparisonStrategy([ComparisonStrategy.BITAP])
+			.setTraversalStrategy(TraversalStrategy.FIND_VALUES)
+			.setWeights([[path => /lastName/.test(path.join(".")), 0.7]])
+			.setDataset(data)
+		const result = se.search("min")
+		const higherValueWithoutWeights = result.find(item => item.value === "Flamingo")
+		const lowerValueWithoutWeights = result.find(item => item.value === "Benjamin")
+		expect((<SearchResult>higherValueWithoutWeights).relevance).toBeLessThan((<SearchResult>lowerValueWithoutWeights).relevance)
 	})
 
 	it("Typical setup with a limiter works", () => {
@@ -94,5 +115,31 @@ describe("End to end", () => {
 		expect(result[0]?.item.id).toBe("1")
 		expect(JSON.stringify(result[0]?.path)).toBe(JSON.stringify(["children", "0", "nested", "text"]))
 		expect(result[0]?.path.length).toBe(4)
+	})
+
+	it("Typical setup with filters works", () => {
+		const se = new Jhaystack()
+			.setComparisonStrategy([ComparisonStrategy.BITAP])
+			.setTraversalStrategy(TraversalStrategy.FIND_OBJECTS)
+			.setFilters([])
+			.setDataset(data)
+		let result = se.search("min")
+		expect(result.length).toBe(5)
+
+		se.setFilters([
+			(_, value) => {
+				return /Benjamin/.test(value)
+			}
+		])
+		result = se.search("min")
+		expect(result.length).toBe(1)
+
+		se.setFilters([path => !/lastName/.test(path.join("."))])
+		result = se.search("min")
+		expect(result.length).toBe(4)
+
+		se.setFilters([path => /lastName/.test(path.join(".")), (path, value) => !/Duck/.test(value)])
+		result = se.search("uck")
+		expect(result.length).toBe(1)
 	})
 })

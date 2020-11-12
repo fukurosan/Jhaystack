@@ -1,13 +1,19 @@
+import IComparisonResult from "../Model/IComparisonResult"
+
 /**
  * Checks if all term characters exists within the context in their given sequence. (not case sensitive!)
  * Score is secondarily based on the total space bewteen the characters.
- * @param {unknown} term - The term to be matched
- * @param {unknown} context - The context to searched
+ * @param {unknown} termIn - The term to be matched
+ * @param {unknown} contextIn - The context to searched
+ * @param {boolean} caseSensitive - Is the search case sensitive?
  * @return {number} - Resulting score
  */
-export default (termIn: unknown, contextIn: unknown): number => {
-	const term = `${termIn}`.toUpperCase().replace(/ /g, "")
-	const context = `${contextIn}`.toUpperCase().replace(/ /g, "")
+export default (termIn: unknown, contextIn: unknown, caseSensitive = true): IComparisonResult | number => {
+	if (typeof termIn !== "string" || typeof contextIn !== "string") {
+		return 0
+	}
+	const term = (caseSensitive ? termIn : termIn.toUpperCase()).replace(/ /g, "")
+	const context = (caseSensitive ? contextIn : contextIn.toUpperCase()).replace(/ /g, "")
 	const termLength = term.length
 	const contextLength = context.length
 	let distance = 0
@@ -28,5 +34,5 @@ export default (termIn: unknown, contextIn: unknown): number => {
 		}
 		return 0
 	}
-	return 1 / (distance + 1)
+	return { score: 1 / (distance + 1), totalDistance: distance }
 }

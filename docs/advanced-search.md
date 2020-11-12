@@ -12,8 +12,8 @@ Example:
 ```javascript
 import { ComparisonStrategy } from "jhaystack"
 const myCustomFunction = (term, context) => {
-    if(/ THOMAS /.test(`${context}`.toUpperCase())) {
-        return BITAP(term, context)
+    if(/ Thomas /.test(`${context}`)) {
+        return ComparisonStrategy.BITAP(term, context)
     }
     return 0
 }
@@ -29,8 +29,8 @@ Example:
 ```javascript
 import { ComparisonStrategy } from "jhaystack"
 const mySearchTerm = "James"
-myJhaystackInstance.setComparisonStrategy([ComparisonStrategy.REGULAR_EXPRESSION_CASE_INSENSITIVE])
-myJhaystackInstance.search(new RegExp(`^${mySearchTerm} Thomas `.toUpperCase()))
+myJhaystackInstance.setComparisonStrategy([ComparisonStrategy.REGULAR_EXPRESSION])
+myJhaystackInstance.search(new RegExp(`^${mySearchTerm} Thomas `))
 ```
 
 ---
@@ -68,4 +68,18 @@ const myCustomFunction = (term, context) => {
     return ComparisonStrategy.STARTS_WITH(term, context) || ComparisonStrategy.ENDS_WITH(term, context)
 }
 myJhaystackInstance.setComparisonStrategy([myCustomFunction])
+```
+
+#### Filtering data
+If you know that there are certain values or properties that do not need to be evaluated then specifying filters for this can help speed things up.
+
+Imagine for example if you have a lot of ID properties in your data that are essentially just UUIDs. Searching through these may not be relevant. And perhaps you are only interested in looking at string values, in which case filtering out all other values first can help greatly speed things up.
+
+```javascript
+import { ComparisonStrategy } from "jhaystack"
+const myFilters = [
+    (path, value) => !/ID$/.test(path.join(".")), //Don't look at values where the property ends with "ID"
+    (path, value) => return typeof value === "string" //Only search through string values
+]
+myJhaystackInstance.setFilters(myFilters)
 ```

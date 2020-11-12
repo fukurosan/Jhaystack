@@ -2,14 +2,18 @@
  * Checks if all words in the term exist within the context.
  * @param {unknown} term - The term to be matched
  * @param {unknown} context - The context to searched
+ * @param {boolean} caseSensitive - Is the search case sensitive?
  * @return {number} - Resulting score
  */
-export default (term: unknown, context: unknown): number => {
+export default (term: unknown, context: unknown, caseSensitive = true): number => {
+	if (typeof term !== "string" || typeof context !== "string") {
+		return 0
+	}
 	let found = 0
-	const termWords = `${term}`.toUpperCase().split(" ")
-	const contextWords = `${context}`.toUpperCase().split(" ")
+	const termWords = (caseSensitive ? term : term.toUpperCase()).split(" ")
+	const contextWords = new Set((caseSensitive ? context : context.toUpperCase()).split(" "))
 	termWords.forEach(termWord => {
-		if (contextWords.indexOf(termWord) > -1) {
+		if (contextWords.has(termWord)) {
 			found++
 		}
 	})

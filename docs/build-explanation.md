@@ -23,7 +23,8 @@ The bundle names follow the following pseudo pattern:
 | Legacy        |   Build compatible with older browsers (read: IE11). Marked with ".legacy" in the name.           |
 
 - If importing the library from unpkg the non-legacy minified umd version will be used by default.  
-- If installing the library through npm the non-legacy minified umd module will be used by default.
+- If installing the library through npm the non-legacy minified cjs version will be used by default.  
+- If installing the library through npm and running it through a bundler the non-legacy minified esm version will be used by default.  
 
 !> **Tip**  
 *If you are unfamiliar with what the different terms mean then below is a cheat sheet.*

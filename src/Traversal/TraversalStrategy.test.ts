@@ -27,7 +27,7 @@ describe("Traversal Strategy", () => {
 	]
 
 	const processedData = data.map(object => {
-		return new Item(object, [], [], [])
+		return new Item(object, 0, [], [], [], [])
 	})
 
 	const repetitionData = [
@@ -45,7 +45,7 @@ describe("Traversal Strategy", () => {
 			name: "Jimmy Ham"
 		}
 	].map(object => {
-		return new Item(object, [], [], [])
+		return new Item(object, 0, [], [], [], [])
 	})
 
 	const mixedDataTypes = [
@@ -55,7 +55,7 @@ describe("Traversal Strategy", () => {
 		"Jimmy Oven",
 		["Jimmy Ham"]
 	].map(object => {
-		return new Item(object, [], [], [])
+		return new Item(object, 0, [], [], [], [])
 	})
 
 	describe("Find Values", () => {
@@ -135,7 +135,7 @@ describe("Traversal Strategy", () => {
 					}
 				}
 			].map(object => {
-				return new Item(object, [], [], [])
+				return new Item(object, 0, [], [], [], [])
 			})
 			const comparisonStrategies = [STARTS_WITH]
 			const searchString = "Nested"

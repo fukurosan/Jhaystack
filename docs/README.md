@@ -78,11 +78,15 @@ const results = se.search("tm")
 The result of a search will be an array of objects. Each search result object has the following properties:
 	
 - `item:` The item where the result was found
+- `itemIndex:` The index of the item in the original array
 - `path:` The path to the matched value inside of the item, expressed as an array of steps
 - `value:` The value that produced the match
 - `relevance:` The relevance of the match on a scale from 0-1
 - `comparisonScore:` The score from the value comparison function on a scale from 0-1
 - `comparisonIndex:` The index of the comparison function that found the match
+- `weight:` The weight of the matched value
+- `normalizedWeight:` The normalized weight of the matched value
+- `metaData` Metadata about the result. Content varies depending on comparison functions used
 
 #### Relevance
 
@@ -92,4 +96,4 @@ The relevance score should not be considered an absolute number. In other words,
 
 When relevance is calculated the order of comparison function will always takes precedence. Secondarily relevance will be based on the score of the comparison function. And, thirdly, there may be parts of the comparison function that scores values differently based on different criteria and circumstances.
 
-To learn more about scary words like comparison strategy, please check out the docs. (hint: its really not that scary!)
+To learn more about scary words like comparison function, please check out the docs. (hint: its really not that scary!)

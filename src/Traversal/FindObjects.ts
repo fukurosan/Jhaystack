@@ -1,12 +1,15 @@
 import SearchResult from "../Model/SearchResult"
-import { getStackedRelevance } from "../Utility/Mathematics"
+import { getRelativeRelevance } from "../Utility/Relevance"
 import Item from "../Model/Item"
 import Shard from "../Model/Shard"
-import IComparison from "../Comparison/IComparison"
+import IComparison from "../Model/IComparison"
+import IComparisonResult from "../Model/IComparisonResult"
 
 interface IComparisonMatch {
 	shard: Shard | null
 	comparisonScore: number
+	weightedComparisonScore: number
+	metaData?: IComparisonResult
 }
 
 /**
@@ -31,26 +34,36 @@ export default (itemArrayIn: Item[], searchValue: any, comparisonStrategy: IComp
 			const item = itemArray[itemIndex]
 			const foundShard = item.shards.reduce(
 				(bestMatch: IComparisonMatch, shard) => {
-					const comparisonScore = comparisonFunction(searchValue, shard.value)
-					if (comparisonScore > bestMatch.comparisonScore) {
+					const comparisonResult = comparisonFunction(searchValue, shard.value)
+					const comparisonScore =
+						typeof comparisonResult === "number" && isFinite(comparisonResult) ? comparisonResult : (<IComparisonResult>comparisonResult).score
+					const weightedComparisonScore = comparisonScore * shard.normalizedWeight
+					if (weightedComparisonScore > bestMatch.weightedComparisonScore) {
 						return {
 							shard,
-							comparisonScore
+							comparisonScore,
+							weightedComparisonScore,
+							metaData: typeof comparisonResult === "object" ? comparisonResult : undefined
 						}
 					}
 					return bestMatch
 				},
-				{ comparisonScore: 0, shard: null }
+				{ comparisonScore: 0, weightedComparisonScore: 0, shard: null }
 			)
 			if (foundShard.comparisonScore) {
+				const foundItem = itemArray.splice(itemIndex, 1)[0]
 				matches[strategyIndex].push(
 					new SearchResult(
-						itemArray.splice(itemIndex, 1)[0].original,
+						foundItem.original,
+						foundItem.originalIndex,
 						foundShard.shard!.path,
-						foundShard.shard!.value,
-						getStackedRelevance(strategyIndex, foundShard.comparisonScore),
+						foundShard.shard!.originalValue,
+						getRelativeRelevance(comparisonStrategy.length, strategyIndex + 1, foundShard.weightedComparisonScore),
 						foundShard.comparisonScore,
-						strategyIndex
+						strategyIndex,
+						foundShard.shard!.weight,
+						foundShard.shard!.normalizedWeight,
+						foundShard.metaData
 					)
 				)
 				numberOfFound++

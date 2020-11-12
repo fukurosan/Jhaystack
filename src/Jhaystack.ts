@@ -1,9 +1,12 @@
 import Engine from "./Engine"
 import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
-import IOptions from "./Options"
-import ITraversal from "./Traversal/ITraversal"
-import IComparison from "./Comparison/IComparison"
+import IOptions from "./Model/IOptions"
+import ITraversal from "./Model/ITraversal"
+import IComparison from "./Model/IComparison"
+import IFilter from "./Model/IFilter"
+import IWeight from "./Model/IWeight"
+import IPreProcessor from "./Model/IPreProcessor"
 
 export default class Jhaystack {
 	/** The internal engine object */
@@ -45,30 +48,28 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the paths that should NOT be traversed.
-	 * Excluded paths always take precedence over included paths.
-	 * @param {(RegExp|string)[]} paths - Array of regular expressions (strings or RegExp objects) to be evaluated on the path strings.
+	 * Sets the preprocessor functions used for preprocessing the provided search data.
+	 * @param {IPreProcessor[]} preProcessors - The array of preprocessor functions
 	 * @returns {Jhaystack} - this
 	 */
-	setExcludedPaths(paths: (RegExp | string)[]): Jhaystack {
-		this.engine.setExcludedPaths(paths)
+	setPreProcessingStrategy(preProcessors: IPreProcessor[]): Jhaystack {
+		this.engine.setPreProcessingStrategy(preProcessors)
 		return this
 	}
 
 	/**
-	 * Sets the paths that SHOULD be traversed.
-	 * Excluded paths always take precedence over included paths.
-	 * @param {(RegExp|string)[]} paths - Array of regular expressions (strings or RegExp objects) to be evaluated on the path strings.
+	 * Sets the filters to be applied to the search data before traversal.
+	 * @param {IFilter[]} filters - Array of filters to be evaluated on the object property paths and values.
 	 * @returns {Jhaystack} - this
 	 */
-	setIncludedPaths(paths: (RegExp | string)[]): Jhaystack {
-		this.engine.setIncludedPaths(paths)
+	setFilters(filters: IFilter[]): Jhaystack {
+		this.engine.setFilters(filters)
 		return this
 	}
 
 	/**
 	 * Sets the array of data to be searched.
-	 * Note that setting this can cause previously configured indexes and path configurations to have to be re-built.
+	 * Note that setting this can cause previously configured indices and path configurations to have to be re-built.
 	 * @param {any[]} dataSet - Array of data to be searched.
 	 * @returns {Jhaystack} - this
 	 */
@@ -78,8 +79,28 @@ export default class Jhaystack {
 	}
 
 	/**
+	 * Adds an item to the search data.
+	 * @param {any} item - item to be added.
+	 * @returns {Jhaystack} - this
+	 */
+	addItem(item: any): Jhaystack {
+		this.engine.addItem(item)
+		return this
+	}
+
+	/**
+	 * Removes an item to the search data.
+	 * @param {any} item - item to be removed.
+	 * @returns {Jhaystack} - this
+	 */
+	removeItem(item: any): Jhaystack {
+		this.engine.removeItem(item)
+		return this
+	}
+
+	/**
 	 * Sets the index strategy to be used.
-	 * @param {IIndex[]} strategy - Array of indexes to be used
+	 * @param {IIndex[]} strategy - Array of indices to be used
 	 * @returns {Jhaystack} - this
 	 */
 	setIndexStrategy(strategy: IIndex[]): Jhaystack {
@@ -94,6 +115,26 @@ export default class Jhaystack {
 	 */
 	setLimit(limit: number): Jhaystack {
 		this.engine.setLimit(limit)
+		return this
+	}
+
+	/**
+	 * Sets relevance weights for given patterns. Data is provided in the form of an array of arrays. Each inner array contains the evaluation function at index 0, and the weight value at index 1 (> 0, < infinity, default 1). Weight is determined by the first function in the array that matches. Default weight is 1.
+	 * @param {IWeight[]} weights - The array of weights
+	 * @returns {Jhaystack} - this
+	 */
+	setWeights(weights: IWeight[]): Jhaystack {
+		this.engine.setWeights(weights)
+		return this
+	}
+
+	/**
+	 * Should preprocessors be applied to the search term as well?
+	 * @param {boolean} shouldApply - The boolean specifying if the preprocessors should be applied or not
+	 * @returns {Jhaystack} - this
+	 */
+	setApplyPreProcessorsToTerm(shouldApply: boolean): Jhaystack {
+		this.engine.setApplyPreProcessorsToTerm(shouldApply)
 		return this
 	}
 

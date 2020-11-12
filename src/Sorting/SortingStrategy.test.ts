@@ -6,12 +6,12 @@ describe("Sorting Strategy", () => {
 
 	beforeEach(() => {
 		items = [
-			new SearchResult({}, ["1", "2", "3", "4", "5", "Attr 2"], "Value 1", 1, 1, 0),
-			new SearchResult({}, ["1", "2", "3", "4", "Attr 1"], "Value 2", 0.8, 0.8, 0),
-			new SearchResult({}, ["1", "2", "3", "Attr 6"], "Value 3", 0.7, 0.7, 0),
-			new SearchResult({}, ["1", "2", "Attr 5"], "Value 4", 0.6, 0.6, 0),
-			new SearchResult({}, ["1", "Attr 4"], "Value 5", 0.5, 0.5, 1),
-			new SearchResult({}, ["Attr 3"], "Value 6", 0.4, 0.4, 1)
+			new SearchResult({}, 0, ["1", "2", "3", "4", "5", "Attr 2"], "Value 1", 1, 1, 0, 1, 1),
+			new SearchResult({}, 0, ["1", "2", "3", "4", "Attr 1"], "Value 2", 0.8, 0.8, 0, 1, 1),
+			new SearchResult({}, 0, ["1", "2", "3", "Attr 6"], "Value 3", 0.7, 0.7, 0, 1, 1),
+			new SearchResult({}, 0, ["1", "2", "Attr 5"], "Value 4", 0.6, 0.6, 0, 1, 1),
+			new SearchResult({}, 0, ["1", "Attr 4"], "Value 5", 0.5, 0.5, 1, 1, 1),
+			new SearchResult({}, 0, ["Attr 3"], "Value 6", 0.4, 0.4, 1, 1, 1)
 		]
 	})
 

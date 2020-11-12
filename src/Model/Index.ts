@@ -52,9 +52,9 @@ export default abstract class Index {
 	 * Score is evaluated by building an index of the term, and then seeing if any shards match the same index keys within a certain range.
 	 * @param {unknown} term - The term that should be evaluated
 	 */
-	evaluate(term: unknown): IndexEvaluationResult {
+	evaluate(term: unknown): IndexEvaluationResult[] {
 		const termTokens = this.extractStringTokens(`${term}`.toUpperCase())
-		const indexQueryResult = new Map()
+		const indexQueryResult = new Map<Shard, number>()
 		for (let i = 0; i < termTokens.length; i++) {
 			const shardArray = this.index[termTokens[i]]
 			if (shardArray) {
@@ -63,28 +63,17 @@ export default abstract class Index {
 					if (!indexQueryResult.has(shard)) {
 						indexQueryResult.set(shard, 1)
 					} else {
-						indexQueryResult.set(shard, indexQueryResult.get(shard) + 1)
+						indexQueryResult.set(shard, indexQueryResult.get(shard)! + 1)
 					}
 				}
 			}
 		}
-
-		const bestMatch = [...indexQueryResult.keys()].reduce((acc: IndexEvaluationResult, key) => {
-			if (indexQueryResult.get(key) > acc.score) {
-				return new IndexEvaluationResult(key, indexQueryResult.get(key)) //This is not really a result, but the data structure is identical
-			} else {
-				return acc
-			}
-		}, new IndexEvaluationResult(null, 0))
-
-		if (bestMatch.score === 0) {
-			return new IndexEvaluationResult(null, 0)
-		} else if (bestMatch.score === termTokens.length) {
-			return new IndexEvaluationResult(bestMatch.shard, 1)
-		}
-
-		const matchRatio = bestMatch.score / termTokens.length
-		return matchRatio > 0.25 ? new IndexEvaluationResult(bestMatch.shard, matchRatio) : new IndexEvaluationResult(null, 0)
+		const result: IndexEvaluationResult[] = []
+		Array.from(indexQueryResult.keys()).forEach(key => {
+			const matchRatio = indexQueryResult.get(key)! / termTokens.length
+			matchRatio > 0.25 && result.push(new IndexEvaluationResult(key, matchRatio))
+		})
+		return result
 	}
 
 	/**

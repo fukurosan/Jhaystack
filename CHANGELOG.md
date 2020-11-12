@@ -1,15 +1,20 @@
 # Changelog
   
-### 0.1.0 (TBR)
+### 0.1.0 TBR
 
 - *TODO* Move search execution off the main thread
   
   
 ### 0.0.40 TBR
 
-- *TODO* Implement weighted paths
-- *TODO* Implement pattern filters
-- *TODO* Implement search meta data
+- Added ability to add and remove individual items from search data set
+- Added value preprocessors
+- Implemented improved relevance scoring strategy
+- Implemented pattern filters
+- Implemented weighted search
+- Implemented search meta data
+- Simplified comparison functions
+- Added index of the result item in the original array to search result object
   
   
 ### 0.0.39
@@ -18,11 +23,10 @@
 - Added additional builds for different purposes
 - Added eslint to project
 - Added prettier to project
-- Added added editorconfig file
-- Updated babel config (effectively changing backwards compatibility on main build)
-- Updated project to abide by new linting rules
+- Added editorconfig file
+- Updated babel config
 - Added new startsWith index strategy
 - Added new regular expression comparison strategy
 - Created better docs
 - Improved typings
-- Improve relevance score from bitap
+- Improved relevance score from bitap

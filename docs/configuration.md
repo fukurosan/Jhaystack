@@ -2,17 +2,21 @@
 
 ?> Jhaystack allows you configure how you want your search to be executed. For more in depth information about each of the below mentioned options, check out the individual pages.
 
-#### Specifying Paths
+#### Specifying Filters
 
-Jhaystack by default scans all nested property values in the provided data set for matches. You can however instruct Jhaystack to either only scan paths that match a given set of regular expressions, or scan everything *except* values that match a given set of regular expressions.
+Jhaystack by default scans all nested property values in the provided data set for matches. You can however instruct Jhaystack to either only scan paths or values that match a given set of filter functions, or scan everything *except* values that match a given set of filter functions. Furthermore, filters are applied to the data right away, meaning that the actual search traversal will be faster since there will be less data to traverse.
 
 #### Comparison Strategy
 
-The comparison strategy governs how Jhaystack determines if a value inside of the dataset is a match or not, as well as partly the relevance of the match. Comparison strategies could for example be "value x starts with search value y", or "value x contains search value y". You can provide multiple comparison strategies that have different relevance to you, and even write your own ones. Jhaystack comes with a bunch of built in strategies that should fit most needs, including fuzzy search.
+The comparison strategy governs how Jhaystack determines if a value inside of the dataset is a match or not, as well as partly the relevance of the match. A comparison strategy consists of comparison functions, which could for example be "value x starts with search value y", or "value x contains search value y". You can provide multiple comparison functions that have different relevance to you, and even write your own ones. Jhaystack comes with a bunch of built in ones that should fit most needs, including fuzzy search.
 
 #### Traversal Strategy
 
 The traversal strategy describes what kind of results you are looking for, and how you want your dataset to be traversed. For instance, you may in one scenario be looking for all values that match a given search term, while in another you may be interested in finding objects where at least one value match a given search term. Traversal strategies allow you to configure this behaviour.
+
+#### Preprocessing Strategy
+
+The preprocessing strategy describes how the values in the search data should be preprocessed before a search is executed. This can for example be that all strings should be made uppercase, or that date objects should be reformatted into strings of a given format. 
 
 #### Sorting Strategy
 
@@ -20,7 +24,7 @@ The sorting strategy lets you configure how the search results from a search sho
 
 #### Index Strategy
 
-Index strategies lets you to create search indexes that allow for offline searches. Offline searches are significantly faster than online searches, but allow for less configurability and flexibility.
+Index strategies lets you to create search indices that allow for offline searches. Offline searches are significantly faster than online searches, but allow for less configurability and flexibility.
 
 ---
 
@@ -28,14 +32,14 @@ Index strategies lets you to create search indexes that allow for offline search
 
 Jhaystack’s constructor accepts an options object where you can specify your configuration settings. Below is a description of the different options. For more in depth information please check the corresponding pages.
 
-All options can be changed after Jhaystack has been instantiated using functions on the Jhaystack instance. The names of these functions are marked by "function" below. Note, though, that changing certain options can cause indexes to have to be rebuilt resulting in load times.
+All options can be changed after Jhaystack has been instantiated using functions on the Jhaystack instance. The names of these functions are marked by "function" below. Note, though, that changing certain options can cause indices to have to be rebuilt resulting in load times.
 
 > ## data
 - **Type**: `any[]`
 - **Default**: `[]`
 - **Function**: `setDataset`
 
-The data to be searched. Values can be of any type, or even mixed. Strings, objects, nested arrays and numbers. Whatever you may want to search. Note that when using the built in comparison strategies, though, the values will be converted to strings.
+The data to be searched. Values can be of any type, or even mixed. strings, objects, dates, nested arrays and so on.
 
 ```javascript
 const myData = [
@@ -47,30 +51,52 @@ const myData = [
 ]
 ```
 
-> ## includedPaths
-- **Type**: `(RegExp|String)[]`
+> ## filters
+- **Type**: `((path: string[], value: unknown): boolean)[]`
 - **Default**: `[]`
-- **Function**: `setIncludedPaths`
+- **Function**: `setFilters`
 
-Array of regular expressions that evaluate valid value paths to be evaluated for matches. Not configuring this option means that all paths in the provided data set objects will be traversed and evaluated.
+Array of filter functions that evaluate valid path/value combinations. Not configuring this option means that all paths and values in the provided data set objects will be traversed and evaluated.
 
 ```javascript
-const includedPaths = [
-    /\.products\./ //Only look for data that is nested inside of a property called products
+const filters = [
+    (path, value) => typeof value === "string" //Only evaluate string values in the dataset
 ]
 ```
 
-> ## excludedPaths
-- **Type**: `(RegExp|String)[]`
+> ## weights
+- **Type**: `[RegExp | string, number][]`
 - **Default**: `[]`
-- **Function**: `setExcludedPaths`
+- **Function**: `setWeights`
 
-Array of regular expressions that evaluate invalid value paths that should not be evaluated for matches. This option always takes precedence over the included paths.
+Sets scoring weights for given regexp path patterns. Data is provided in the form of an array of arrays, where each inner array has a first object that is the pattern, and a second object that is a weight that determines the importance of the matched property. The weight must be a positive number. Default weight is 1.
 
 ```javascript
-const excludedPaths = [
-    /\.products\.newProducts\./ //Do not include data nested inside of a property called newProducts that is a direct child of a property called products
+const weights = [
+    [[/\.products\.newProducts\./, 2]] //Make newProducts found under products extra important
 ]
+```
+
+> ## preProcessing
+- **Type**: `Function[]`
+- **Default**: `[PreProcessorStrategy.TO_STRING, PreProcessorStrategy.TO_UPPER_CASE]`
+- **Function**: `setPreProcessorStrategy`
+
+Array of preprocessor functions that should be applied to the search data.
+
+```javascript
+const preProcessing = [PreProcessorStrategy.TO_STRING, PreProcessorStrategy.TO_UPPER_CASE]
+```
+
+> ## applyPreProcessorsToTerm
+- **Type**: `boolean`
+- **Default**: `true`
+- **Function**: `setApplyPreProcessorsToTerm`
+
+Configure if pre processors should be applied to the provided search term before search execution
+
+```javascript
+const applyPreProcessorsToTerm = true
 ```
 
 > ## comparison

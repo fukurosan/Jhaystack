@@ -29,7 +29,7 @@ const result = se.search("ton")
 ```
 
 !> **Tip**  
-*Jhaystack comes with a bunch of built in comparison functions that you can use to fine tune your search. But you can also provide your own custom function. The function should return a number between 0 and 1 that determines the relevance of the match, 1 being a perfect match and 0 being no match at all.*
+*Jhaystack comes with a bunch of built in comparison functions that you can use to fine tune your search. But you can also provide your own custom function. The function should either return a number between 0 and 1 that determines the relevance of the match, 1 being a perfect match and 0 being no match at all, or an object with a mandatory property called score that should contain the aforementioned number. Any additional information stored in the object will be made available inside of the search result metadata object.*
 
 A custom comparison function should take the following arguments:
 - **term** The value to be searched for.
@@ -38,7 +38,10 @@ A custom comparison function should take the following arguments:
 Example:
 ```javascript
 const customStrategy = (term, context) => {
-    return `${term}` === `${context}`
+    return `${term}` === `${context}` ? 1 : 0
+}
+const customStrategyWithMetaData = (term, context) => {
+    return `${term}` === `${context}` ? { score: 1 } : { score: 0 }
 }
 ```
 Note that the data type of both the term and context could be anything.
@@ -58,42 +61,25 @@ const customStrategy = (term, context) => {
 Jhaystack currently comes with the following comparison strategies built in:
 
 > ## BITAP (default)
-- **Case Sensitive**: `false`  
 - **Scoring**: `Relative`  
 
-Determines if the term can be found inside of the context within a given levenshtein distance. 
+Determines if the term can be found inside of the context within a given levenshtein distance. Can either be configured to do a full scan of the context to find the best possible match, or a partial scan where it settles for the first match of the provided criteria.
 
 Levenshtein distance is a way of describing the number of differences between two strings. 1 levenshtein distance means either one insertion, one removal, or one replacement of a character. For example, `"telephone"` is 3 steps away from `"elephant"` -> `(-t)eleph(o>a)n(e>t)`. In this particular implementation the algorithm will scan through the entire context to see if any contained sequence of characters match, rather than compare the values in their entirety. In this scenario `"telephone"` will actually be 2 steps away, because the algorithm will start comparing from the second character: `"elephone"`.
 
-This implementation will find the first best result inside of the context. This means that if there is a better match later on in the context this will be missed. If your use case requires a perfectly evaluated result then refer to `BITAP_FULL`.
-
 Relevance is primarily based on the levenshtein distance of the match, and secondarily on the size of the context as well as the match distance from context index 0.
 
-The following additional arguments can be passed to this function:
- - **maxErrors** 
-  - **Description**: *Maximum levenshtein distance*
-  - **Type**: `Integer`
-  - **Default**: `2`
- - **isPositionRelevant**
-  - **Description**: *Should the position in the context where the match was found be taken into account when calculating the relevance? Usually a match is more relevant the closer to the beginning of the context that it is found.*
-  - **Type**: `Boolean`
-  - **Default**: `true`
- - **isContextSizeRelevant**
-  - **Description**: *Should the size of the context where the match was found be taken into account when calculating the relevance? Usually a smaller context will mean a more relevant match. This could be names, titles, and so on.*
-  - **Type**: `Boolean`
-  - **Default**: `true`
-
----
-
-> ## BITAP_FULL
-- **Case Sensitive**: `false`  
-- **Scoring**: `Relative`  
-
-Determines the best possible match of the term inside of the context, within a given levenshtein distance. This implementation will find the best possible result inside of the context. This may be necessary in some scenarios, but be weary that it may have an impact on search performance with long values.
-
-Relevance is primarily based on the levenshtein distance of the match, and secondarily on the size of the context as well as the match distance from context index 0.
+This comparison function can only handle search values that are up to 32 characters long. Longer search values will be automatically substringed by the function.
 
 The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
+ - **isFullScan** 
+  - **Description**: *Should the entire context be scanned to find the best possible match (full scan), or should the best first possible match be used (partial scan)?*
+  - **Type**: `boolean`
+  - **Default**: `true`
  - **maxErrors** 
   - **Description**: *Maximum levenshtein distance*
   - **Type**: `Integer`
@@ -107,10 +93,17 @@ The following additional arguments can be passed to this function:
   - **Type**: `Boolean`
   - **Default**: `true`
 
+The following meta data will be provided by this function:
+ - **k**:
+  - **Description**: *The levenshtein distance*
+  - **Type**: `Integer`
+ - **matchIndex**:
+  - **Description**: *The character index inside of the context where the match was confirmed. I.e. the last character in the match.*
+  - **Type**: `Integer`
+
 ---
 
 > ## FUZZY_SEQUENCE
-- **Case Sensitive**: `false`  
 - **Scoring**: `Relative`  
 
 Determines if all letters of the term exist somewhere inside the context, in the given order but not necessarily right after each other.
@@ -119,98 +112,99 @@ For example, the context `"telephone aunt"` would match with `"elephant"` becaus
 
 Relevance will be based on the total distance between the characters.
 
+The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
+
+The following meta data will be provided by this function:
+ - **totalDistance**:
+  - **Description**: *The total distance between characters*
+  - **Type**: `Integer`
+
 ---
 
 > ## CONTAINS_ALL_WORDS
-- **Case Sensitive**: `false`  
 - **Scoring**: `Relative`  
 
 Determines if all the words in the term are contained inside of the context.
 
 For example, the context  `"I am eating cake next week"` would match with the term `"Next week I am eating cake"`
 
+The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
+
 ---
 
 > ## REGULAR_EXPRESSION
-- **Case Sensitive**: `true`  
 - **Scoring**: `Binary`  
 
 This comparison strategy is only compatible with regular expression search values. What that means is that in order to use this strategy you need to pass a valid regular expression object to the search function, rather than a string, number or similar.
 
 Determines if the context matches the regular expression pattern.
 
----
-
-> ## REGULAR_EXPRESSION_CASE_INSENSITIVE
-- **Case Sensitive**: `true`  
-- **Scoring**: `Binary`  
-
-This comparison strategy is only compatible with regular expression search values. What that means is that in order to use this strategy you need to pass a valid regular expression object to the search function, rather than a string, number or similar.
-
-This version of the strategy will convert the context to uppercase characters. Make sure that you take this into account when creating your regular expression
-
-Determines if the context matches the regular expression pattern.
+The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
 
 ---
 
 > ## STARTS_WITH
-- **Case Sensitive**: `true`  
 - **Scoring**: `Binary`  
 
 Determines if the context starts with the term.
 
----
-
-> ## STARTS_WITH_CASE_INSENSITIVE
-- **Case Sensitive**: `false`  
-- **Scoring**: `Binary`  
-
-Determines if the context starts with the term.
+The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
 
 ---
 
 > ## ENDS_WITH
-- **Case Sensitive**: `true`
+- **Case Sensitive**: `default true`
 - **Scoring**: `Binary`  
 
 Determines if the context ends with the term.
 
----
-
-> ## ENDS_WITH_CASE_INSENSITIVE
-- **Case Sensitive**: `false`
-- **Scoring**: `Binary`  
-
-Determines if the context ends with the term.
+The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
 
 ---
 
 > ## CONTAINS
-- **Case Sensitive**: `true`
+- **Case Sensitive**: `default true`
 - **Scoring**: `Binary`  
 
 Determines if the context contains the term.
 
----
-
-> ## CONTAINS_CASE_INSENSITIVE
-- **Case Sensitive**: `false`
-- **Scoring**: `Binary`  
-
-Determines if the context contains the term.
+The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
 
 ---
 
 > ## EQUALS
-- **Case Sensitive**: `true`
+- **Case Sensitive**: `default true`
 - **Scoring**: `Binary`  
 
 Determines if the term equals the context.
 
----
+The following additional arguments can be passed to this function:
+ - **caseSensitive** 
+  - **Description**: *Is the search case sensitive?*
+  - **Type**: `boolean`
+  - **Default**: `true`
 
-> ## EQUALS_CASE_INSENSITIVE
-- **Case Sensitive**: `false`
-- **Scoring**: `Binary`  
-
-Determines if the term equals the context.

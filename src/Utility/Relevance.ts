@@ -1,5 +1,5 @@
 /**
- * Determines the relevance within a set range, and combines it with a floating point number between 0 - 1
+ * Determines the linear (kind of) relevance. Uses a point in a set range, and combines it with a floating point number between 0 - 1
  * @param {number} length - Length of the range
  * @param {number} point - Point in the range, lower is better
  * @param {number} secondaryValue - The secondary score (0.0 - 1.0), higher is better
@@ -14,20 +14,7 @@ export const getRelativeRelevance = (length: number, point: number, secondaryVal
 }
 
 /**
- * Combines two positive integers into a relevance score of 0 - 1
- * @param {number} primaryScoreIn - Primary score, Lower is better
- * @param {number} secondaryScoreIn - Secondary score, Lower is better
- * @return {number} - Combined score (0.0 - 1.0)
- */
-export const getTweenedRelevance = (primaryScoreIn: number, secondaryScoreIn: number): number => {
-	let secondaryScore = secondaryScoreIn
-	secondaryScore < 0 && (secondaryScore = 0)
-	secondaryScore++
-	return getStackedRelevance(primaryScoreIn, 1 / secondaryScore)
-}
-
-/**
- * Creates a score from one positive integer and one floating point number between 0 and 1
+ * Determines the logarithmic (kind of) relevance. Combines one primary positive integer and one secondary positive floating point number between 0 and 1 into a relevance score of 0 - 1
  * @param {number} primaryScoreIn - Primary score (integer), Lower is better
  * @param {number} secondaryScoreIn - Secondary score (float 0.0 - 1.0), higher is better
  * @return {number} - Combined score (0.0 - 1.0)
@@ -49,25 +36,31 @@ export const getStackedRelevance = (primaryScoreIn: number, secondaryScoreIn: nu
 }
 
 /**
- * Combines a list of positive integers into a single relevance score
- * @param {number[]} scores - An array of positive numbers, ranked from most important to least important. Lower is better.
- * @return {number} - Combined score (0.0 - 1.0)
+ * Calculates a logistic sigmoid function. Will not work for very large numbers due to how rounding in JavaScript works, but is fine for its use case.
+ * @param {number} z - The number to be plotted
+ * @return {number} - number between -1 - 1
  */
-export const getCombinedRelevanceScore = (scores: number[]): number => {
-	if (scores.length === 0) {
-		return 0
-	} else if (scores.length === 1) {
-		if (scores[0] < 0) {
-			return 0
-		}
-		return 1 / (scores[0] + 1)
-	}
-	return scores.reverse().reduce((accumulatedScore: number, score: number, index: number): number => {
-		if (index === 0) {
-			accumulatedScore = 1 / (score + 1)
-		} else {
-			accumulatedScore = getStackedRelevance(score, accumulatedScore)
-		}
-		return accumulatedScore
-	}, 0)
+export const sigmoid = (z: number): number => {
+	return 1 / (1 + Math.exp(-z / 100))
+}
+
+/**
+ * Calculates a logistic sigmoid function, but for only positive numbers.
+ * Good for converting integers that can range up to the hundreds into a score from 0 - 1
+ * @param {number} z - The number to be plotted
+ * @return {number} - number between 0 - 1
+ */
+export const sigmoidPositive = (z: number): number => {
+	return (sigmoid(z) - 0.5) * 2
+}
+
+/**
+ * Normalizes a value using minmax
+ * @param {number} value - The number to be normalized
+ * @param {number} max - Maximum value of the scale
+ * @param {number} min - Minimum value of the scale
+ * @return {number} - number between 0 - 1
+ */
+export const minMax = (value: number, max: number, min: number) => {
+	return (value - min) / (max - min)
 }

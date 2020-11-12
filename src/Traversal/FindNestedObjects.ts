@@ -1,13 +1,16 @@
 import SearchResult from "../Model/SearchResult"
 import Item from "../Model/Item"
 import Shard from "../Model/Shard"
-import { getStackedRelevance } from "../Utility/Mathematics"
+import { getRelativeRelevance } from "../Utility/Relevance"
 import { ObjectLiteral } from "../Utility/JsonUtility"
-import IComparison from "../Comparison/IComparison"
+import IComparison from "../Model/IComparison"
+import IComparisonResult from "../Model/IComparisonResult"
 
 interface IComparisonMatch {
 	shard: Shard | null
 	comparisonScore: number
+	normalizedComparisonScore: number
+	metaData?: IComparisonResult
 }
 
 /**
@@ -65,16 +68,21 @@ export default (itemArray: Item[], searchValue: any, comparisonStrategy: ICompar
 			for (const [nestedObject, shardArray] of nestedObjectShardMap) {
 				const foundShard = shardArray.reduce(
 					(bestMatch: IComparisonMatch, shard: Shard) => {
-						const comparisonScore = comparisonFunction(searchValue, shard.value)
-						if (comparisonScore > bestMatch.comparisonScore) {
+						const comparisonResult = comparisonFunction(searchValue, shard.value)
+						const comparisonScore =
+							typeof comparisonResult === "number" && isFinite(comparisonResult) ? comparisonResult : (<IComparisonResult>comparisonResult).score
+						const normalizedComparisonScore = comparisonScore * shard.normalizedWeight
+						if (normalizedComparisonScore > bestMatch.normalizedComparisonScore) {
 							return {
 								shard,
-								comparisonScore
+								comparisonScore,
+								normalizedComparisonScore,
+								metaData: typeof comparisonResult === "object" ? comparisonResult : undefined
 							}
 						}
 						return bestMatch
 					},
-					{ comparisonScore: 0, shard: null }
+					{ comparisonScore: 0, normalizedComparisonScore: 0, shard: null }
 				)
 				if (foundShard.comparisonScore) {
 					let path = shardNestedPathMap.get(foundShard.shard!)!
@@ -84,11 +92,15 @@ export default (itemArray: Item[], searchValue: any, comparisonStrategy: ICompar
 					matches[strategyIndex].push(
 						new SearchResult(
 							nestedObject,
+							item.originalIndex,
 							path,
-							foundShard.shard!.value,
-							getStackedRelevance(strategyIndex, foundShard.comparisonScore),
+							foundShard.shard!.originalValue,
+							getRelativeRelevance(comparisonStrategy.length, strategyIndex + 1, foundShard.comparisonScore),
 							foundShard.comparisonScore,
-							strategyIndex
+							strategyIndex,
+							foundShard.shard!.weight,
+							foundShard.shard!.normalizedWeight,
+							foundShard.metaData
 						)
 					)
 					numberOfFound++

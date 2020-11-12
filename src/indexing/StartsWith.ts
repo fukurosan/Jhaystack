@@ -19,18 +19,13 @@ export default class StartsWithIndex extends Index {
 		return tokens
 	}
 
-	evaluate(term: unknown): IndexEvaluationResult {
+	evaluate(term: unknown): IndexEvaluationResult[] {
 		const results = this.index[`${term}`.toUpperCase()]
 		if (results) {
-			const resultShard = results.reduce((shortestShard: Shard, shard: Shard, index) => {
-				if (index === 0) {
-					return shard
-				}
-				return shard.value > shortestShard.value ? shard : shortestShard
-			}, new Shard(null, [], ""))
-			return new IndexEvaluationResult(resultShard, 1)
-		} else {
-			return new IndexEvaluationResult(null, 0)
+			return results.map(shard => {
+				return new IndexEvaluationResult(shard, 1)
+			})
 		}
+		return []
 	}
 }

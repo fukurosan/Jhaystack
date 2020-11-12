@@ -1,13 +1,9 @@
 import SearchResult from "../Model/SearchResult"
-import { getStackedRelevance } from "../Utility/Mathematics"
+import { getRelativeRelevance } from "../Utility/Relevance"
 import Item from "../Model/Item"
 import Shard from "../Model/Shard"
-import IComparison from "../Comparison/IComparison"
-
-interface IComparisonMatch {
-	shard: Shard | null
-	comparisonScore: number
-}
+import IComparison from "../Model/IComparison"
+import IComparisonResult from "../Model/IComparisonResult"
 
 /**
  * Finds all matching shards inside of a given item array.
@@ -33,32 +29,26 @@ export default (itemArray: Item[], searchValue: any, comparisonStrategy: ICompar
 				itemRemainingShardMap.set(item, [...item.shards])
 			}
 			const shards = itemRemainingShardMap.get(item)!
-			const foundShards = shards.reduce((matches: IComparisonMatch[], shard) => {
-				if (limit && matches.length + numberOfFound >= limit) {
-					return matches
-				}
-				const comparisonScore = comparisonFunction(searchValue, shard.value)
+			for (let shardIndex = 0; shardIndex < shards.length; shardIndex++) {
+				const shard = shards[shardIndex]
+				const comparisonResult = comparisonFunction(searchValue, shard.value)
+				const comparisonScore =
+					typeof comparisonResult === "number" && isFinite(comparisonResult) ? comparisonResult : (<IComparisonResult>comparisonResult).score
 				if (comparisonScore) {
-					matches.push({
-						shard,
-						comparisonScore
-					})
-				}
-				return matches
-			}, [])
-			if (foundShards.length > 0) {
-				const foundOriginalItem = item.original
-				for (let shardIndex = 0; shardIndex < foundShards.length; shardIndex++) {
-					const foundShard = foundShards[shardIndex]
-					shards.splice(shards.indexOf(foundShard.shard!), 1)
+					shards.splice(shardIndex, 1)
+					shardIndex--
 					matches[strategyIndex].push(
 						new SearchResult(
-							foundOriginalItem,
-							foundShard.shard!.path,
-							foundShard.shard!.value,
-							getStackedRelevance(strategyIndex, foundShard.comparisonScore),
-							foundShard.comparisonScore,
-							strategyIndex
+							item.original,
+							item.originalIndex,
+							shard.path,
+							shard.originalValue,
+							getRelativeRelevance(comparisonStrategy.length, strategyIndex + 1, comparisonScore * shard.normalizedWeight),
+							comparisonScore,
+							strategyIndex,
+							shard.weight,
+							shard.normalizedWeight,
+							typeof comparisonResult === "object" ? comparisonResult : undefined
 						)
 					)
 					numberOfFound++
