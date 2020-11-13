@@ -1,12 +1,12 @@
 {
   "name": "jhaystack",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "JavaScript search engine",
   "main": "dist/bundle.cjs.min.js",
   "module": "dist/bundle.esm.js",
   "unpkg": "dist/bundle.umd.min.js",
   "jsdelivr": "dist/bundle.umd.min.js",
-  "types": "./types/index.d.ts",
+  "types": "./dist/types.d.ts",
   "scripts": {
     "prebuild": "rimraf dist && rimraf types && npm run lint:fix && npm run test && npm run build:types",
     "build": "rollup -c",
