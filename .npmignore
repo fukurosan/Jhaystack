@@ -13,9 +13,11 @@ package-lock.json
 .editorconfig
 .eslintignore
 .eslintrc
+.lintstagedrc
 .gitignore
 .prettierignore
 .prettierrc
+.huskyrc
 jest.config.js
 rollup.config.js
 tsconfig.json
