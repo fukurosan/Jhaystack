@@ -13,7 +13,7 @@ import IComparisonResult from "../Model/IComparisonResult"
  * @param {number} limit - Maximum number of matches
  * @return {SearchResult[]} - A list of search results
  */
-export default (itemArray: Item[], searchValue: any, comparisonStrategy: IComparison[], limit?: null | number): SearchResult[] => {
+export const FIND_VALUES = (itemArray: Item[], searchValue: any, comparisonStrategy: IComparison[], limit?: null | number): SearchResult[] => {
 	if (limit !== undefined && limit !== null && limit < 1) {
 		return []
 	}

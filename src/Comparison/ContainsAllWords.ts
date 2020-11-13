@@ -5,7 +5,7 @@
  * @param {boolean} caseSensitive - Is the search case sensitive?
  * @return {number} - Resulting score
  */
-export default (term: unknown, context: unknown, caseSensitive = true): number => {
+export const CONTAINS_ALL_WORDS = (term: unknown, context: unknown, caseSensitive = true): number => {
 	if (typeof term !== "string" || typeof context !== "string") {
 		return 0
 	}

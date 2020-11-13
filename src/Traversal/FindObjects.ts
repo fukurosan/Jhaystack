@@ -20,7 +20,7 @@ interface IComparisonMatch {
  * @param {number} limit - Maximum number of matches
  * @return {SearchResult[]} - A list of search results
  */
-export default (itemArrayIn: Item[], searchValue: any, comparisonStrategy: IComparison[], limit?: null | number): SearchResult[] => {
+export const FIND_OBJECTS = (itemArrayIn: Item[], searchValue: any, comparisonStrategy: IComparison[], limit?: null | number): SearchResult[] => {
 	if (limit !== undefined && limit !== null && limit < 1) {
 		return []
 	}

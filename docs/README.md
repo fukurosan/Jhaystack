@@ -31,15 +31,15 @@ Load using a script element:
 ```
 
 !> **Tip**  
-*If you load the library bundle using a script element then a global variable called Jhaystack will be created. All examples in these docs use standard ES import statements, but in this case you can omit these and instead access the necessary parts of the library by using Jhaystack.X.*
+*If you load the library bundle using a script element then a global variable called `jhaystack` will be created. All examples in these docs use standard ES import statements, but in this case you can omit these and instead access the necessary parts of the library by using `jhaystack.X.*`
 
 ```html
 <script>
 //No
 import { Jhaystack, ComparisonStrategy } from "jhaystack"
 //Yes
-Jhaystack.Jhaystack
-Jhaystack.ComparisonStrategy
+jhaystack.Jhaystack
+jhaystack.ComparisonStrategy
 </script>
 ```
 

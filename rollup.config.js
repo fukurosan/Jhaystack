@@ -27,25 +27,25 @@ export default [
 		input: "./src/index.ts",
 		output: [
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.cjs.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.cjs.js`,
 				format: "cjs",
 				banner: BANNER,
 				exports: "auto"
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.esm.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.esm.js`,
 				format: "esm",
 				banner: BANNER
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.umd.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.umd.js`,
 				format: "umd",
 				banner: BANNER,
 				name: LIBRARY_NAME,
 				globals: {}
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.iife.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.iife.js`,
 				format: "iife",
 				banner: BANNER,
 				name: LIBRARY_NAME,
@@ -69,25 +69,25 @@ export default [
 		input: "./src/index.ts",
 		output: [
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.cjs.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.cjs.min.js`,
 				format: "cjs",
 				banner: BANNER,
 				exports: "auto"
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.esm.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.esm.min.js`,
 				format: "esm",
 				banner: BANNER
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.umd.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.umd.min.js`,
 				format: "umd",
 				banner: BANNER,
 				name: LIBRARY_NAME,
 				globals: {}
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.iife.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.iife.min.js`,
 				format: "iife",
 				banner: BANNER,
 				name: LIBRARY_NAME,
@@ -122,25 +122,25 @@ export default [
 		input: "./src/index.ts",
 		output: [
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.cjs.legacy.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.cjs.legacy.js`,
 				format: "cjs",
 				banner: BANNER,
 				exports: "auto"
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.esm.legacy.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.esm.legacy.js`,
 				format: "esm",
 				banner: BANNER
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.umd.legacy.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.umd.legacy.js`,
 				format: "umd",
 				banner: BANNER,
 				name: LIBRARY_NAME,
 				globals: {}
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.iife.legacy.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.iife.legacy.js`,
 				format: "iife",
 				banner: BANNER,
 				name: LIBRARY_NAME,
@@ -179,25 +179,25 @@ export default [
 		input: "./src/index.ts",
 		output: [
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.cjs.legacy.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.cjs.legacy.min.js`,
 				format: "cjs",
 				banner: BANNER,
 				exports: "auto"
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.esm.legacy.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.esm.legacy.min.js`,
 				format: "esm",
 				banner: BANNER
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.umd.legacy.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.umd.legacy.min.js`,
 				format: "umd",
 				banner: BANNER,
 				name: LIBRARY_NAME,
 				globals: {}
 			},
 			{
-				file: `${DIST_FOLDER}/${LIBRARY_NAME.toLocaleLowerCase()}.iife.legacy.min.js`,
+				file: `${DIST_FOLDER}/${LIBRARY_NAME}.iife.legacy.min.js`,
 				format: "iife",
 				banner: BANNER,
 				name: LIBRARY_NAME,

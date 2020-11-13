@@ -2,7 +2,10 @@ import Index from "../Model/Index"
 import Shard from "../Model/Shard"
 import IndexEvaluationResult from "../Model/IndexEvaluationResult"
 
-export default class StartsWithIndex extends Index {
+/**
+ * Index strategy that will check for values that start with the provided term.
+ */
+export class StartsWithIndex extends Index {
 	tag: string
 
 	constructor(shards: Shard[]) {

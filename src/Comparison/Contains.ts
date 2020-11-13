@@ -1,11 +1,11 @@
 /**
- * Checks if the context contains the term (case sensitive!).
+ * Checks if the context contains the term
  * @param {unknown} term - The term to be matched
  * @param {unknown} context - The context to searched
  * @param {boolean} caseSensitive - Is the search case sensitive?
  * @return {number} - Resulting score
  */
-export default (term: unknown, context: unknown, caseSensitive = true): number => {
+export const CONTAINS = (term: unknown, context: unknown, caseSensitive = true): number => {
 	if (typeof term !== "string" || typeof context !== "string") {
 		return 0
 	}

@@ -1,7 +1,10 @@
 import Index from "../Model/Index"
 import Shard from "../Model/Shard"
 
-export default class TriGramIndex extends Index {
+/**
+ * An n-gram index where n = 3. Will use character combinations in sets of 3 to determine similarity between values.
+ */
+export class TriGramIndex extends Index {
 	tag: string
 
 	constructor(shards: Shard[]) {

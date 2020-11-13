@@ -1,11 +1,11 @@
 /**
- * Checks if the context is equal to the term (case sensitive!).
+ * Checks if the context is equal to the term
  * @param {unknown} term - The term to be matched
  * @param {unknown} context - The context to searched
  * @param {boolean} caseSensitive - Is the search case sensitive?
  * @return {number} - Resulting score
  */
-export default (term: unknown, context: unknown, caseSensitive = true): number => {
+export const EQUALS = (term: unknown, context: unknown, caseSensitive = true): number => {
 	return caseSensitive
 		? context === term
 			? 1

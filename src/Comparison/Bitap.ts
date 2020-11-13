@@ -69,7 +69,7 @@ const getScorePenaltyValue = (
  * @param {boolean} isContextSizeRelevant - If true relevance will secondarily be based on context absolue size. Smaller is more relevant.
  * @return {number} - Resulting score. Score is primarily based on the levenshtein distance.
  */
-export default (
+export const BITAP = (
 	termIn: unknown,
 	contextIn: unknown,
 	caseSensitive = true,

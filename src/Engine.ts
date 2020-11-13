@@ -1,10 +1,10 @@
-import { BITAP } from "./Comparison/ComparisonStrategy"
-import { FIND_VALUES } from "./Traversal/TraversalStrategy"
+import { BITAP } from "./Comparison/Bitap"
+import { FIND_VALUES } from "./Traversal/FindValues"
 import { mergeArraySortFunctions } from "./Utility/JsonUtility"
 import Item from "./Model/Item"
 import SearchResult from "./Model/SearchResult"
 import { IIndex } from "./Model/Index"
-import RELEVANCE from "./Sorting/Relevance"
+import { RELEVANCE } from "./Sorting/Relevance"
 import IOptions from "./Model/IOptions"
 import ITraversal from "./Model/ITraversal"
 import IComparison from "./Model/IComparison"
@@ -20,9 +20,9 @@ export default class SearchEngine {
 	private traversalStrategy: ITraversal
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
-	/** Array of value processors to use */
+	/** Array of value processors to use for preprocessing the search data values */
 	private preProcessingStrategy: IPreProcessor[]
-	/** The processed dataset used for searching */
+	/** The processed data set used for searching */
 	private items: Item[]
 	/** The original data set provided by the user */
 	private originalData: any[]

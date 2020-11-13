@@ -5,6 +5,6 @@
  * @param {boolean} caseSensitive - Is the search case sensitive?
  * @return {number} - Resulting score
  */
-export default (term: RegExp, context: unknown, caseSensitive = true) => {
+export const REGULAR_EXPRESSION = (term: RegExp, context: unknown, caseSensitive = true) => {
 	return caseSensitive ? (term.test(`${context}`) ? 1 : 0) : term.test(`${context}`.toUpperCase()) ? 1 : 0
 }

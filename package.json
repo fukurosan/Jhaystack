@@ -1,12 +1,12 @@
 {
   "name": "jhaystack",
-  "version": "0.0.42",
+  "version": "0.0.47",
   "description": "JavaScript search engine",
-  "main": "dist/bundle.cjs.min.js",
-  "module": "dist/bundle.esm.js",
-  "unpkg": "dist/bundle.umd.min.js",
-  "jsdelivr": "dist/bundle.umd.min.js",
-  "types": "./dist/types.d.ts",
+  "main": "./dist/jhaystack.cjs.min.js",
+  "module": "./dist/jhaystack.esm.js",
+  "unpkg": "./dist/jhaystack.umd.min.js",
+  "jsdelivr": "./dist/jhaystack.umd.min.js",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "prebuild": "rimraf dist && rimraf types && npm run lint:fix && npm run test && npm run build:types",
     "build": "rollup -c",
@@ -15,7 +15,7 @@
     "lint:fix": "npm run prettier && eslint \"*/**/*.{js,ts}\" --fix",
     "test": "jest --verbose --coverage --no-cache",
     "test:watch": "jest --watch --verbose",
-    "build:types": "tsc --declaration --emitDeclarationOnly --out ./dist/types.js"
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir ./dist/types/"
   },
   "repository": {
     "type": "git",

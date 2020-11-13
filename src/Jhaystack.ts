@@ -8,6 +8,10 @@ import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 
+/**
+ * The main Jhaystack class.
+ * This is where the adventure starts!
+ */
 export default class Jhaystack {
 	/** The internal engine object */
 	private engine: Engine
@@ -17,7 +21,7 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the comparison strategy to be used.
+	 * Sets the value comparison strategy to be used.
 	 * @param {IComparison[]} strategy - Array of comparison functions to be used
 	 * @returns {Jhaystack} - this
 	 */
@@ -27,7 +31,7 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the traversal strategy to be used.
+	 * Sets the traversal strategy to be used. I.e. how the data set should be traversed, what constitutes a match, as well as what to return as a result.
 	 * @param {ITraversal} strategy - Traversal strategy to be used
 	 * @returns {Jhaystack} - this
 	 */
@@ -70,6 +74,7 @@ export default class Jhaystack {
 	/**
 	 * Sets the array of data to be searched.
 	 * Note that setting this can cause previously configured indices and path configurations to have to be re-built.
+	 * You can also add and remove individual items using the addItem and removeItem functions. For smaller changes this is usually prefered.
 	 * @param {any[]} dataSet - Array of data to be searched.
 	 * @returns {Jhaystack} - this
 	 */
@@ -89,7 +94,7 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Removes an item to the search data.
+	 * Removes an item from the search data.
 	 * @param {any} item - item to be removed.
 	 * @returns {Jhaystack} - this
 	 */
@@ -99,7 +104,7 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the index strategy to be used.
+	 * Sets the index strategy to be used. The index strategy is only relevant if you are doing offline searches.
 	 * @param {IIndex[]} strategy - Array of indices to be used
 	 * @returns {Jhaystack} - this
 	 */
@@ -119,7 +124,10 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets relevance weights for given patterns. Data is provided in the form of an array of arrays. Each inner array contains the evaluation function at index 0, and the weight value at index 1 (> 0, < infinity, default 1). Weight is determined by the first function in the array that matches. Default weight is 1.
+	 * Sets relevance weights for given patterns.
+	 * Data is provided in the form of an array of arrays. Each inner array contains the evaluation function at index 0, and the weight value at index 1 (> 0, < infinity, default 1).
+	 * Weight is determined by the first function in the array that matches.
+	 * Default weight is 1.
 	 * @param {IWeight[]} weights - The array of weights
 	 * @returns {Jhaystack} - this
 	 */
