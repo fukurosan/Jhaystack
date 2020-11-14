@@ -67,7 +67,7 @@ Determines if the term can be found inside of the context within a given levensh
 
 Levenshtein distance is a way of describing the number of differences between two strings. 1 levenshtein distance means either one insertion, one removal, or one replacement of a character. For example, `"telephone"` is 3 steps away from `"elephant"` -> `(-t)eleph(o>a)n(e>t)`. In this particular implementation the algorithm will scan through the entire context to see if any contained sequence of characters match, rather than compare the values in their entirety. In this scenario `"telephone"` will actually be 2 steps away, because the algorithm will start comparing from the second character: `"elephone"`.
 
-Relevance is primarily based on the levenshtein distance of the match, and secondarily on the size of the context as well as the match distance from context index 0.
+Relevance is primarily based on the levenshtein distance of the match, and secondarily on the size of the context as well as the match distance from context index 0. Matches that only match one single character will be considered irrelevant.
 
 This comparison function can only handle search values that are up to 32 characters long. Longer search values will be automatically substringed by the function.
 

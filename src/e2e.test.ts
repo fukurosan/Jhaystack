@@ -124,7 +124,7 @@ describe("End to end", () => {
 			.setFilters([])
 			.setDataset(data)
 		let result = se.search("min")
-		expect(result.length).toBe(5)
+		expect(result.length).toBe(4)
 
 		se.setFilters([
 			(_, value) => {
@@ -136,7 +136,7 @@ describe("End to end", () => {
 
 		se.setFilters([path => !/lastName/.test(path.join("."))])
 		result = se.search("min")
-		expect(result.length).toBe(4)
+		expect(result.length).toBe(2)
 
 		se.setFilters([path => /lastName/.test(path.join(".")), (path, value) => !/Duck/.test(value)])
 		result = se.search("uck")

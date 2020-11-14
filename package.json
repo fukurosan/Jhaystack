@@ -1,6 +1,6 @@
 {
   "name": "jhaystack",
-  "version": "0.0.49",
+  "version": "0.0.50",
   "description": "JavaScript search engine",
   "main": "./dist/jhaystack.cjs.min.js",
   "module": "./dist/jhaystack.esm.js",
@@ -34,7 +34,7 @@
   "bugs": {
     "url": "https://github.com/fukurosan/Jhaystack/issues"
   },
-  "homepage": "https://github.com/fukurosan/Jhaystack",
+  "homepage": "https://fukurosan.github.io/Jhaystack/",
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/plugin-proposal-class-properties": "^7.10.1",

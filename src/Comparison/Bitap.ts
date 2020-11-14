@@ -4,13 +4,12 @@ import { getRelativeRelevance, sigmoidPositive } from "../Utility/Relevance"
 
 //Fantastic Japanese wiki article on Bitap (shift-and, shift-or):
 //https://ja.m.wikipedia.org/wiki/Bitapアルゴリズム
-//The implementation in this file includes Wu & Mander's changes:
+//Wu & Mander's implementation for reference:
 //https://dl.acm.org/doi/pdf/10.1145/135239.135244
 //Navarro's implementation for reference:
 //https://www.researchgate.net/publication/2437209_A_Faster_Algorithm_for_Approximate_String_Matching
 //Myer's implementation for reference:
 //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.332.9395&rep=rep1&type=pdf
-//This implementation does not include Navarro's changes.
 
 /**
  * Creates a bit mask of the context based on the position of characters found in the term.
@@ -144,7 +143,7 @@ export const BITAP = (
 		}
 	}
 
-	if (matchKDepth !== null && matchIndex !== null) {
+	if (matchKDepth !== null && matchIndex !== null && termLength - matchKDepth > 1) {
 		return {
 			score:
 				isPositionRelevant || isContextSizeRelevant
