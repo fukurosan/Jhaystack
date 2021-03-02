@@ -3,8 +3,20 @@
 ### 0.1.0 TBR
 
 - *TODO* Move search execution off the main thread
-  
-  
+
+
+### 0.0.51
+
+- Added Cosine distance comparison strategy
+- Added Levenshtein distance comparison strategy
+- Added Damerau-Levenshtein distance comparison strategy
+- Added Euclidean distance comparison strategy
+- Added Hamming distance comparison strategy
+- Added Jaccard distance comparison strategy
+- Added Jaro-Winkler distance comparison strategy
+- Added Longest Common Substring comparison strategy
+ 
+
 ### 0.0.40
 
 - Added ability to add and remove individual items from search data set

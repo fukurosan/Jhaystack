@@ -5,15 +5,15 @@ import IComparisonResult from "../Model/IComparisonResult"
  * Score is secondarily based on the total space bewteen the characters.
  * @param {unknown} termIn - The term to be matched
  * @param {unknown} contextIn - The context to searched
- * @param {boolean} caseSensitive - Is the search case sensitive?
+ * @param {number} threshold - Threshold for what is considered a match
  * @return {number} - Resulting score
  */
-export const FUZZY_SEQUENCE = (termIn: unknown, contextIn: unknown, caseSensitive = true): IComparisonResult | number => {
+export const FUZZY_SEQUENCE = (termIn: unknown, contextIn: unknown, threshold = 0.2): IComparisonResult | number => {
 	if (typeof termIn !== "string" || typeof contextIn !== "string") {
 		return 0
 	}
-	const term = (caseSensitive ? termIn : termIn.toUpperCase()).replace(/ /g, "")
-	const context = (caseSensitive ? contextIn : contextIn.toUpperCase()).replace(/ /g, "")
+	const term = termIn.replace(/ /g, "")
+	const context = contextIn.replace(/ /g, "")
 	const termLength = term.length
 	const contextLength = context.length
 	let distance = 0
@@ -34,5 +34,9 @@ export const FUZZY_SEQUENCE = (termIn: unknown, contextIn: unknown, caseSensitiv
 		}
 		return 0
 	}
-	return { score: 1 / (distance + 1), totalDistance: distance }
+	const score = 1 / (distance + 1)
+	if (score > threshold) {
+		return { score, totalDistance: distance }
+	}
+	return 0
 }

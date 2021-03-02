@@ -103,6 +103,175 @@ The following meta data will be provided by this function:
 
 ---
 
+> ## COSINE
+- **Scoring**: `Relative`  
+
+Determines the cosine distance between two strings based on their n grams. The strings involved will first be converted into vectors based on ngrams, and then a cosine angle between the two will be calculated and used to determine the similarity.
+
+The following additional arguments can be passed to this function:
+ - **threshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.2`
+ - **n** 
+  - **Description**: *gram sizes to format the input term and context into.*
+  - **Type**: `number`
+  - **Default**: `3`
+
+---
+
+> ## LEVENSHTEIN
+- **Scoring**: `Relative`  
+
+Determines the Levenshtein distance between the two input strings and converts it into a score from 0-1.
+
+The difference between this function and bitap is that this function makes an absolute comparison between the input strings, rather than what is essentially a contains-scan.
+
+The following additional arguments can be passed to this function:
+ - **threshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.2`
+
+---
+
+> ## DAMERAU
+- **Scoring**: `Relative`  
+
+Determines the full Damerau-Levenshtein distance between the two input strings and converts it into a score from 0-1.
+
+The difference between Levenshtein distance and Damerau-Levenshtein distance is that Damerau-Levenshtein distance considers transpositions a valid single alteration.
+
+For example let's say we wanted to calculate the difference between "eHllo" and "Hello":
+
+Levenshtein
+`"eHllo" -> "Hllo" -> "Hello"` = 2 alterations
+
+Damerau-Levenshtein
+`"eHllo" -> "Hello"` = 1 alteration
+
+The following additional arguments can be passed to this function:
+ - **threshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.2`
+
+---
+
+> ## EUCLIDEAN
+- **Scoring**: `Relative`  
+
+Determines the euclidean distance between the two input strings based on their ngrams and converts it into a score from 0-1.
+
+The Euclidean distance is the distance between to vectors within a coordinate system. The input strings will be converted into ngram coordinates which will be used as vectors when determining the distance.
+
+The following additional arguments can be passed to this function:
+ - **threshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.7`
+ - **n** 
+  - **Description**: *gram sizes to format the input term and context into.*
+  - **Type**: `number`
+  - **Default**: `3`
+
+---
+
+> ## HAMMING
+- **Scoring**: `Relative`  
+
+Computes a score based on the number of symbol positions in the term and context that differ.
+
+Hamming distance can only be calculated on strings of equal length, or numbers.
+
+For Example:
+`"Hello", "Jello" = 1`, because they differ with one character. Making the score 1 - 1/5 = 0.8.
+
+If two numbers are provided to the function then the distance will be computed as the bit representation of said numbers.
+
+For example:
+`9, 14 = 1`, because `0101 -> 0111`. Making the score 1 - 1/4 = 0.75
+
+The following additional arguments can be passed to this function:
+ - **threshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.2`
+
+---
+
+> ## LONGEST_COMMON_SUBSTRING
+- **Scoring**: `Relative`  
+
+Computes a score based on the longest common substring within the input strings.
+
+For Example:
+`"I like cats", "cats are awesome" = 4`, because the longest common substring is `"cats"`. 
+
+The score would either be computed as the result * 2 / (term length + context length), or as result/ term length based on arguments provided to the function.
+
+
+The following additional arguments can be passed to this function:
+ - **threshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.3`
+ - **containsSearch** 
+  - **Description**: *Determines of the computed score should be based on only term length, or the full combined length.*
+  - **Type**: `boolean`
+  - **Default**: `false`
+---
+
+> ## JACCARD
+- **Scoring**: `Relative`  
+
+Computes a score based on intersection of ngrams over union.
+
+The two input strings are both converted into ngrams, and the number of intersecting ngrams are divided by the number of union ngrams to generate a score.
+
+For example:
+`"Pear", "Swear" = 1/4 = 0.25`, because `"ear"` is the intersection and `"Pea", "ear", "Swe", "wea"` is the union.
+
+
+The following additional arguments can be passed to this function:
+ - **threshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.2`
+ - **n** 
+  - **Description**: *Determines the size of ngrams to use for the calculation.*
+  - **Type**: `number`
+  - **Default**: `3`
+---
+
+> ## JARO_WINKLER
+- **Scoring**: `Relative`  
+
+Computes a score based on the Jaro-Winkler distance of two strings.
+
+Jaro distance is computed by exact characters positions and limited transpositions. The valid transposition length grows with the string length and is calculated by Math.max(str1.length, string2.length) / 2. The number of transpositioned character and matching characters are then used to determine the distance.
+
+Jaro-Winkler adds a bias to the prefix of the strings. If the prefix is identical then the distance is considered to be less. The maximum prefix length can be configured to 1-4. If prefixed the distance will be considered reduced by a factor of a scaling boost.
+
+The following additional arguments can be passed to this function:
+ - **matchThreshold** 
+  - **Description**: *Threshold between 0-1 for what is considered a match.*
+  - **Type**: `number`
+  - **Default**: `0.6`
+ - **winklerThreshold** 
+  - **Description**: *Threshold for a Jaro score where Winkler should be applied.*
+  - **Type**: `number`
+  - **Default**: `0.7`
+ - **prefixLength** 
+  - **Description**: *Threshold for the string prefix (1-4).*
+  - **Type**: `number`
+  - **Default**: `4`
+ - **scalingFactor** 
+  - **Description**: *Scaling factor for the prefix boost (0-0.25).*
+  - **Type**: `number`
+  - **Default**: `0.1`
+---
+
 > ## FUZZY_SEQUENCE
 - **Scoring**: `Relative`  
 
@@ -111,12 +280,6 @@ Determines if all letters of the term exist somewhere inside the context, in the
 For example, the context `"telephone aunt"` would match with `"elephant"` because `t(eleph)one (a)u(nt)`
 
 Relevance will be based on the total distance between the characters.
-
-The following additional arguments can be passed to this function:
- - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
 
 The following meta data will be provided by this function:
  - **totalDistance**:
