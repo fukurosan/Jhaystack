@@ -5,6 +5,14 @@
 - *TODO* Move search execution off the main thread
 
 
+### 0.0.52
+
+- Added Scrubber preprocessor
+- Added English Stop Words preprocessor
+- Added Porter2 stemmer preprocessor
+- Added Lancaster stemmer preprocessor
+
+
 ### 0.0.51
 
 - Added Cosine distance comparison strategy
@@ -27,8 +35,8 @@
 - Implemented search meta data
 - Simplified comparison functions
 - Added index of the result item in the original array to search result object
-  
-  
+
+
 ### 0.0.39
 
 - Switched bundler from webpack to rollup

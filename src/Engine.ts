@@ -11,7 +11,7 @@ import IComparison from "./Model/IComparison"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
-import { TO_STRING, TO_UPPER_CASE } from "./PreProcessing/PreProcessingStrategy"
+import { TO_STRING, TO_LOWER_CASE } from "./PreProcessing/PreProcessingStrategy"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
@@ -47,7 +47,7 @@ export default class SearchEngine {
 		this.limit = null
 		this.filters = []
 		this.weights = []
-		this.preProcessingStrategy = [TO_STRING, TO_UPPER_CASE]
+		this.preProcessingStrategy = [TO_STRING, TO_LOWER_CASE]
 		this.isApplyPreProcessorsToTerm = true
 
 		if (options) {
