@@ -1,5 +1,5 @@
 import Index from "../Model/Index"
-import Shard from "../Model/Shard"
+import Declaration from "../Model/Declaration"
 
 /**
  * Index strategy that will allow for equality lookup
@@ -7,8 +7,8 @@ import Shard from "../Model/Shard"
 export class ValueIndex extends Index {
 	tag: string
 
-	constructor(shards: Shard[]) {
-		super(shards)
+	constructor(declarations: Declaration[]) {
+		super(declarations)
 		this.tag = "VALUE"
 	}
 

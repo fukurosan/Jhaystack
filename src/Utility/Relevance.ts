@@ -1,5 +1,5 @@
 /**
- * Determines the linear (kind of) relevance. Uses a point in a set range, and combines it with a floating point number between 0 - 1
+ * Determines a linear relevance. Uses a point in a set range, and combines it with a floating point number between 0 - 1
  * @param {number} length - Length of the range
  * @param {number} point - Point in the range, lower is better
  * @param {number} secondaryValue - The secondary score (0.0 - 1.0), higher is better
@@ -14,7 +14,7 @@ export const getRelativeRelevance = (length: number, point: number, secondaryVal
 }
 
 /**
- * Determines the logarithmic (kind of) relevance. Combines one primary positive integer and one secondary positive floating point number between 0 and 1 into a relevance score of 0 - 1
+ * Determines a non-linear relevance. Combines one primary positive integer and one secondary positive floating point number between 0 and 1 into a relevance score of 0 - 1
  * @param {number} primaryScoreIn - Primary score (integer), Lower is better
  * @param {number} secondaryScoreIn - Secondary score (float 0.0 - 1.0), higher is better
  * @return {number} - Combined score (0.0 - 1.0)

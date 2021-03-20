@@ -1,8 +1,8 @@
 import { VALUE, WORD, TRIGRAM, STARTS_WITH } from "./IndexStrategy"
-import { flattenObject } from "../Utility/JsonUtility"
+import { BY_OBJECT } from "../Extraction/ByObject"
 
 describe("Indexing module", () => {
-	const data = flattenObject({
+	const data = BY_OBJECT({
 		items: [
 			{
 				id: 1,
@@ -33,23 +33,23 @@ describe("Indexing module", () => {
 				title: "Welcome to space sir"
 			}
 		]
-	})
+	})[0]
 
 	it("Creates word index", () => {
 		const index = new WORD(data)
 		expect(index.evaluate("TOM")[0].score).toBeTruthy()
 		expect(index.evaluate("TEM")[0].score).toBeTruthy()
 		expect(index.evaluate("OM").length).toBe(0)
-		expect(index.evaluate("TOM")[0].shard?.path.toString()).toBe(["items", "0", "firstName"].toString())
-		expect(index.evaluate("TOM")[0].shard?.value).toEqual("Tim Tom Tem")
+		expect(index.evaluate("TOM")[0].declaration?.path.toString()).toBe(["items", "0", "firstName"].toString())
+		expect(index.evaluate("TOM")[0].declaration?.value).toEqual("Tim Tom Tem")
 		expect(index.tag).toBe("WORD")
 	})
 
 	it("Creates value index", () => {
 		const index = new VALUE(data)
 		expect(index.evaluate("JIM")[0].score).toBeTruthy()
-		expect(index.evaluate("JIM")[0].shard?.path.toString()).toBe(["items", "1", "firstName"].toString())
-		expect(index.evaluate("JIM")[0].shard?.value).toEqual("Jim")
+		expect(index.evaluate("JIM")[0].declaration?.path.toString()).toBe(["items", "1", "firstName"].toString())
+		expect(index.evaluate("JIM")[0].declaration?.value).toEqual("Jim")
 		expect(index.tag).toBe("VALUE")
 	})
 
@@ -57,8 +57,8 @@ describe("Indexing module", () => {
 		const index = new TRIGRAM(data)
 		expect(index.evaluate("BIT")[0].score).toBe(1)
 		expect(index.evaluate("RI").length).toBe(0)
-		expect(index.evaluate("BIT")[0].shard?.path.toString()).toBe(["items", "2", "lastName"].toString())
-		expect(index.evaluate("BIT")[0].shard?.value).toEqual("Ribbity")
+		expect(index.evaluate("BIT")[0].declaration?.path.toString()).toBe(["items", "2", "lastName"].toString())
+		expect(index.evaluate("BIT")[0].declaration?.value).toEqual("Ribbity")
 		expect(index.evaluate("Come to space and join us!")[0].score).toBe(12 / 24)
 		expect(index.tag).toBe("TRIGRAM")
 	})

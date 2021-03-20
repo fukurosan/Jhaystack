@@ -1,5 +1,5 @@
 import Index from "../Model/Index"
-import Shard from "../Model/Shard"
+import Declaration from "../Model/Declaration"
 
 /**
  * An n-gram index where n = 3. Will use character combinations in sets of 3 to determine similarity between values.
@@ -7,8 +7,8 @@ import Shard from "../Model/Shard"
 export class TriGramIndex extends Index {
 	tag: string
 
-	constructor(shards: Shard[]) {
-		super(shards)
+	constructor(declarations: Declaration[]) {
+		super(declarations)
 		this.tag = "TRIGRAM"
 	}
 

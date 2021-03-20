@@ -1,4 +1,4 @@
-import { deepCopyObject, flattenObject, getLastNonNumericItemInArray, mergeArraySortFunctions } from "./JsonUtility"
+import { deepCopyObject, getLastNonNumericItemInArray, mergeArraySortFunctions } from "./JsonUtility"
 
 describe("JSON Utility Module", () => {
 	const data = {
@@ -29,18 +29,12 @@ describe("JSON Utility Module", () => {
 		expect(cloneString === dataString).toBe(true)
 	})
 
-	it("Object flattening works", () => {
-		expect(flattenObject(data).length).toBe(5)
-		expect(flattenObject("One")[0].value).toBe("One")
-		expect(flattenObject(2)[0].value).toBe(2)
-	})
-
 	it("Extracting last non-numeric item from array works", () => {
 		const path1 = ["something", "0", 1, "something else"]
 		const path2 = ["something", "0", 1]
-		const path3 = ["0"]
+		const path3 = [0]
 		expect(getLastNonNumericItemInArray(path1)).toBe("something else")
-		expect(getLastNonNumericItemInArray(path2)).toBe("something")
+		expect(getLastNonNumericItemInArray(path2)).toBe("0")
 		expect(getLastNonNumericItemInArray(path3)).toBe(null)
 	})
 

@@ -1,31 +1,34 @@
 import { BITAP } from "./Comparison/Bitap"
-import { FIND_VALUES } from "./Traversal/FindValues"
+import { BY_VALUE } from "./Extraction/ByValue"
 import { mergeArraySortFunctions } from "./Utility/JsonUtility"
-import Item from "./Model/Item"
+import Document from "./Model/Document"
 import SearchResult from "./Model/SearchResult"
 import { IIndex } from "./Model/Index"
 import { RELEVANCE } from "./Sorting/Relevance"
 import IOptions from "./Model/IOptions"
-import ITraversal from "./Model/ITraversal"
+import IExtraction from "./Model/IExtraction"
 import IComparison from "./Model/IComparison"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import { TO_STRING, TO_LOWER_CASE } from "./PreProcessing/PreProcessingStrategy"
+import { FULL_SCAN } from "./Utility/Scan"
+import { minMax } from "./Utility/Relevance"
+import Declaration from "./Model/Declaration"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
 	private comparisonStrategy: IComparison[]
-	/** The traversal strategy to use */
-	private traversalStrategy: ITraversal
+	/** The extraction strategy to use */
+	private extractionStrategy: IExtraction
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Array of value processors to use for preprocessing the search data values */
 	private preProcessingStrategy: IPreProcessor[]
 	/** The processed data set used for searching */
-	private items: Item[]
+	private documents: Document[]
 	/** The original data set provided by the user */
-	private originalData: any[]
+	private originData: any[]
 	/** Types of indices to be built for offline search */
 	private indexStrategy: IIndex[]
 	/** Maximum number of matches before search ends */
@@ -39,11 +42,11 @@ export default class SearchEngine {
 
 	constructor(options?: IOptions) {
 		this.comparisonStrategy = [BITAP]
-		this.traversalStrategy = FIND_VALUES
+		this.extractionStrategy = BY_VALUE
 		this.indexStrategy = []
 		this.sortingStrategy = [RELEVANCE.DESCENDING]
-		this.items = []
-		this.originalData = []
+		this.documents = []
+		this.originData = []
 		this.limit = null
 		this.filters = []
 		this.weights = []
@@ -52,7 +55,7 @@ export default class SearchEngine {
 
 		if (options) {
 			options.comparison && this.setComparisonStrategy(options.comparison)
-			options.traversal && this.setTraversalStrategy(options.traversal)
+			options.extraction && this.setExtractionStrategy(options.extraction)
 			options.sorting && this.setSortingStrategy(options.sorting)
 			options.limit && this.setLimit(options.limit)
 			options.index && this.setIndexStrategy(options.index)
@@ -72,8 +75,8 @@ export default class SearchEngine {
 		}
 	}
 
-	setTraversalStrategy(strategy: ITraversal): void {
-		this.traversalStrategy = strategy
+	setExtractionStrategy(strategy: IExtraction): void {
+		this.extractionStrategy = strategy
 	}
 
 	setSortingStrategy(strategy: ((a: SearchResult, b: SearchResult) => number)[]): void {
@@ -99,23 +102,25 @@ export default class SearchEngine {
 	}
 
 	setDataset(datasetArray: any[]): void {
-		this.originalData = datasetArray
+		this.originData = datasetArray
 		this.prepareDataset()
 	}
 
 	addItem(item: any) {
-		this.originalData.push(item)
-		this.items.push(new Item(item, this.originalData.length - 1, this.filters, this.indexStrategy, this.weights, this.preProcessingStrategy))
+		this.originData.push(item)
+		const maxWeight = this.getMaxWeight()
+		this.extractionStrategy(item).forEach(declarations => {
+			this.documents.push(
+				new Document(item, this.originData.length - 1, this.processDeclarations(declarations, maxWeight), this.filters, this.indexStrategy)
+			)
+		})
 	}
 
 	removeItem(item: any) {
-		const index = this.originalData.indexOf(item)
+		const index = this.originData.indexOf(item)
 		if (index !== -1) {
-			this.originalData.splice(index, 1)
-			this.items.splice(index, 1)
-			for (let i = index; i < this.items.length; i++) {
-				this.items[i].originalIndex--
-			}
+			this.originData.splice(index, 1)
+			this.documents = this.documents.filter(doc => doc.originIndex !== index)
 		}
 	}
 
@@ -146,12 +151,43 @@ export default class SearchEngine {
 	}
 
 	/**
-	 * Format the given array of data into an array of Item instances.
+	 * Format the given array of data into an array of Document instances.
 	 */
 	prepareDataset(): void {
-		this.items = this.originalData.map((item, index) => {
-			return new Item(item, index, this.filters, this.indexStrategy, this.weights, this.preProcessingStrategy)
-		})
+		const documents: Document[] = []
+		const maxWeight = this.getMaxWeight()
+		for (let i = 0; i < this.originData.length; i++) {
+			const extractedDocuments = this.extractionStrategy(this.originData[i])
+			for (let j = 0; j < extractedDocuments.length; j++) {
+				const declarations = this.processDeclarations(extractedDocuments[j], maxWeight)
+				documents.push(new Document(this.originData[i], i, declarations, this.filters, this.indexStrategy))
+			}
+		}
+		this.documents = documents
+	}
+
+	getMaxWeight() {
+		let maxWeight = 1
+		const maxValue = Math.max(...this.weights.map(weight => weight[1]))
+		maxValue > 1 && (maxWeight = maxValue)
+		return maxWeight
+	}
+
+	processDeclarations(declarations: Declaration[], maxWeight: number) {
+		return declarations
+			.filter(declaration => this.filters.every(filter => filter(declaration.path, declaration.originValue)))
+			.map(declaration => {
+				if (this.weights.length > 0) {
+					declaration.weight = 1
+					const customWeight = this.weights.find(weight => weight[0](declaration.path, declaration.originValue))
+					if (customWeight) {
+						declaration.weight = customWeight[1]
+					}
+					declaration.normalizedWeight = minMax(declaration.weight, maxWeight, 0)
+				}
+				this.preProcessingStrategy.forEach(processor => (declaration.value = processor(declaration.value)))
+				return declaration
+			})
 	}
 
 	onlineSearch(searchValueIn: any): SearchResult[] {
@@ -159,7 +195,7 @@ export default class SearchEngine {
 		if (this.isApplyPreProcessorsToTerm) {
 			this.preProcessingStrategy.forEach(processor => (searchValue = processor(searchValue)))
 		}
-		const searchResult = this.traversalStrategy(this.items, searchValue, this.comparisonStrategy, this.limit)
+		const searchResult = FULL_SCAN(this.documents, searchValue, this.comparisonStrategy, this.limit)
 		if (this.sortingStrategy.length > 0) {
 			searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))
 		}
@@ -171,8 +207,8 @@ export default class SearchEngine {
 		if (this.isApplyPreProcessorsToTerm) {
 			this.preProcessingStrategy.forEach(processor => (searchValue = processor(searchValue)))
 		}
-		const searchResult = this.items.reduce((resultArray: SearchResult[], item: Item) => {
-			return [...resultArray, ...item.offlineSearch(searchValue)]
+		const searchResult = this.documents.reduce((resultArray: SearchResult[], document: Document) => {
+			return [...resultArray, ...document.offlineSearch(searchValue)]
 		}, [])
 		if (this.sortingStrategy.length > 0) {
 			searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))

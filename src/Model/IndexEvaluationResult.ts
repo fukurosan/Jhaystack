@@ -1,13 +1,13 @@
-import Shard from "./Shard"
+import Declaration from "./Declaration"
 
 export default class IndexEvaluationResult {
-	/** The shard where the match was found (null if no match was found) */
-	shard: Shard
+	/** The declaration where the match was found (null if no match was found) */
+	declaration: Declaration
 	/** The score of the match */
 	score: number
 
-	constructor(shard: Shard, score: number) {
-		this.shard = shard
+	constructor(declaration: Declaration, score: number) {
+		this.declaration = declaration
 		this.score = score
 	}
 }

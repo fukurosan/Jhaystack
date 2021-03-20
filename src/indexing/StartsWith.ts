@@ -1,5 +1,5 @@
 import Index from "../Model/Index"
-import Shard from "../Model/Shard"
+import Declaration from "../Model/Declaration"
 import IndexEvaluationResult from "../Model/IndexEvaluationResult"
 
 /**
@@ -8,8 +8,8 @@ import IndexEvaluationResult from "../Model/IndexEvaluationResult"
 export class StartsWithIndex extends Index {
 	tag: string
 
-	constructor(shards: Shard[]) {
-		super(shards)
+	constructor(declarations: Declaration[]) {
+		super(declarations)
 		this.tag = "STARTS_WITH"
 	}
 
@@ -25,8 +25,8 @@ export class StartsWithIndex extends Index {
 	evaluate(term: unknown): IndexEvaluationResult[] {
 		const results = this.index[`${term}`.toUpperCase()]
 		if (results) {
-			return results.map(shard => {
-				return new IndexEvaluationResult(shard, 1)
+			return results.map(declaration => {
+				return new IndexEvaluationResult(declaration, 1)
 			})
 		}
 		return []

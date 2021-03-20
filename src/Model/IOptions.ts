@@ -1,16 +1,16 @@
 import { IIndex } from "./Index"
 import SearchResult from "./SearchResult"
-import ITraversal from "./ITraversal"
 import IComparison from "./IComparison"
 import IFilter from "./IFilter"
 import IWeight from "./IWeight"
 import IPreProcessor from "./IPreProcessor"
+import IExtraction from "./IExtraction"
 
 export default interface IOptions {
 	/** Array containing the comparison functions to be used for evaluating matches. */
 	comparison?: IComparison[]
-	/** The traversal strategy to use, i.e. how the data set should be traversed, what constitutes a match, and what to return as a result. */
-	traversal?: ITraversal
+	/** Sets the extraction strategy to be used. I.e. how documents should be extracted from the dataset. */
+	extraction?: IExtraction
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	sorting?: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Maximum number of matches before search ends */

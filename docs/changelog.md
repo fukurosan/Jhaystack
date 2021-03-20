@@ -4,6 +4,11 @@
 
 - *TODO* Move search execution off the main thread
 
+### 0.0.53
+
+ - Rewrote traversal strategies into extraction strategies
+ - Performance improvements
+
 
 ### 0.0.52
 

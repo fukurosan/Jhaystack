@@ -4,15 +4,15 @@
 
 #### Specifying Filters
 
-Jhaystack by default scans all nested property values in the provided data set for matches. You can however instruct Jhaystack to either only scan paths or values that match a given set of filter functions, or scan everything *except* values that match a given set of filter functions. Furthermore, filters are applied to the data right away, meaning that the actual search traversal will be faster since there will be less data to traverse.
+Jhaystack by default scans all nested property values in the provided data set for matches. You can however instruct Jhaystack to either only scan paths or values that match a given set of filter functions, or scan everything *except* values that match a given set of filter functions. Furthermore, filters are applied to the data right away, meaning that the actual search will be faster since there will be less data to traverse.
 
 #### Comparison Strategy
 
 The comparison strategy governs how Jhaystack determines if a value inside of the dataset is a match or not, as well as partly the relevance of the match. A comparison strategy consists of comparison functions, which could for example be "value x starts with search value y", or "value x contains search value y". You can provide multiple comparison functions that have different relevance to you, and even write your own ones. Jhaystack comes with a bunch of built in ones that should fit most needs, including fuzzy search.
 
-#### Traversal Strategy
+#### Extraction Strategy
 
-The traversal strategy describes what kind of results you are looking for, and how you want your dataset to be traversed. For instance, you may in one scenario be looking for all values that match a given search term, while in another you may be interested in finding objects where at least one value match a given search term. Traversal strategies allow you to configure this behaviour.
+The extraction strategy describes what kind of results you are looking for. It governs how Jhaystack internally extracts documents from the provided datasets. For instance, you may in one scenario be looking for all values that match a given search term, while in another you may be interested in finding objects where at least one value match a given search term. Extraction strategies allow you to configure this behaviour.
 
 #### Preprocessing Strategy
 
@@ -112,22 +112,22 @@ const myCustomStrategy = (term, context) => { return term == context }
 const myStrategies = [myCustomStrategy, ComparisonStrategy.StartsWithCaseInsensitive, ComparisonStrategy.ContainsAllWords]
 ```
 
-> ## traversal
+> ## extraction
 - **Type**: `Function`
-- **Default**: `TraversalStrategy.FIND_VALUES`
-- **Function**: `setTraversalStrategy`
+- **Default**: `ExtractionStrategy.BY_VALUE`
+- **Function**: `setExtractionStrategy`
 
-A traversal strategy that describes to Jhaystack how to traverse and interact with the search data when searching.
+An extraction strategy that describes to Jhaystack how to extract documents from the provided dataset.
 
 ```javascript
-import { TraversalStrategy } from "jhaystack"
-const traversalStrategy = TraversalStrategy.FIND_NESTED_OBJECTS
+import { ExtractionStrategy } from "jhaystack"
+const extractionStrategy = ExtractionStrategy.BY_NESTED_OBJECT
 ```
 
 > ## sorting
 - **Type**: `Function[]`
 - **Default**: `[SortingStrategy.RELEVANCE.DESCENDING]`
-- **Function**: `setTraversalStrategy`
+- **Function**: `setSortingStrategy`
 
 Array of sorting functions that describe the order in which the results of a search should be sorted. Results will be ordered by the functions provided from left to right.
 

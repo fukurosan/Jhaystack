@@ -3,7 +3,7 @@
 * [Specifying Filters](filters.md)
 * [Weighted Search](weights.md)
 * [Comparison Strategy](comparison.md)
-* [Traversal Strategy](traversal.md)
+* [Extraction Strategy](extraction.md)
 * [Preprocessing Strategy](preprocessing.md)
 * [Sorting Strategy](sorting.md)
 * [Index Strategy](index.md)

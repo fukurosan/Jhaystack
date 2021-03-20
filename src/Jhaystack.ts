@@ -2,7 +2,7 @@ import Engine from "./Engine"
 import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
 import IOptions from "./Model/IOptions"
-import ITraversal from "./Model/ITraversal"
+import IExtraction from "./Model/IExtraction"
 import IComparison from "./Model/IComparison"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
@@ -31,12 +31,12 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the traversal strategy to be used. I.e. how the data set should be traversed, what constitutes a match, as well as what to return as a result.
-	 * @param {ITraversal} strategy - Traversal strategy to be used
+	 * Sets the extraction strategy to be used. I.e. how documents should be extracted from the dataset.
+	 * @param {IExtraction} strategy - Extraction strategy to be used
 	 * @returns {Jhaystack} - this
 	 */
-	setTraversalStrategy(strategy: ITraversal): Jhaystack {
-		this.engine.setTraversalStrategy(strategy)
+	setExtractionStrategy(strategy: IExtraction): Jhaystack {
+		this.engine.setExtractionStrategy(strategy)
 		return this
 	}
 
@@ -62,7 +62,7 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the filters to be applied to the search data before traversal.
+	 * Sets the filters to be applied to the search data.
 	 * @param {IFilter[]} filters - Array of filters to be evaluated on the object property paths and values.
 	 * @returns {Jhaystack} - this
 	 */

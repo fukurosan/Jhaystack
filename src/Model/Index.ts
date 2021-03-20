@@ -1,12 +1,12 @@
-import Shard from "./Shard"
+import Declaration from "./Declaration"
 import IndexEvaluationResult from "./IndexEvaluationResult"
 
 interface IndexMap {
-	[key: string]: Shard[]
+	[key: string]: Declaration[]
 }
 
 export interface IIndex {
-	new (shards: Shard[]): Index
+	new (declarations: Declaration[]): Index
 }
 
 export default abstract class Index {
@@ -20,50 +20,50 @@ export default abstract class Index {
 	 */
 	abstract extractStringTokens(string: string): string[]
 
-	shards: Shard[] = []
+	declarations: Declaration[] = []
 	index: IndexMap
 
-	constructor(shards: Shard[]) {
-		this.shards = shards
+	constructor(declarations: Declaration[]) {
+		this.declarations = declarations
 		this.index = {}
 		this.build()
 	}
 
 	/**
 	 * Builds the index map using the extractStringTokens function.
-	 * Each extracted sub-component becomes a key to an array, containing all shards that match said sub-component.
+	 * Each extracted sub-component becomes a key to an array, containing all declarations that match said sub-component.
 	 **/
 	build(): void {
 		this.index = {}
-		this.shards.forEach(shard => {
-			const value = `${shard.value}`.toUpperCase()
+		this.declarations.forEach(declaration => {
+			const value = `${declaration.value}`.toUpperCase()
 			const tokens = this.extractStringTokens(value)
 			tokens.forEach(token => {
 				if (!this.index[token]) {
 					this.index[token] = []
 				}
-				this.index[token].push(shard)
+				this.index[token].push(declaration)
 			})
 		})
 	}
 
 	/**
 	 * Evaluates a search value against the index.
-	 * Score is evaluated by building an index of the term, and then seeing if any shards match the same index keys within a certain range.
+	 * Score is evaluated by building an index of the term, and then seeing if any declarations match the same index keys within a certain range.
 	 * @param {unknown} term - The term that should be evaluated
 	 */
 	evaluate(term: unknown): IndexEvaluationResult[] {
 		const termTokens = this.extractStringTokens(`${term}`.toUpperCase())
-		const indexQueryResult = new Map<Shard, number>()
+		const indexQueryResult = new Map<Declaration, number>()
 		for (let i = 0; i < termTokens.length; i++) {
-			const shardArray = this.index[termTokens[i]]
-			if (shardArray) {
-				for (let j = 0; j < shardArray.length; j++) {
-					const shard = shardArray[j]
-					if (!indexQueryResult.has(shard)) {
-						indexQueryResult.set(shard, 1)
+			const declarationArray = this.index[termTokens[i]]
+			if (declarationArray) {
+				for (let j = 0; j < declarationArray.length; j++) {
+					const declaration = declarationArray[j]
+					if (!indexQueryResult.has(declaration)) {
+						indexQueryResult.set(declaration, 1)
 					} else {
-						indexQueryResult.set(shard, indexQueryResult.get(shard)! + 1)
+						indexQueryResult.set(declaration, indexQueryResult.get(declaration)! + 1)
 					}
 				}
 			}
@@ -77,11 +77,11 @@ export default abstract class Index {
 	}
 
 	/**
-	 * Removes any existing index and builds a new index based on the provided shards.
-	 * @param {Shard[]} shards - Array of shards that the index should be built on
+	 * Removes any existing index and builds a new index based on the provided declarations.
+	 * @param {Declaration[]} declarations - Array of declarations that the index should be built on
 	 */
-	setShards(shards: Shard[]): void {
-		this.shards = shards
+	setDeclarations(declarations: Declaration[]): void {
+		this.declarations = declarations
 		this.build()
 	}
 }

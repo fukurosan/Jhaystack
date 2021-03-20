@@ -22,7 +22,7 @@
 	},
 	"plugins": ["@typescript-eslint"],
 	"rules": {
-		"no-console": [2, { "allow": ["warn", "error"] }],
+		"no-console": [1, { "allow": ["warn", "error"] }],
 		"indent": [2, "tab", { "SwitchCase": 1 }],
 		"linebreak-style": [2, "unix"],
 		"quotes": [2, "double"],

@@ -1,4 +1,4 @@
-import { Jhaystack, ComparisonStrategy, TraversalStrategy, SortingStrategy, IndexStrategy } from "./index"
+import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, IndexStrategy } from "./index"
 import SearchResult from "./Model/SearchResult"
 
 describe("End to end", () => {
@@ -40,7 +40,7 @@ describe("End to end", () => {
 	it("Typical fuzzy match setup works", () => {
 		const se = new Jhaystack()
 			.setComparisonStrategy([ComparisonStrategy.FUZZY_SEQUENCE])
-			.setTraversalStrategy(TraversalStrategy.FIND_VALUES)
+			.setExtractionStrategy(ExtractionStrategy.BY_VALUE)
 			.setDataset(data)
 		const result = se.search("dck")
 		expect(result.length).toBe(1)
@@ -53,7 +53,7 @@ describe("End to end", () => {
 		const se = new Jhaystack()
 			//@ts-ignore
 			.setComparisonStrategy(ComparisonStrategy.FUZZY_SEQUENCE) //This is incorrectly typed on purpose
-			.setTraversalStrategy(TraversalStrategy.FIND_OBJECTS)
+			.setExtractionStrategy(ExtractionStrategy.BY_NESTED_OBJECT)
 			.setDataset(data)
 		const result = se.search("dck")
 		expect(result.length).toBe(1)
@@ -65,19 +65,19 @@ describe("End to end", () => {
 	it("Typical weighted setup works", () => {
 		const se = new Jhaystack()
 			.setComparisonStrategy([ComparisonStrategy.BITAP])
-			.setTraversalStrategy(TraversalStrategy.FIND_VALUES)
+			.setExtractionStrategy(ExtractionStrategy.BY_VALUE)
 			.setWeights([[path => /lastName/.test(path.join(".")), 0.7]])
 			.setDataset(data)
 		const result = se.search("min")
-		const higherValueWithoutWeights = result.find(item => item.value === "Flamingo")
-		const lowerValueWithoutWeights = result.find(item => item.value === "Benjamin")
+		const higherValueWithoutWeights = result.find(document => document.value === "Flamingo")
+		const lowerValueWithoutWeights = result.find(document => document.value === "Benjamin")
 		expect((<SearchResult>higherValueWithoutWeights).relevance).toBeLessThan((<SearchResult>lowerValueWithoutWeights).relevance)
 	})
 
 	it("Typical setup with a limiter works", () => {
 		const se = new Jhaystack()
 			.setComparisonStrategy([ComparisonStrategy.CONTAINS])
-			.setTraversalStrategy(TraversalStrategy.FIND_OBJECTS)
+			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setDataset(data)
 			.setLimit(1)
 		const result = se.search("min")
@@ -90,7 +90,7 @@ describe("End to end", () => {
 	it("Typical setup with sorting works", () => {
 		const se = new Jhaystack()
 			.setComparisonStrategy([ComparisonStrategy.CONTAINS])
-			.setTraversalStrategy(TraversalStrategy.FIND_OBJECTS)
+			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setDataset(data)
 			.setSortingStrategy([SortingStrategy.PROPERTY.ASCENDING])
 		const result = se.search("min")
@@ -99,11 +99,11 @@ describe("End to end", () => {
 	})
 
 	it("Typical setup with a nested search result works", () => {
-		const se = new Jhaystack().setComparisonStrategy([ComparisonStrategy.CONTAINS]).setTraversalStrategy(TraversalStrategy.FIND_OBJECTS).setDataset(data)
+		const se = new Jhaystack().setComparisonStrategy([ComparisonStrategy.CONTAINS]).setExtractionStrategy(ExtractionStrategy.BY_OBJECT).setDataset(data)
 		const result = se.search("Nested")
 		expect(result.length).toBe(1)
 		expect(result[0].item.id).toBe("1")
-		expect(JSON.stringify(result[0].path)).toBe(JSON.stringify(["children", "0", "nested", "text"]))
+		expect(JSON.stringify(result[0].path)).toBe(JSON.stringify(["children", 0, "nested", "text"]))
 		expect(result[0].path.length).toBe(4)
 	})
 
@@ -113,14 +113,14 @@ describe("End to end", () => {
 		expect(result.length).toBe(1)
 		expect(result[0]?.relevance).toBe(0.375)
 		expect(result[0]?.item.id).toBe("1")
-		expect(JSON.stringify(result[0]?.path)).toBe(JSON.stringify(["children", "0", "nested", "text"]))
+		expect(JSON.stringify(result[0]?.path)).toBe(JSON.stringify(["children", 0, "nested", "text"]))
 		expect(result[0]?.path.length).toBe(4)
 	})
 
 	it("Typical setup with filters works", () => {
 		const se = new Jhaystack()
 			.setComparisonStrategy([ComparisonStrategy.BITAP])
-			.setTraversalStrategy(TraversalStrategy.FIND_OBJECTS)
+			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setFilters([])
 			.setDataset(data)
 		let result = se.search("min")
