@@ -34,7 +34,7 @@ Jhaystack comes with the following possible extraction strategies:
 
 > ## BY_VALUE (default)
 
-This strategy searches for any values that match the search criteria. If multiple properties on the same object match the criteria then Jhaystack will return these as multiple results.
+This strategy treats each value as a separate document. In other words, if multiple properties on the same object match the criteria then Jhaystack will return these as multiple results.
 
 Consider if you executed a search for "jhaystack" on the following object:
 ```javascript
@@ -53,7 +53,7 @@ If you executed a search for "jhaystack" you would get three results. One for id
 
 > ## BY_OBJECT
 
-This strategy finds the best matching value nested inside of the search item.
+This strategy treats each root object as one single document. In other words, even if multiple properties match the given search criteria it will still only generate one search result.
 
 Let's revisit the last example. What if you executed a search for "jhaystack" on the following object:
 ```javascript
@@ -72,7 +72,7 @@ If you executed a search for "jhaystack" you would get one results. In this case
 
 > ## BY_NESTED_OBJECT
 
-This strategy splits each data object into its nested objects and searches them separately.
+This strategy splits each data object into its nested objects and extracts each nested object as a separate document.
 
 let us bring out the example again. What if you executed a search for "jhaystack" on the following object:
 ```javascript
