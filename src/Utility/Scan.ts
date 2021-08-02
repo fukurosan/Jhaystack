@@ -1,5 +1,5 @@
 import SearchResult from "../Model/SearchResult"
-import { getRelativeRelevance } from "./Relevance"
+import { getRelativeRelevance } from "./MathUtils"
 import Document from "../Model/Document"
 import Declaration from "../Model/Declaration"
 import IComparison from "../Model/IComparison"
@@ -9,14 +9,14 @@ interface IComparisonMatch {
 	declaration: Declaration | null
 	comparisonScore: number
 	weightedComparisonScore: number
-	metaData?: IComparisonResult
+	metaData: IComparisonResult | null
 }
 
 /**
  * Finds all documents in the given document array with matching declarations. Always finds the best matching declaration.
  * @param {Document[]} documentArray - Array of documents to traverse
  * @param {any} searchValue - Value to search for
- * @param {IComparison[]} comparisonStrategy - Array of functions to use for value comparison
+ * @param {IComparison[]} comparisonStrategy - Function to use for value comparison
  * @param {number} limit - Maximum number of matches
  * @return {SearchResult[]} - A list of search results
  */
@@ -42,12 +42,12 @@ export const FULL_SCAN = (documentArray: Document[], searchValue: any, compariso
 							declaration,
 							comparisonScore,
 							weightedComparisonScore,
-							metaData: typeof comparisonResult === "object" ? comparisonResult : undefined
+							metaData: typeof comparisonResult === "object" ? comparisonResult : null
 						}
 					}
 					return bestMatch
 				},
-				{ comparisonScore: 0, weightedComparisonScore: 0, declaration: null }
+				{ comparisonScore: 0, weightedComparisonScore: 0, declaration: null, metaData: null }
 			)
 			if (foundDeclaration.comparisonScore) {
 				matches[strategyIndex].push(

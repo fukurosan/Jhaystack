@@ -1,4 +1,4 @@
-import { getRelativeRelevance, getStackedRelevance, minMax, sigmoid, sigmoidPositive } from "./Relevance"
+import { getRelativeRelevance, getStackedRelevance, minMax, sigmoid, sigmoidPositive } from "./MathUtils"
 
 describe("Mathematics Utility Module", () => {
 	it("Correctly calculates relative relevance", () => {

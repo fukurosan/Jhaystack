@@ -194,7 +194,7 @@ const CHARACTER_RULES: CHARACTER_RULE = Object.freeze({
 	]
 })
 
-function traverse(word: string, isintact: boolean): string {
+const traverse = (word: string, isintact: boolean): string => {
 	const ruleset = CHARACTER_RULES[word[word.length - 1]]
 	if (!ruleset) {
 		return word

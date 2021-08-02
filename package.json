@@ -13,7 +13,7 @@
     "prettier": "prettier \"*/**/*.{js,ts}\" --write",
     "lint": "eslint \"*/**/*.{js,ts}\"",
     "lint:fix": "npm run prettier && eslint \"*/**/*.{js,ts}\" --fix",
-    "test": "jest --verbose --coverage --no-cache",
+    "test": "jest --verbose --coverage --no-cache --maxtestworkers=50%",
     "test:watch": "jest --watch --verbose",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir ./dist/types/"
   },

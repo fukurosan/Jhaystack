@@ -1,4 +1,4 @@
-import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, IndexStrategy } from "./index"
+import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy } from "./index"
 import SearchResult from "./Model/SearchResult"
 
 describe("End to end", () => {
@@ -105,16 +105,6 @@ describe("End to end", () => {
 		expect(result[0].item.id).toBe("1")
 		expect(JSON.stringify(result[0].path)).toBe(JSON.stringify(["children", 0, "nested", "text"]))
 		expect(result[0].path.length).toBe(4)
-	})
-
-	it("Typical setup with an indexed trigram search works", () => {
-		const se = new Jhaystack().setIndexStrategy([IndexStrategy.TRIGRAM]).setDataset(data)
-		const result = se.indexLookup("Teddy Ject")
-		expect(result.length).toBe(1)
-		expect(result[0]?.relevance).toBe(0.375)
-		expect(result[0]?.item.id).toBe("1")
-		expect(JSON.stringify(result[0]?.path)).toBe(JSON.stringify(["children", 0, "nested", "text"]))
-		expect(result[0]?.path.length).toBe(4)
 	})
 
 	it("Typical setup with filters works", () => {

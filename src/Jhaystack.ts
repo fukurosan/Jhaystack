@@ -1,5 +1,4 @@
 import Engine from "./Engine"
-import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
 import IOptions from "./Model/IOptions"
 import IExtraction from "./Model/IExtraction"
@@ -104,16 +103,6 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the index strategy to be used. The index strategy is only relevant if you are doing offline searches.
-	 * @param {IIndex[]} strategy - Array of indices to be used
-	 * @returns {Jhaystack} - this
-	 */
-	setIndexStrategy(strategy: IIndex[]): Jhaystack {
-		this.engine.setIndexStrategy(strategy)
-		return this
-	}
-
-	/**
 	 * Sets the maximum number of matches to be found before search stops.
 	 * @param {number} limit - Maximum number of matches (integer)
 	 * @returns {Jhaystack} - this
@@ -147,20 +136,12 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Perform an online search for a given value
+	 * Perform a search
 	 * @param {any} searchValue - Value to search for
 	 * @returns {SearchResult[]} - Search results
 	 */
 	search(searchValue: any): SearchResult[] {
-		return this.engine.onlineSearch(searchValue)
+		return this.engine.search(searchValue)
 	}
 
-	/**
-	 * Perform an offline search for a given value
-	 * @param {any} searchValue - Value to search for
-	 * @returns {SearchResult[]} - Search results
-	 */
-	indexLookup(searchValue: any): SearchResult[] {
-		return this.engine.offlineSearch(searchValue)
-	}
 }

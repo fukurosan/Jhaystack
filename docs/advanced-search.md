@@ -51,7 +51,7 @@ myJhaystackInstance.search()
 
 > ## Speed
 
-Online searches will never be as fast as offline searches, but there are things you can do to help Jhaystack perform better.
+Full string approximation scans will never be as fast as indexed search, but there are things you can do to help Jhaystack perform better.
 
 #### Limiting results
 Do you only need x amount of results? Set a result limit. This means Jhaystack can stop searching as soon as it has found enough matches.

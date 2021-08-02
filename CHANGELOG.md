@@ -1,8 +1,10 @@
 # Changelog
-  
-### 0.1.0 TBR
 
-- *TODO* Move search execution off the main thread
+### 0.0.54
+- Added optional automatic k-value computation for Bitap based on term length
+- Improved test runner performance by lowering concurrent number of workers
+- Various bug fixes
+
 
 ### 0.0.53
 

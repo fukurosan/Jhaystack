@@ -1,6 +1,6 @@
 import IComparisonResult from "../Model/IComparisonResult"
 import { ObjectLiteral } from "../Utility/JsonUtility"
-import { getRelativeRelevance, sigmoidPositive } from "../Utility/Relevance"
+import { getRelativeRelevance, sigmoidPositive } from "../Utility/MathUtils"
 
 //Fantastic Japanese wiki article on Bitap (shift-and, shift-or):
 //https://ja.m.wikipedia.org/wiki/Bitapアルゴリズム
@@ -63,7 +63,7 @@ const getScorePenaltyValue = (
  * @param {unknown} contextIn - The context to search
  * @param {boolean} caseSensitive - Is the search case sensitive?
  * @param {boolean} isFullScan - Should the entire context be scanned for the absolute best possible match?
- * @param {number} maxErrors - Maximum levenshtein distance (integer)
+ * @param {number} maxErrors - Maximum levenshtein distance (integer). Default is -1 which results in an automatic value based on the term length
  * @param {boolean} isPositionRelevant - If true relevance will secondarily be based on term's absolute vicinity to index 0 in context
  * @param {boolean} isContextSizeRelevant - If true relevance will secondarily be based on context absolue size. Smaller is more relevant.
  * @return {number} - Resulting score. Score is primarily based on the levenshtein distance.
@@ -73,7 +73,7 @@ export const BITAP = (
 	contextIn: unknown,
 	caseSensitive = true,
 	isFullScan = true,
-	maxErrors = 2,
+	maxErrors = -1,
 	isPositionRelevant = true,
 	isContextSizeRelevant = true
 ): number | IComparisonResult => {
@@ -84,6 +84,15 @@ export const BITAP = (
 	const context = caseSensitive ? contextIn : contextIn.toUpperCase()
 	const contextLength = context.length
 	const termLength = term.length
+	if (maxErrors === -1) {
+		if (termLength <= 2) {
+			maxErrors = 0
+		} else if (termLength <= 5) {
+			maxErrors = 1
+		} else {
+			maxErrors = 2
+		}
+	}
 	if (termLength - maxErrors > contextLength) {
 		return 0
 	}
@@ -157,6 +166,5 @@ export const BITAP = (
 			matchIndex
 		}
 	}
-
 	return 0
 }

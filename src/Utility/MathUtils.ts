@@ -64,3 +64,12 @@ export const sigmoidPositive = (z: number): number => {
 export const minMax = (value: number, max: number, min: number) => {
 	return (value - min) / (max - min)
 }
+
+/**
+ * Generates a random number in a minmax range.
+ * @param {number} min - Minimum number in range
+ * @param {number} max - Maximum number in range
+ */
+export const getRandomNumberInRange = (min: number, max: number) => {
+	return Math.random() * (max - min) + min
+}

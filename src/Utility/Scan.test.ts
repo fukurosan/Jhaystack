@@ -28,7 +28,7 @@ describe("Scan", () => {
 	]
 
 	const processedData = data.map(object => {
-		return new Document(object, 0, BY_OBJECT(object)[0], [], [])
+		return new Document(0, object, 0, BY_OBJECT(object)[0])
 	})
 
 	const repetitionData = [
@@ -46,7 +46,7 @@ describe("Scan", () => {
 			name: "Jimmy Ham"
 		}
 	].map(object => {
-		return new Document(object, 0, BY_OBJECT(object)[0], [], [])
+		return new Document(0, object, 0, BY_OBJECT(object)[0])
 	})
 
 	const mixedDataTypes = [
@@ -56,7 +56,7 @@ describe("Scan", () => {
 		"Jimmy Oven",
 		["Jimmy Ham"]
 	].map(object => {
-		return new Document(object, 0, BY_OBJECT(object)[0], [], [])
+		return new Document(0, object, 0, BY_OBJECT(object)[0])
 	})
 
 	describe("Full scan", () => {

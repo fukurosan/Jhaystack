@@ -6,7 +6,6 @@
 * [Extraction Strategy](extraction.md)
 * [Preprocessing Strategy](preprocessing.md)
 * [Sorting Strategy](sorting.md)
-* [Index Strategy](index.md)
 * [Advanced Search](advanced-search.md)
 * [Build Explanation](build-explanation.md)
 * [Changelog](changelog.md)  

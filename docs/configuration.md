@@ -22,10 +22,6 @@ The preprocessing strategy describes how the values in the search data should be
 
 The sorting strategy lets you configure how the search results from a search should be ordered.
 
-#### Index Strategy
-
-Index strategies lets you to create search indices that allow for offline searches. Offline searches are significantly faster than online searches, but allow for less configurability and flexibility.
-
 ---
 
 # Options
@@ -138,18 +134,6 @@ const myCustomStrategy = (a, b) => {
 		if (typeof a.item !== "object" && typeof b.item === "object") return -1
 		return 0
 const sortingStrategy = [myCustomStrategy, SortingStrategy.RELEVANCE.DESCENDING]
-```
-
-> ## index
-- **Type**: `Object[]`
-- **Default**: `[]`
-- **Function**: `setIndexStrategy`
-
-Array of index definitions to be built and used for offline searching.
-
-```javascript
-import { IndexStrategy } from "jhaystack"
-const myIndexStrategy = [IndexStrategy.TRIGRAM]
 ```
 
 > ## limit

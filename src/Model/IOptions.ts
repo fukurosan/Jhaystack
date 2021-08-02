@@ -15,8 +15,6 @@ export default interface IOptions {
 	sorting?: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Maximum number of matches before search ends */
 	limit?: null | number
-	/** Type of indices to be built for offline search */
-	index?: IIndex[]
 	/** Filters for what data should or should not be searchable */
 	filters?: IFilter[]
 	/** Weight functions that determine how certain property paths and values should be weighed in terms of their relevance. */

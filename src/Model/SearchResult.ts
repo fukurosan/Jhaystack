@@ -20,7 +20,7 @@ export default class SearchResult {
 	/** The normalized weight of the result (0-1) */
 	normalizedWeight: number
 	/** Potential meta data from the comparison function */
-	metaData: ObjectLiteral
+	metaData: ObjectLiteral | null
 
 	constructor(
 		item: ObjectLiteral,
@@ -32,7 +32,7 @@ export default class SearchResult {
 		comparisonIndex: number,
 		weight: number,
 		normalizedWeight: number,
-		metaData?: ObjectLiteral
+		metaData?: ObjectLiteral | null
 	) {
 		this.item = item
 		this.itemIndex = index
