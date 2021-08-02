@@ -3,6 +3,10 @@
 ### 0.0.54
 - Added optional automatic k-value computation for Bitap based on term length
 - Improved test runner performance by lowering concurrent number of workers
+- Implemented NGram tokenizer strategy
+- Implemented EdgeGram tokenizer strategy
+- Implemented Shingle tokenizer strategy
+- Implemented Word tokenizer strategy
 - Various bug fixes
 
 
