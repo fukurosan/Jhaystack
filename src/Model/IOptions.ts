@@ -1,4 +1,3 @@
-import { IIndex } from "./Index"
 import SearchResult from "./SearchResult"
 import IComparison from "./IComparison"
 import IFilter from "./IFilter"
