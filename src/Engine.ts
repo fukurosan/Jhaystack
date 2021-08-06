@@ -14,6 +14,8 @@ import { TO_STRING, TO_LOWER_CASE } from "./PreProcessing/PreProcessingStrategy"
 import { FULL_SCAN } from "./Utility/Scan"
 import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
+import { Index } from "./indexing/Index"
+import IIndexOptions from "./indexing/IIndexOptions"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
@@ -36,6 +38,8 @@ export default class SearchEngine {
 	private weights: IWeight[]
 	/** Should preprocessors be applied to the search term as well? */
 	private isApplyPreProcessorsToTerm: boolean
+	/** All current indexes */
+	private indexes: Map<string, Index> = new Map()
 	/** Next available document identifier */
 	private nextDocumentID = 0
 
@@ -107,9 +111,7 @@ export default class SearchEngine {
 		this.originData.push(item)
 		const maxWeight = this.getMaxWeight()
 		this.extractionStrategy(item).forEach(declarations => {
-			this.corpus.push(
-				new Document(this.nextDocumentID++, item, this.originData.length - 1, this.processDeclarations(declarations, maxWeight))
-			)
+			this.corpus.push(new Document(this.nextDocumentID++, item, this.originData.length - 1, this.processDeclarations(declarations, maxWeight)))
 		})
 	}
 
@@ -178,6 +180,36 @@ export default class SearchEngine {
 			})
 	}
 
+	createIndex(options: IIndexOptions, doNotBuild?: boolean) {
+		if (this.indexes.has(options.id)) {
+			console.error("An index with that ID already exists!")
+			return
+		}
+		if (!options.id) {
+			console.error("No ID was provided!")
+			return
+		}
+		const index = new Index(this.corpus, options)
+		if (!doNotBuild) {
+			index.build()
+		}
+		this.indexes.set(options.id, index)
+	}
+
+	removeIndex(id: string) {
+		if (!this.indexes.has(id)) {
+			console.error("No such index exists!")
+			return
+		}
+		this.indexes.delete(id)
+	}
+
+	buildIndexes() {
+		for (const [, index] of this.indexes) {
+			index.build()
+		}
+	}
+
 	search(searchValueIn: any): SearchResult[] {
 		let searchValue = searchValueIn
 		if (this.isApplyPreProcessorsToTerm) {
@@ -189,5 +221,4 @@ export default class SearchEngine {
 		}
 		return searchResult
 	}
-
 }

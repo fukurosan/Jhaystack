@@ -354,7 +354,7 @@ export class Index {
 		}
 		for (const [token] of tokenMap) {
 			if (!this.invertedIndex.has(token)) {
-				//If the token does not exist we return en empty result
+				//If the token does not exist we return an empty result
 				return {
 					queryVector: [],
 					documents: []

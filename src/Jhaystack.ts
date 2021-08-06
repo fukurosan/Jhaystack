@@ -6,6 +6,7 @@ import IComparison from "./Model/IComparison"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
+import IIndexOptions from "./indexing/IIndexOptions"
 
 /**
  * The main Jhaystack class.
@@ -136,6 +137,30 @@ export default class Jhaystack {
 	}
 
 	/**
+	 * Creates a new Index
+	 * @param options Options for the index
+	 * @param doNotBuild If set to true the index will not immediately be built
+	 */
+	createIndex(options: IIndexOptions, doNotBuild?: boolean) {
+		return this.engine.createIndex(options, doNotBuild)
+	}
+
+	/**
+	 * Removes an Index
+	 * @param id - ID of the index
+	 */
+	removeIndex(id: string) {
+		return this.engine.removeIndex(id)
+	}
+
+	/**
+	 * (re)Builds all indexes
+	 */
+	buildIndexes() {
+		return this.engine.buildIndexes()
+	}
+
+	/**
 	 * Perform a search
 	 * @param {any} searchValue - Value to search for
 	 * @returns {SearchResult[]} - Search results
@@ -143,5 +168,5 @@ export default class Jhaystack {
 	search(searchValue: any): SearchResult[] {
 		return this.engine.search(searchValue)
 	}
-
+	
 }
