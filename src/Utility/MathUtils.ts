@@ -71,5 +71,5 @@ export const minMax = (value: number, max: number, min: number) => {
  * @param {number} max - Maximum number in range
  */
 export const getRandomNumberInRange = (min: number, max: number) => {
-	return Math.random() * (max - min) + min
+	return Math.ceil(Math.random() * (max - min) + min)
 }

@@ -24,6 +24,6 @@ export default class Declaration {
 	}
 
 	get normalizedPath() {
-		return JSON.stringify(this.path.filter(field => typeof field === "string"))
+		return this.path.filter(field => typeof field === "string").join(".")
 	}
 }

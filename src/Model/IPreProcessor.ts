@@ -1,3 +1,3 @@
 export default interface IPreProcessor {
-	(value: unknown): unknown
+	(value: any): any
 }
