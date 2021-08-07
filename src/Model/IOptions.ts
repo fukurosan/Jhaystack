@@ -5,6 +5,7 @@ import IWeight from "./IWeight"
 import IPreProcessor from "./IPreProcessor"
 import IExtraction from "./IExtraction"
 import IIndexOptions from "../indexing/IIndexOptions"
+import IClusterSpecification from "../indexing/Clustering/IClusterSpecification"
 
 export default interface IOptions {
 	/** Array containing the comparison functions to be used for evaluating matches. */
@@ -14,6 +15,11 @@ export default interface IOptions {
 	/** Sets the indexing strategy to be used */
 	indexing?: {
 		options: IIndexOptions
+		doNotBuild?: boolean
+	}
+	/** Sets the cluster strategy to be used */
+	clustering?: {
+		options: IClusterSpecification[]
 		doNotBuild?: boolean
 	}
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */

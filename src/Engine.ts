@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { BITAP } from "./Comparison/Bitap"
 import { BY_VALUE } from "./Extraction/ByValue"
 import { mergeArraySortFunctions } from "./Utility/JsonUtility"
@@ -16,6 +17,8 @@ import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
 import { Index } from "./indexing/Index"
 import IIndexOptions from "./indexing/IIndexOptions"
+import IClusterSpecification from "./indexing/Clustering/IClusterSpecification"
+import ICluster from "./indexing/Clustering/ICluster"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
@@ -28,6 +31,8 @@ export default class SearchEngine {
 	private preProcessingStrategy: IPreProcessor[]
 	/** The index strategy to use */
 	private indexStrategy: Index | null = null
+	/** The cluster strategy to use */
+	private clusterStrategy: ICluster[] | null = null
 	/** The processed data set used for searching */
 	private corpus: Document[]
 	/** The original data set provided by the user */
@@ -64,6 +69,7 @@ export default class SearchEngine {
 			options.weights && this.setWeights(options.weights)
 			options.preProcessing && this.setPreProcessingStrategy(options.preProcessing)
 			options.indexing && options.indexing.options && this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
+			options.clustering && options.clustering.options && this.setClusterStrategy(options.clustering.options, options.clustering.doNotBuild)
 			typeof options.applyPreProcessorsToTerm === "boolean" && (this.isApplyPreProcessorsToTerm = options.applyPreProcessorsToTerm)
 			options.data && this.setDataset(options.data)
 		}
@@ -193,6 +199,35 @@ export default class SearchEngine {
 		if (this.indexStrategy) {
 			this.indexStrategy.build()
 		}
+	}
+
+	setClusterStrategy(clusterSpecifications: IClusterSpecification[], doNotBuild?: boolean) {
+		this.clusterStrategy = clusterSpecifications.map(specification => {
+			return new specification.cluster(specification.id, specification.options)
+		})
+		if (!doNotBuild) {
+			this.buildClusters()
+		}
+	}
+
+	buildClusters() {
+		const documents = this.indexStrategy
+			? this.indexStrategy.getAllIndexDocuments()
+			: this.corpus.map(doc => ({
+					document: doc,
+					tokenMap: new Map(),
+					vector: []
+			  }))
+		const statistics = this.indexStrategy
+			? this.indexStrategy.getStatistics()
+			: {
+					numberOfDocuments: this.corpus.length,
+					numberOfTokens: -1,
+					averageDocumentLength: -1
+			  }
+		this.clusterStrategy?.forEach(cluster => {
+			cluster.build(documents, statistics)
+		})
 	}
 
 	search(searchValueIn: any): SearchResult[] {

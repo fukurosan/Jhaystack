@@ -7,6 +7,7 @@ import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import IIndexOptions from "./indexing/IIndexOptions"
+import IClusterSpecification from "./indexing/Clustering/IClusterSpecification"
 
 /**
  * The main Jhaystack class.
@@ -153,6 +154,15 @@ export default class Jhaystack {
 	}
 
 	/**
+	 * Sets the cluster strategy to use
+	 * @param clusterSpecifications - Cluster specifications
+	 * @param doNotBuild If set to true the clusters will not immediately be built
+	 */
+	setClusterStrategy(clusterSpecifications: IClusterSpecification[], doNotBuild?: boolean) {
+		this.engine.setClusterStrategy(clusterSpecifications, doNotBuild)
+	}
+
+	/**
 	 * Perform a search
 	 * @param {any} searchValue - Value to search for
 	 * @returns {SearchResult[]} - Search results
@@ -160,5 +170,4 @@ export default class Jhaystack {
 	search(searchValue: any): SearchResult[] {
 		return this.engine.search(searchValue)
 	}
-	
 }

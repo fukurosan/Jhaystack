@@ -19,8 +19,6 @@ interface IInvertedIndexRow {
 }
 
 export class Index {
-	/** Identifier for the index */
-	private id: string
 	/** Filters for the index */
 	private filters: IFilter[] = []
 	/** PreProcessors for the index */
@@ -31,9 +29,6 @@ export class Index {
 	private weighter: IWeighter
 	/** Should fields be encoded into the tokens? */
 	private ENCODE_FIELDS = false
-
-	/** Clusters for the index */
-	private clusters: Map<any, ICluster> = new Map<any, ICluster>()
 
 	/** Map that holds Document -> Token Meta Map relation. */
 	private forwardIndex: Map<DocumentID, Map<string, IIndexTokenMeta>> = new Map()
@@ -48,20 +43,11 @@ export class Index {
 	private totalDocumentLength = 0
 
 	constructor(corpus: Document[], options: IIndexOptions) {
-		if (!options.id) {
-			throw new Error("No ID was provided to the index.")
-		}
-		this.id = options.id
 		this.filters = options.filters ? options.filters : []
 		this.preProcessors = options.preProcessors ? options.preProcessors : []
 		this.tokenizer = options.tokenizer ? options.tokenizer : WORD
 		const weighterOptions = options.weighterOptions ? options.weighterOptions : {}
 		this.weighter = options.weighter ? new options.weighter(this, weighterOptions) : new TFIDF(this, weighterOptions)
-		if (options.clusters) {
-			options.clusters.forEach(clusterSpecification => {
-				this.addCluster(clusterSpecification)
-			})
-		}
 		if (typeof options.encodeFields === "boolean") {
 			this.ENCODE_FIELDS = options.encodeFields
 		}
@@ -80,25 +66,6 @@ export class Index {
 		for (const [, tokenMap] of this.forwardIndex) {
 			this.weighter.getTFMagnitude(tokenMap)
 		}
-		for (const [, cluster] of this.clusters) {
-			cluster.build(this.getAllIndexDocuments(), this.getStatistics())
-		}
-	}
-
-	/**
-	 * Adds a new cluster to the index
-	 * @param clusterSpecification - Cluster specification to be added
-	 */
-	addCluster(clusterSpecification: IClusterSpecification) {
-		this.clusters.set(clusterSpecification.id, new clusterSpecification.cluster(clusterSpecification.id, clusterSpecification.options))
-	}
-
-	/**
-	 * Removes a cluster from the index
-	 * @param id - ID of cluster to be removed
-	 */
-	removeCluster(id: any) {
-		this.clusters.delete(id)
 	}
 
 	/**
@@ -424,10 +391,11 @@ export class Index {
 	}
 
 	/**
+	 * To be moved
 	 * Find all documents clustered with the provided document
 	 * @param doc - The document to be used in search
 	 * @param clusters - Cluster to be searched
-	 */
+	 *
 	inexactKRetrievalByClusters(doc: Document, clusters: string[]) {
 		if (!clusters.length) {
 			return []
@@ -461,5 +429,5 @@ export class Index {
 			return acc
 		}, [])
 		return intersection
-	}
+	}*/
 }
