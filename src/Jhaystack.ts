@@ -6,7 +6,7 @@ import IComparison from "./Model/IComparison"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
-import IIndexOptions from "./indexing/IIndexOptions"
+import IIndexOptions from "./Indexing/IIndexOptions"
 import IClusterSpecification from "./Clustering/IClusterSpecification"
 import ISpelling from "./Model/ISpelling"
 

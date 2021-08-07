@@ -5,7 +5,7 @@ import * as SortingStrategy from "./Sorting/SortingStrategy"
 import * as PreProcessingStrategy from "./PreProcessing/PreProcessingStrategy"
 import * as tokenizerStrategy from "./Tokenizer/TokenizerStrategy"
 import * as clusterStrategy from "./Clustering/clusterStrategy"
-import * as rankingStrategy from "./indexing/Ranking/rankingStrategy"
+import * as rankingStrategy from "./Indexing/Ranking/rankingStrategy"
 import * as spellingStrategy from "./Spelling/spellingStrategy"
 
 export {

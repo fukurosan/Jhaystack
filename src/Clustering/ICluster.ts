@@ -1,5 +1,5 @@
 import { DocumentID } from "../Model/Document"
-import { IIndexStatistics } from "../indexing/IIndexStatistics"
+import { IIndexStatistics } from "../Indexing/IIndexStatistics"
 import IIndexDocument from "../Model/IIndexDocument"
 
 export default interface ICluster {
