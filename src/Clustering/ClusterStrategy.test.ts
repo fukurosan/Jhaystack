@@ -1,7 +1,49 @@
-import { KMeans } from "./clusterStrategy"
-import Document from "../../Model/Document"
+import { KMeans, Range } from "./clusterStrategy"
+import Document from "../Model/Document"
+import Declaration from "../Model/Declaration"
 
 describe("Clustering Strategy Module", () => {
+	it("Range works", () => {
+		let nextID = 0
+		const documents = [
+			{
+				number: 1
+			},
+			{
+				number: 2
+			},
+			{
+				number: 3
+			},
+			{
+				number: 4
+			},
+			{
+				number: 5
+			},
+			{
+				number: 6
+			}
+		]
+			.map((obj, i) => new Document(++nextID, obj, i, [new Declaration(obj.number, ["number"])]))
+			.map(doc => ({
+				document: doc,
+				tokenMap: new Map(),
+				vector: []
+			}))
+		const rangeCluster = new Range("1", { field: "number" })
+		rangeCluster.build(documents)
+		const testDocument = documents[0] //This is irrelevant to the cluster
+		const lt = rangeCluster.evaluate(testDocument, { lessThan: 5 })
+		const gt = rangeCluster.evaluate(testDocument, { greaterThan: 2 })
+		const range = rangeCluster.evaluate(testDocument, { lessThan: 5, greaterThan: 2 })
+		expect(lt.length).toBe(4)
+		expect(gt.length).toBe(4)
+		expect(range.length).toBe(2)
+		expect(range).toContain(3)
+		expect(range).toContain(4)
+	})
+
 	it("KMeans works", () => {
 		const documents = [
 			{

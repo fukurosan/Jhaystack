@@ -5,7 +5,7 @@ import IWeight from "./IWeight"
 import IPreProcessor from "./IPreProcessor"
 import IExtraction from "./IExtraction"
 import IIndexOptions from "../indexing/IIndexOptions"
-import IClusterSpecification from "../indexing/Clustering/IClusterSpecification"
+import IClusterSpecification from "../Clustering/IClusterSpecification"
 
 export default interface IOptions {
 	/** Array containing the comparison functions to be used for evaluating matches. */

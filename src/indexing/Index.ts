@@ -6,10 +6,8 @@ import IIndexTokenMeta from "./IIndexTokenMeta"
 import { ObjectLiteral } from "../Utility/JsonUtility"
 import IIndexOptions from "./IIndexOptions"
 import { WORD } from "../Tokenizer/TokenizerStrategy"
-import IWeighter from "./Weighting/IWeighter"
-import { TFIDF } from "./Weighting/weighterStrategy"
-import ICluster from "./Clustering/ICluster"
-import IClusterSpecification from "./Clustering/IClusterSpecification"
+import IRanker from "./Ranking/IRanker"
+import { TFIDF } from "./Ranking/rankingStrategy"
 import { IIndexStatistics } from "./IIndexStatistics"
 import IIndexDocument from "./IIndexDocument"
 
@@ -25,8 +23,8 @@ export class Index {
 	private preProcessors: IPreProcessor[] = []
 	/** Tokenizer for the index */
 	private tokenizer: ITokenizer
-	/** Weighter for the index */
-	private weighter: IWeighter
+	/** Ranker for the index */
+	private ranker: IRanker
 	/** Should fields be encoded into the tokens? */
 	private ENCODE_FIELDS = false
 
@@ -46,8 +44,8 @@ export class Index {
 		this.filters = options.filters ? options.filters : []
 		this.preProcessors = options.preProcessors ? options.preProcessors : []
 		this.tokenizer = options.tokenizer ? options.tokenizer : WORD
-		const weighterOptions = options.weighterOptions ? options.weighterOptions : {}
-		this.weighter = options.weighter ? new options.weighter(this, weighterOptions) : new TFIDF(this, weighterOptions)
+		const rankerOptions = options.rankerOptions ? options.rankerOptions : {}
+		this.ranker = options.ranker ? new options.ranker(this, rankerOptions) : new TFIDF(this, rankerOptions)
 		if (typeof options.encodeFields === "boolean") {
 			this.ENCODE_FIELDS = options.encodeFields
 		}
@@ -61,10 +59,10 @@ export class Index {
 	 */
 	build() {
 		for (const [token] of this.invertedIndex) {
-			this.invertedIndex.get(token)!.idf = this.weighter.getIDFMagnitude(token)
+			this.invertedIndex.get(token)!.idf = this.ranker.getIDFMagnitude(token)
 		}
 		for (const [, tokenMap] of this.forwardIndex) {
-			this.weighter.getTFMagnitude(tokenMap)
+			this.ranker.getTFMagnitude(tokenMap)
 		}
 	}
 
@@ -167,7 +165,7 @@ export class Index {
 					}
 				}
 			})
-		approximateMagnitude && this.weighter.getTFMagnitude(documentTokenMap)
+		approximateMagnitude && this.ranker.getTFMagnitude(documentTokenMap)
 		return documentTokenMap
 	}
 
@@ -310,7 +308,7 @@ export class Index {
 		}
 		//Compute document list
 		const tokenMap = this.getDocumentTokenMap(doc, false)
-		this.weighter.getQueryTFMagnitude(tokenMap)
+		this.ranker.getQueryTFMagnitude(tokenMap)
 		let documents: Set<DocumentID>[] = []
 		//Handle field encoding for the query
 		if (this.ENCODE_FIELDS) {
@@ -401,7 +399,7 @@ export class Index {
 			return []
 		}
 		const tokenMap = this.getDocumentTokenMap(doc, false)
-		this.weighter.getQueryTFMagnitude(tokenMap)
+		this.ranker.getQueryTFMagnitude(tokenMap)
 		const vector = this.getDenseVectorFromTokenMap(tokenMap)
 		const documents: Set<DocumentID>[] = []
 		for (let i = 0; i < clusters.length; i++) {

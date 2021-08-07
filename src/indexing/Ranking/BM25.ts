@@ -1,4 +1,4 @@
-import IWeighter from "./IWeighter"
+import IRanker from "./IRanker"
 import IIndexTokenMeta from "../IIndexTokenMeta"
 import { Index } from "../Index"
 
@@ -14,7 +14,7 @@ const DEFAULT_OPTIONS: IBM25Options = Object.freeze({
 	b: 0.75
 })
 
-export class BM25 implements IWeighter {
+export class BM25 implements IRanker {
 	/** Configuration for the BM25 module */
 	private options: IBM25Options
 	/** Index bound tot he BM25 module */

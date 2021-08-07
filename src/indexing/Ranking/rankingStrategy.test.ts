@@ -1,6 +1,6 @@
 import { Index } from "../Index"
 import { simpleDocuments } from "../__test__/testDocuments"
-import { TFIDF, BM25 } from "./weighterStrategy"
+import { TFIDF, BM25 } from "./rankingStrategy"
 import IIndexOptions from "../IIndexOptions"
 
 describe("Vector Scoring Strategy Module", () => {
@@ -13,9 +13,8 @@ describe("Vector Scoring Strategy Module", () => {
 
 	it("TFIDF works", () => {
 		const withDefaults = getAllVectorsFromOptions({
-			id: "1",
-			weighter: TFIDF,
-			weighterOptions: {}
+			ranker: TFIDF,
+			rankerOptions: {}
 		})
 		const expectedDefaultOutcome = [
 			[
@@ -157,9 +156,8 @@ describe("Vector Scoring Strategy Module", () => {
 		expect(withDefaults).toStrictEqual(expectedDefaultOutcome)
 
 		const withNoNormalization = getAllVectorsFromOptions({
-			id: "1",
-			weighter: TFIDF,
-			weighterOptions: {
+			ranker: TFIDF,
+			rankerOptions: {
 				smartirs: "ntn"
 			}
 		})
@@ -303,9 +301,8 @@ describe("Vector Scoring Strategy Module", () => {
 		expect(withNoNormalization).toStrictEqual(expectedNoNormalizationResult)
 
 		const withPivotNoNormalization = getAllVectorsFromOptions({
-			id: "1",
-			weighter: TFIDF,
-			weighterOptions: {
+			ranker: TFIDF,
+			rankerOptions: {
 				smartirs: "ntn",
 				pivot: true
 			}
@@ -452,9 +449,8 @@ describe("Vector Scoring Strategy Module", () => {
 
 	it("BM25 works", () => {
 		const withDefaults = getAllVectorsFromOptions({
-			id: "1",
-			weighter: BM25,
-			weighterOptions: {}
+			ranker: BM25,
+			rankerOptions: {}
 		})
 		const expectedWithDefaults = [
 			[

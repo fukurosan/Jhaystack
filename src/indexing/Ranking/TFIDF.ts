@@ -1,6 +1,6 @@
 import { Index } from "../Index"
 import IIndexTokenMeta from "../IIndexTokenMeta"
-import IWeighter from "./IWeighter"
+import IRanker from "./IRanker"
 
 interface ITFIDFOptions {
 	/** Three characters defining the tf, idf and normalization type to be used. */
@@ -23,7 +23,7 @@ const DEFAULT_OPTIONS: ITFIDFOptions = Object.freeze({
 	slope: 0.65
 })
 
-export class TFIDF implements IWeighter {
+export class TFIDF implements IRanker {
 	/** Configuration for the TFIDF module */
 	private options: ITFIDFOptions
 	/** Index bound tot he TFIDF module */
@@ -41,7 +41,7 @@ export class TFIDF implements IWeighter {
 		}
 		if (this.options.smartirs) {
 			if (!this.evaluateSMART(this.options.smartirs)) {
-				throw new Error("Incorrect smartirs parameter passed to TFIDF weighter module: " + this.options.smartirs)
+				throw new Error("Incorrect smartirs parameter passed to TFIDF ranker module: " + this.options.smartirs)
 			}
 		}
 	}
@@ -118,7 +118,7 @@ export class TFIDF implements IWeighter {
 			const loggedValue = toLog ? Math.log10(toLog) : 0
 			return Math.max(0, loggedValue)
 		} else {
-			throw new Error("Invalid IDF type passed to weighter function: " + idfType)
+			throw new Error("Invalid IDF type passed to ranker function: " + idfType)
 		}
 	}
 
@@ -152,7 +152,7 @@ export class TFIDF implements IWeighter {
 				const averageTermFrequency = totalTerms / tokenMap.size
 				TF = (1 + Math.log10(naturalFrequency)) / (1 + Math.log10(averageTermFrequency))
 			} else {
-				throw new Error("Invalid TF type passed to weighter: " + tfType)
+				throw new Error("Invalid TF type passed to ranker: " + tfType)
 			}
 			meta.magnitude = TF * this.index.getInverseDocumentFrequency(token)
 		}
@@ -190,7 +190,7 @@ export class TFIDF implements IWeighter {
 				}
 			}
 		} else if (normalizationType !== "n" && normalizationType !== "none") {
-			throw new Error("Invalid normalization type passed to weighter")
+			throw new Error("Invalid normalization type passed to ranker")
 		}
 		//Handle pivot of magnitude
 		if (pivot) {

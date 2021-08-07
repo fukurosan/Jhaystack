@@ -2,9 +2,7 @@ import { Index } from "./Index"
 import { simpleDocuments, createSimpleDocumentByString } from "./__test__/testDocuments"
 
 describe("Index Module", () => {
-	const defaultOptions = {
-		id: "1"
-	}
+	const defaultOptions = {}
 
 	const documentZeroDenseVector = [
 		0.4472135954999579,

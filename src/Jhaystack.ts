@@ -7,7 +7,7 @@ import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import IIndexOptions from "./indexing/IIndexOptions"
-import IClusterSpecification from "./indexing/Clustering/IClusterSpecification"
+import IClusterSpecification from "./Clustering/IClusterSpecification"
 
 /**
  * The main Jhaystack class.

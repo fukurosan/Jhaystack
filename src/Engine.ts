@@ -17,8 +17,8 @@ import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
 import { Index } from "./indexing/Index"
 import IIndexOptions from "./indexing/IIndexOptions"
-import IClusterSpecification from "./indexing/Clustering/IClusterSpecification"
-import ICluster from "./indexing/Clustering/ICluster"
+import IClusterSpecification from "./Clustering/IClusterSpecification"
+import ICluster from "./Clustering/ICluster"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
