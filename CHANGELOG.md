@@ -6,18 +6,20 @@
 - Added index clustering support
 - Added KMeans cluster strategy
 - Added Value Range cluster strategy
-- Added new Spelling Strategy support
+- Added Spelling Strategy support
 - Added new Trigram Spelling Strategy
 - Added Thread Planner and partly moved search execution off main thread
 - Added TFIDF weighter strategy
 - Added BM25 weighter strategy
-- Added optional automatic k-value computation for Bitap based on term length
+- Added tokenizer Strategy support
 - Added NGram tokenizer strategy
 - Added EdgeGram tokenizer strategy
 - Added Shingle tokenizer strategy
 - Added Word tokenizer strategy
+- Added optional automatic k-value computation for Bitap based on term length
 - Improved test runner performance by lowering concurrent number of workers
-- Various bug fixes
+- Ended support for legacy browsers (IE11).
+- Various bug fixes and performance improvements
 
 
 ### 0.0.53
