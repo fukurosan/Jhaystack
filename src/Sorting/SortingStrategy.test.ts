@@ -1,4 +1,4 @@
-import { VALUE, PROPERTY, DEPTH, RELEVANCE, COMPARISON_SCORE, COMPARISON_INDEX } from "./SortingStrategy"
+import { VALUE, PROPERTY, DEPTH, RELEVANCE, COMPARISON_SCORE } from "./SortingStrategy"
 import SearchResult from "../Model/SearchResult"
 
 describe("Sorting Strategy", () => {
@@ -6,12 +6,12 @@ describe("Sorting Strategy", () => {
 
 	beforeEach(() => {
 		items = [
-			new SearchResult({}, 0, ["1", "2", "3", "4", "5", "Attr 2"], "Value 1", 1, 1, 0, 1, 1),
-			new SearchResult({}, 0, ["1", "2", "3", "4", "Attr 1"], "Value 2", 0.8, 0.8, 0, 1, 1),
-			new SearchResult({}, 0, ["1", "2", "3", "Attr 6"], "Value 3", 0.7, 0.7, 0, 1, 1),
-			new SearchResult({}, 0, ["1", "2", "Attr 5"], "Value 4", 0.6, 0.6, 0, 1, 1),
-			new SearchResult({}, 0, ["1", "Attr 4"], "Value 5", 0.5, 0.5, 1, 1, 1),
-			new SearchResult({}, 0, ["Attr 3"], "Value 6", 0.4, 0.4, 1, 1, 1)
+			new SearchResult({}, 0, ["1", "2", "3", "4", "5", "Attr 2"], "Value 1", 1, 1, 1, 1),
+			new SearchResult({}, 0, ["1", "2", "3", "4", "Attr 1"], "Value 2", 0.8, 0.8, 1, 1),
+			new SearchResult({}, 0, ["1", "2", "3", "Attr 6"], "Value 3", 0.7, 0.7, 1, 1),
+			new SearchResult({}, 0, ["1", "2", "Attr 5"], "Value 4", 0.6, 0.6, 1, 1),
+			new SearchResult({}, 0, ["1", "Attr 4"], "Value 5", 0.5, 0.5, 1, 1),
+			new SearchResult({}, 0, ["Attr 3"], "Value 6", 0.4, 0.4, 1, 1)
 		]
 	})
 
@@ -58,14 +58,5 @@ describe("Sorting Strategy", () => {
 		result = items.sort(COMPARISON_SCORE.ASCENDING)
 		expect(result[0].comparisonScore).toBe(0.4)
 		expect(result[5].comparisonScore).toBe(1)
-	})
-
-	it("Sorts by comparison index", () => {
-		let result = items.sort(COMPARISON_INDEX.DESCENDING)
-		expect(result[0].comparisonIndex).toBe(1)
-		expect(result[5].comparisonIndex).toBe(0)
-		result = items.sort(COMPARISON_INDEX.ASCENDING)
-		expect(result[0].comparisonIndex).toBe(0)
-		expect(result[5].comparisonIndex).toBe(1)
 	})
 })

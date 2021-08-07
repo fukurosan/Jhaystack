@@ -24,10 +24,10 @@ export default class Jhaystack {
 
 	/**
 	 * Sets the value comparison strategy to be used.
-	 * @param {IComparison[]} strategy - Array of comparison functions to be used
+	 * @param {IComparison[]} strategy - comparison function to be used
 	 * @returns {Jhaystack} - this
 	 */
-	setComparisonStrategy(strategy: IComparison[]): Jhaystack {
+	setComparisonStrategy(strategy: IComparison): Jhaystack {
 		this.engine.setComparisonStrategy(strategy)
 		return this
 	}

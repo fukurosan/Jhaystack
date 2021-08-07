@@ -9,8 +9,8 @@ import IClusterSpecification from "../Clustering/IClusterSpecification"
 import ISpelling from "./ISpelling"
 
 export default interface IOptions {
-	/** Array containing the comparison functions to be used for evaluating matches. */
-	comparison?: IComparison[]
+	/** Default comparison function to be used for evaluating matches. */
+	comparison?: IComparison
 	/** Sets the extraction strategy to be used. I.e. how documents should be extracted from the dataset. */
 	extraction?: IExtraction
 	/** Sets the indexing strategy to be used */

@@ -38,10 +38,7 @@ describe("End to end", () => {
 	]
 
 	it("Typical fuzzy match setup works", () => {
-		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.FUZZY_SEQUENCE])
-			.setExtractionStrategy(ExtractionStrategy.BY_VALUE)
-			.setDataset(data)
+		const se = new Jhaystack().setComparisonStrategy(ComparisonStrategy.FUZZY_SEQUENCE).setExtractionStrategy(ExtractionStrategy.BY_VALUE).setDataset(data)
 		const result = se.search("dck")
 		expect(result.length).toBe(1)
 		expect(result[0].item.firstName).toBe("Arnold")
@@ -64,7 +61,7 @@ describe("End to end", () => {
 
 	it("Typical weighted setup works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.BITAP])
+			.setComparisonStrategy(ComparisonStrategy.BITAP)
 			.setExtractionStrategy(ExtractionStrategy.BY_VALUE)
 			.setWeights([[path => /lastName/.test(path.join(".")), 0.7]])
 			.setDataset(data)
@@ -76,7 +73,7 @@ describe("End to end", () => {
 
 	it("Typical setup with a limiter works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.CONTAINS])
+			.setComparisonStrategy(ComparisonStrategy.CONTAINS)
 			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setDataset(data)
 			.setLimit(1)
@@ -89,7 +86,7 @@ describe("End to end", () => {
 
 	it("Typical setup with sorting works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.CONTAINS])
+			.setComparisonStrategy(ComparisonStrategy.CONTAINS)
 			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setDataset(data)
 			.setSortingStrategy([SortingStrategy.PROPERTY.ASCENDING])
@@ -99,7 +96,7 @@ describe("End to end", () => {
 	})
 
 	it("Typical setup with a nested search result works", () => {
-		const se = new Jhaystack().setComparisonStrategy([ComparisonStrategy.CONTAINS]).setExtractionStrategy(ExtractionStrategy.BY_OBJECT).setDataset(data)
+		const se = new Jhaystack().setComparisonStrategy(ComparisonStrategy.CONTAINS).setExtractionStrategy(ExtractionStrategy.BY_OBJECT).setDataset(data)
 		const result = se.search("Nested")
 		expect(result.length).toBe(1)
 		expect(result[0].item.id).toBe("1")
@@ -109,7 +106,7 @@ describe("End to end", () => {
 
 	it("Typical setup with filters works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.BITAP])
+			.setComparisonStrategy(ComparisonStrategy.BITAP)
 			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setFilters([])
 			.setDataset(data)

@@ -18,7 +18,8 @@
 - Added Word tokenizer strategy
 - Added optional automatic k-value computation for Bitap based on term length
 - Improved test runner performance by lowering concurrent number of workers
-- Ended support for legacy browsers (IE11).
+- Ended support for legacy browsers (IE11)
+- Removed ability to set multiple default comparison strategies
 - Various bug fixes and performance improvements
 
 

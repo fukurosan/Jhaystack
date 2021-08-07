@@ -13,8 +13,6 @@ export default class SearchResult {
 	relevance: number
 	/** The score from the value comparison function */
 	comparisonScore: number
-	/** The index of the comparison function that found the match */
-	comparisonIndex: number
 	/** The weight of the result */
 	weight: number
 	/** The normalized weight of the result (0-1) */
@@ -29,7 +27,6 @@ export default class SearchResult {
 		value: any,
 		relevance: number,
 		comparisonScore: number,
-		comparisonIndex: number,
 		weight: number,
 		normalizedWeight: number,
 		metaData?: ObjectLiteral | null
@@ -40,7 +37,6 @@ export default class SearchResult {
 		this.value = value
 		this.relevance = relevance
 		this.comparisonScore = comparisonScore
-		this.comparisonIndex = comparisonIndex
 		this.weight = weight
 		this.normalizedWeight = normalizedWeight
 		this.metaData = {}

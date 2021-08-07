@@ -22,8 +22,8 @@ import ICluster from "./Clustering/ICluster"
 import ISpelling from "./Model/ISpelling"
 
 export default class SearchEngine {
-	/** Array containing the comparison functions to be used for evaluating matches */
-	private comparisonStrategy: IComparison[]
+	/** Default Comparison function to be used for evaluating matches */
+	private comparisonStrategy: IComparison
 	/** The extraction strategy to use */
 	private extractionStrategy: IExtraction
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
@@ -52,7 +52,7 @@ export default class SearchEngine {
 	private nextDocumentID = 0
 
 	constructor(options?: IOptions) {
-		this.comparisonStrategy = [BITAP]
+		this.comparisonStrategy = BITAP
 		this.extractionStrategy = BY_VALUE
 		this.indexStrategy = null
 		this.clusterStrategy = []
@@ -82,12 +82,8 @@ export default class SearchEngine {
 		}
 	}
 
-	setComparisonStrategy(strategy: IComparison[]): void {
-		if (!Array.isArray(strategy)) {
-			this.comparisonStrategy = [strategy]
-		} else {
-			this.comparisonStrategy = strategy
-		}
+	setComparisonStrategy(strategy: IComparison): void {
+		this.comparisonStrategy = strategy
 	}
 
 	setExtractionStrategy(strategy: IExtraction): void {
