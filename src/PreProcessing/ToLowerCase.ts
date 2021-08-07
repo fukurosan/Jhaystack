@@ -1,8 +1,8 @@
 /**
  * Makes strings lower case, and simply passes through other values.
- * @param {unknown} value - The value to be processed
+ * @param {any} value - The value to be processed
  * @return {number} - Resulting value
  */
-export const TO_LOWER_CASE = (value: unknown): unknown => {
+export const TO_LOWER_CASE = (value: any): any => {
 	return typeof value === "string" ? value.toLowerCase() : value
 }

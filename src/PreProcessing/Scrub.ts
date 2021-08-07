@@ -1,9 +1,9 @@
 /**
  * Cleans an array or a string from common special characters.
- * @param {unknown} value - The value to be processed
+ * @param {any} value - The value to be processed
  * @return {number} - Cleaned value
  */
-export const SCRUB = (value: unknown): unknown => {
+export const SCRUB = (value: any): any => {
 	if (Array.isArray(value)) {
 		return value.map(val => getScrubbedWord(val))
 	} else if (typeof value === "string") {

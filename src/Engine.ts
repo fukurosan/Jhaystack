@@ -11,7 +11,7 @@ import IComparison from "./Model/IComparison"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
-import { TO_STRING, TO_LOWER_CASE } from "./PreProcessing/PreProcessingStrategy"
+import { TO_STRING, TO_LOWER_CASE, SCRUB } from "./PreProcessing/PreProcessingStrategy"
 import { FULL_SCAN } from "./Utility/Scan"
 import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
@@ -19,6 +19,7 @@ import { Index } from "./indexing/Index"
 import IIndexOptions from "./indexing/IIndexOptions"
 import IClusterSpecification from "./Clustering/IClusterSpecification"
 import ICluster from "./Clustering/ICluster"
+import ISpelling from "./Model/ISpelling"
 
 export default class SearchEngine {
 	/** Array containing the comparison functions to be used for evaluating matches */
@@ -30,9 +31,11 @@ export default class SearchEngine {
 	/** Array of value processors to use for preprocessing the search data values */
 	private preProcessingStrategy: IPreProcessor[]
 	/** The index strategy to use */
-	private indexStrategy: Index | null = null
+	private indexStrategy: Index | null
 	/** The cluster strategy to use */
-	private clusterStrategy: ICluster[] = []
+	private clusterStrategy: ICluster[]
+	/** The speller strategy to use */
+	private spellingStrategy: ISpelling[]
 	/** The processed data set used for searching */
 	private corpus: Document[]
 	/** The original data set provided by the user */
@@ -51,6 +54,9 @@ export default class SearchEngine {
 	constructor(options?: IOptions) {
 		this.comparisonStrategy = [BITAP]
 		this.extractionStrategy = BY_VALUE
+		this.indexStrategy = null
+		this.clusterStrategy = []
+		this.spellingStrategy = []
 		this.sortingStrategy = [RELEVANCE.DESCENDING]
 		this.corpus = []
 		this.originData = []
@@ -70,6 +76,7 @@ export default class SearchEngine {
 			options.preProcessing && this.setPreProcessingStrategy(options.preProcessing)
 			options.indexing && options.indexing.options && this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
 			options.clustering && options.clustering.options && this.setClusterStrategy(options.clustering.options, options.clustering.doNotBuild)
+			options.spelling && options.spelling.strategy && this.setSpellingStrategy(options.spelling.strategy, options.spelling.doNotBuild)
 			typeof options.applyPreProcessorsToTerm === "boolean" && (this.isApplyPreProcessorsToTerm = options.applyPreProcessorsToTerm)
 			options.data && this.setDataset(options.data)
 		}
@@ -228,6 +235,28 @@ export default class SearchEngine {
 		this.clusterStrategy.forEach(cluster => {
 			cluster.build(documents, statistics)
 		})
+	}
+
+	setSpellingStrategy(spellers: (new () => ISpelling)[], doNotBuild?: boolean) {
+		this.spellingStrategy = spellers.map(speller => new speller())
+		if (!doNotBuild) {
+			this.buildSpellers()
+		}
+	}
+
+	buildSpellers() {
+		const allWordsSet = new Set()
+		this.corpus.forEach(doc => {
+			doc.declarations.forEach(declaration => {
+				if (typeof declaration.originValue === "string") {
+					SCRUB(declaration.originValue)
+						.split(" ")
+						.forEach((word: string) => allWordsSet.add(word))
+				}
+			})
+		})
+		const allWords = Array.from(allWordsSet)
+		this.spellingStrategy.forEach(speller => speller.build(allWords))
 	}
 
 	search(searchValueIn: any): SearchResult[] {

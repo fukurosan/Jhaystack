@@ -8,6 +8,7 @@ import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import IIndexOptions from "./indexing/IIndexOptions"
 import IClusterSpecification from "./Clustering/IClusterSpecification"
+import ISpelling from "./Model/ISpelling"
 
 /**
  * The main Jhaystack class.
@@ -160,6 +161,29 @@ export default class Jhaystack {
 	 */
 	setClusterStrategy(clusterSpecifications: IClusterSpecification[], doNotBuild?: boolean) {
 		this.engine.setClusterStrategy(clusterSpecifications, doNotBuild)
+	}
+
+	/**
+	 * (re)Builds all clusters
+	 */
+	buildClusters() {
+		this.engine.buildClusters()
+	}
+
+	/**
+	 * Sets the speller strategy to use
+	 * @param spellers - List of speller implementations to use, in order of importance
+	 * @param doNotBuild If set to true the clusters will not immediately be built
+	 */
+	setSpellingStrategy(spellers: (new () => ISpelling)[], doNotBuild?: boolean) {
+		this.engine.setSpellingStrategy(spellers, doNotBuild)
+	}
+
+	/**
+	 * (re)Builds all spellers
+	 */
+	buildSpellers() {
+		this.engine.buildSpellers()
 	}
 
 	/**

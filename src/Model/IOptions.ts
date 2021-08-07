@@ -6,6 +6,7 @@ import IPreProcessor from "./IPreProcessor"
 import IExtraction from "./IExtraction"
 import IIndexOptions from "../indexing/IIndexOptions"
 import IClusterSpecification from "../Clustering/IClusterSpecification"
+import ISpelling from "./ISpelling"
 
 export default interface IOptions {
 	/** Array containing the comparison functions to be used for evaluating matches. */
@@ -20,6 +21,11 @@ export default interface IOptions {
 	/** Sets the cluster strategy to be used */
 	clustering?: {
 		options: IClusterSpecification[]
+		doNotBuild?: boolean
+	}
+	/** Sets the spelling strategy to use */
+	spelling: {
+		strategy: (new () => ISpelling)[]
 		doNotBuild?: boolean
 	}
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */

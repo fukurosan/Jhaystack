@@ -3,10 +3,10 @@
  * You can read more about the algorithm here:
  * https://web.archive.org/web/20140827005744/http://www.comp.lancs.ac.uk/computing/research/stemming/index.htm
  * Processes either a string value or an array of string values
- * @param {unknown} value - The value to be processed
+ * @param {any} value - The value to be processed
  * @return {number} - Resulting value
  */
-export const LANCASTER = (value: unknown): unknown => {
+export const LANCASTER = (value: any): any => {
 	if (typeof value === "string") {
 		return value
 			.split(" ")
