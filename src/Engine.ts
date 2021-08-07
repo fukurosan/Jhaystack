@@ -32,7 +32,7 @@ export default class SearchEngine {
 	/** The index strategy to use */
 	private indexStrategy: Index | null = null
 	/** The cluster strategy to use */
-	private clusterStrategy: ICluster[] | null = null
+	private clusterStrategy: ICluster[] = []
 	/** The processed data set used for searching */
 	private corpus: Document[]
 	/** The original data set provided by the user */
@@ -225,7 +225,7 @@ export default class SearchEngine {
 					numberOfTokens: -1,
 					averageDocumentLength: -1
 			  }
-		this.clusterStrategy?.forEach(cluster => {
+		this.clusterStrategy.forEach(cluster => {
 			cluster.build(documents, statistics)
 		})
 	}
