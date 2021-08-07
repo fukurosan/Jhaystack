@@ -2,7 +2,7 @@ import ICluster from "./ICluster"
 import { DocumentID } from "../Model/Document"
 import { IIndexStatistics } from "../indexing/IIndexStatistics"
 import { getRandomNumberInRange } from "../Utility/MathUtils"
-import IIndexDocument from "../indexing/IIndexDocument"
+import IIndexDocument from "../Model/IIndexDocument"
 
 interface IKMeansClusterOptions {
 	/** Number of clusters. If set to -1 the optimal number will be estimated by the algorithm. */

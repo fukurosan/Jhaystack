@@ -1,6 +1,6 @@
 import ICluster from "./ICluster"
 import { DocumentID } from "../Model/Document"
-import IIndexDocument from "../indexing/IIndexDocument"
+import IIndexDocument from "../Model/IIndexDocument"
 
 interface IRangeClusterOptions {
 	field: string

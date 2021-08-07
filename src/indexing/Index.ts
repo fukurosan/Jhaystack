@@ -9,7 +9,7 @@ import { WORD } from "../Tokenizer/TokenizerStrategy"
 import IRanker from "./Ranking/IRanker"
 import { TFIDF } from "./Ranking/rankingStrategy"
 import { IIndexStatistics } from "./IIndexStatistics"
-import IIndexDocument from "./IIndexDocument"
+import IIndexDocument from "../Model/IIndexDocument"
 
 interface IInvertedIndexRow {
 	documents: Set<DocumentID>
