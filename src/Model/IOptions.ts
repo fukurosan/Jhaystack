@@ -4,7 +4,7 @@ import IFilter from "./IFilter"
 import IWeight from "./IWeight"
 import IPreProcessor from "./IPreProcessor"
 import IExtraction from "./IExtraction"
-import IIndexOptions from "../indexing/IIndexOptions"
+import IIndexOptions from "../Indexing/IIndexOptions"
 import IClusterSpecification from "../Clustering/IClusterSpecification"
 import ISpelling from "./ISpelling"
 

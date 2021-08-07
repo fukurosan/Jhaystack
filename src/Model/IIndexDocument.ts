@@ -1,5 +1,5 @@
 import Document from "./Document"
-import IIndexTokenMeta from "../indexing/IIndexTokenMeta"
+import IIndexTokenMeta from "../Indexing/IIndexTokenMeta"
 
 export default interface IIndexDocument {
 	document: Document
