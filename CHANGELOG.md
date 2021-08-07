@@ -5,6 +5,10 @@
 - Added new index implementation
 - Added index clustering support
 - Added KMeans cluster strategy
+- Added Value Range cluster strategy
+- Added new Spelling Strategy support
+- Added new Trigram Spelling Strategy
+- Added Thread Planner and partly moved search execution off main thread
 - Added TFIDF weighter strategy
 - Added BM25 weighter strategy
 - Added optional automatic k-value computation for Bitap based on term length
