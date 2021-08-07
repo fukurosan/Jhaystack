@@ -123,12 +123,19 @@ export default class SearchEngine {
 		this.extractionStrategy(item).forEach(declarations => {
 			this.corpus.push(new Document(this.nextDocumentID++, item, this.originData.length - 1, this.processDeclarations(declarations, maxWeight)))
 		})
+		if (this.indexStrategy) {
+			this.indexStrategy.addDocument(this.corpus[this.corpus.length - 1])
+		}
 	}
 
 	removeItem(item: any) {
 		const index = this.originData.indexOf(item)
 		if (index !== -1) {
 			this.originData.splice(index, 1)
+			const doc = <Document> this.corpus.find(doc => doc.originIndex === index)
+			if (this.indexStrategy) {
+				this.indexStrategy.removeDocument(doc)
+			}
 			this.corpus = this.corpus.filter(doc => doc.originIndex !== index)
 		}
 	}
