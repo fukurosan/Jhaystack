@@ -26,6 +26,8 @@ export default class SearchEngine {
 	private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Array of value processors to use for preprocessing the search data values */
 	private preProcessingStrategy: IPreProcessor[]
+	/** The index strategy to use */
+	private indexStrategy: Index | null = null
 	/** The processed data set used for searching */
 	private corpus: Document[]
 	/** The original data set provided by the user */
@@ -38,8 +40,6 @@ export default class SearchEngine {
 	private weights: IWeight[]
 	/** Should preprocessors be applied to the search term as well? */
 	private isApplyPreProcessorsToTerm: boolean
-	/** All current indexes */
-	private indexes: Map<string, Index> = new Map()
 	/** Next available document identifier */
 	private nextDocumentID = 0
 
@@ -63,6 +63,7 @@ export default class SearchEngine {
 			options.filters && this.setFilters(options.filters)
 			options.weights && this.setWeights(options.weights)
 			options.preProcessing && this.setPreProcessingStrategy(options.preProcessing)
+			options.indexing && options.indexing.options && this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
 			typeof options.applyPreProcessorsToTerm === "boolean" && (this.isApplyPreProcessorsToTerm = options.applyPreProcessorsToTerm)
 			options.data && this.setDataset(options.data)
 		}
@@ -180,33 +181,17 @@ export default class SearchEngine {
 			})
 	}
 
-	createIndex(options: IIndexOptions, doNotBuild?: boolean) {
-		if (this.indexes.has(options.id)) {
-			console.error("An index with that ID already exists!")
-			return
-		}
-		if (!options.id) {
-			console.error("No ID was provided!")
-			return
-		}
+	setIndexStrategy(options: IIndexOptions, doNotBuild?: boolean) {
 		const index = new Index(this.corpus, options)
 		if (!doNotBuild) {
 			index.build()
 		}
-		this.indexes.set(options.id, index)
+		this.indexStrategy = index
 	}
 
-	removeIndex(id: string) {
-		if (!this.indexes.has(id)) {
-			console.error("No such index exists!")
-			return
-		}
-		this.indexes.delete(id)
-	}
-
-	buildIndexes() {
-		for (const [, index] of this.indexes) {
-			index.build()
+	buildIndex() {
+		if (this.indexStrategy) {
+			this.indexStrategy.build()
 		}
 	}
 

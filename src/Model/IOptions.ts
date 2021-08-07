@@ -4,12 +4,18 @@ import IFilter from "./IFilter"
 import IWeight from "./IWeight"
 import IPreProcessor from "./IPreProcessor"
 import IExtraction from "./IExtraction"
+import IIndexOptions from "../indexing/IIndexOptions"
 
 export default interface IOptions {
 	/** Array containing the comparison functions to be used for evaluating matches. */
 	comparison?: IComparison[]
 	/** Sets the extraction strategy to be used. I.e. how documents should be extracted from the dataset. */
 	extraction?: IExtraction
+	/** Sets the indexing strategy to be used */
+	indexing?: {
+		options: IIndexOptions
+		doNotBuild?: boolean
+	}
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	sorting?: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Maximum number of matches before search ends */

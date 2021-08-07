@@ -137,27 +137,19 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Creates a new Index
+	 * Sets the index strategy to use
 	 * @param options Options for the index
 	 * @param doNotBuild If set to true the index will not immediately be built
 	 */
-	createIndex(options: IIndexOptions, doNotBuild?: boolean) {
-		return this.engine.createIndex(options, doNotBuild)
-	}
-
-	/**
-	 * Removes an Index
-	 * @param id - ID of the index
-	 */
-	removeIndex(id: string) {
-		return this.engine.removeIndex(id)
+	setIndexStrategy(options: IIndexOptions, doNotBuild?: boolean) {
+		return this.engine.setIndexStrategy(options, doNotBuild)
 	}
 
 	/**
 	 * (re)Builds all indexes
 	 */
-	buildIndexes() {
-		return this.engine.buildIndexes()
+	buildIndex() {
+		return this.engine.buildIndex()
 	}
 
 	/**
