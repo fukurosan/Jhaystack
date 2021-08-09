@@ -388,44 +388,4 @@ export class Index {
 		}
 	}
 
-	/**
-	 * To be moved
-	 * Find all documents clustered with the provided document
-	 * @param doc - The document to be used in search
-	 * @param clusters - Cluster to be searched
-	 *
-	inexactKRetrievalByClusters(doc: Document, clusters: string[]) {
-		if (!clusters.length) {
-			return []
-		}
-		const tokenMap = this.getDocumentTokenMap(doc, false)
-		this.ranker.getQueryTFMagnitude(tokenMap)
-		const vector = this.getDenseVectorFromTokenMap(tokenMap)
-		const documents: Set<DocumentID>[] = []
-		for (let i = 0; i < clusters.length; i++) {
-			if (!this.clusters.has(clusters[i])) {
-				console.error("No such cluster found: " + clusters[i])
-				return []
-			}
-			const clusteredDocs = this.clusters.get(clusters[i])!.evaluate({
-				document: doc,
-				tokenMap,
-				vector
-			})
-			if (!clusteredDocs.length) {
-				return []
-			}
-			documents.push(new Set(clusteredDocs))
-		}
-		const intersection = Array.from(documents.pop()!).reduce((acc: DocumentID[], curr: DocumentID) => {
-			for (let i = 0; i < documents.length; i++) {
-				if (!documents[i].has(curr)) {
-					return acc
-				}
-			}
-			acc.push(curr)
-			return acc
-		}, [])
-		return intersection
-	}*/
 }
