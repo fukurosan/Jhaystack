@@ -1,6 +1,6 @@
 # Changelog
 
-### 0.0.54
+### 0.1.0
 
 - Added new index implementation
 - Added index clustering support
@@ -16,12 +16,15 @@
 - Added EdgeGram tokenizer strategy
 - Added Shingle tokenizer strategy
 - Added Word tokenizer strategy
+- Added Full-Text Scoring strategy support
+- Added Cosine Full-Text scoring strategy
+- Added Magnitude Full-Text scoring strategy
+- Added Query Planner
 - Added optional automatic k-value computation for Bitap based on term length
 - Improved test runner performance by lowering concurrent number of workers
 - Ended support for legacy browsers (IE11)
 - Removed ability to set multiple default comparison strategies
 - Various bug fixes and performance improvements
-
 
 ### 0.0.53
 
