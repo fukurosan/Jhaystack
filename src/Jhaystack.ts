@@ -3,6 +3,7 @@ import SearchResult from "./Model/SearchResult"
 import IOptions from "./Model/IOptions"
 import IExtraction from "./Model/IExtraction"
 import IComparison from "./Model/IComparison"
+import { IFullTextScoring } from "./Model/IFullTextScoring"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
@@ -24,11 +25,21 @@ export default class Jhaystack {
 
 	/**
 	 * Sets the value comparison strategy to be used.
-	 * @param {IComparison[]} strategy - comparison function to be used
+	 * @param {IComparison} strategy - comparison function to be used
 	 * @returns {Jhaystack} - this
 	 */
 	setComparisonStrategy(strategy: IComparison): Jhaystack {
 		this.engine.setComparisonStrategy(strategy)
+		return this
+	}
+
+	/**
+	 * Sets the full-text scoring strategy to be used.
+	 * @param {IFullTextScoring} strategy - comparison function to be used
+	 * @returns {Jhaystack} - this
+	 */
+	setFullTextScoringStrategy(strategy: IFullTextScoring): Jhaystack {
+		this.engine.setFullTextScoringStrategy(strategy)
 		return this
 	}
 
@@ -142,48 +153,60 @@ export default class Jhaystack {
 	 * Sets the index strategy to use
 	 * @param options Options for the index
 	 * @param doNotBuild If set to true the index will not immediately be built
+	 * @returns {Jhaystack} - this
 	 */
 	setIndexStrategy(options: IIndexOptions, doNotBuild?: boolean) {
-		return this.engine.setIndexStrategy(options, doNotBuild)
+		this.engine.setIndexStrategy(options, doNotBuild)
+		return this
 	}
 
 	/**
 	 * (re)Builds all indexes
+	 * @returns {Jhaystack} - this
 	 */
 	buildIndex() {
-		return this.engine.buildIndex()
+		this.engine.buildIndex()
+		return this
 	}
 
 	/**
 	 * Sets the cluster strategy to use
 	 * @param clusterSpecifications - Cluster specifications
 	 * @param doNotBuild If set to true the clusters will not immediately be built
+	 * @returns {Jhaystack} - this
 	 */
 	setClusterStrategy(clusterSpecifications: IClusterSpecification[], doNotBuild?: boolean) {
 		this.engine.setClusterStrategy(clusterSpecifications, doNotBuild)
+		return this
 	}
 
 	/**
 	 * (re)Builds all clusters
+	 * @returns {Jhaystack} - this
 	 */
 	buildClusters() {
 		this.engine.buildClusters()
+		return this
 	}
 
 	/**
 	 * Sets the speller strategy to use
 	 * @param spellers - List of speller implementations to use, in order of importance
 	 * @param doNotBuild If set to true the clusters will not immediately be built
+	 * @returns {Jhaystack} - this
 	 */
 	setSpellingStrategy(spellers: (new () => ISpelling)[], doNotBuild?: boolean) {
 		this.engine.setSpellingStrategy(spellers, doNotBuild)
+		return this
 	}
 
 	/**
 	 * (re)Builds all spellers
+	 * @returns {Jhaystack} - this
 	 */
 	buildSpellers() {
 		this.engine.buildSpellers()
+		return this
 	}
 
 	/**

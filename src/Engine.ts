@@ -20,6 +20,7 @@ import IIndexOptions from "./Indexing/IIndexOptions"
 import IClusterSpecification from "./Clustering/IClusterSpecification"
 import ICluster from "./Clustering/ICluster"
 import ISpelling from "./Model/ISpelling"
+import { IFullTextScoring } from "./Model/IFullTextScoring"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -30,6 +31,8 @@ export default class SearchEngine {
 	private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Array of value processors to use for preprocessing the search data values */
 	private preProcessingStrategy: IPreProcessor[]
+	/** The full-text scoring strategy to use */
+	private fullTextScoringStrategy: IFullTextScoring | null
 	/** The index strategy to use */
 	private indexStrategy: Index | null
 	/** The cluster strategy to use */
@@ -54,6 +57,7 @@ export default class SearchEngine {
 	constructor(options?: IOptions) {
 		this.comparisonStrategy = BITAP
 		this.extractionStrategy = BY_VALUE
+		this.fullTextScoringStrategy = null
 		this.indexStrategy = null
 		this.clusterStrategy = []
 		this.spellingStrategy = []
@@ -195,6 +199,10 @@ export default class SearchEngine {
 				this.preProcessingStrategy.forEach(processor => (declaration.value = processor(declaration.value)))
 				return declaration
 			})
+	}
+
+	setFullTextScoringStrategy(strategy: IFullTextScoring) {
+		this.fullTextScoringStrategy = strategy
 	}
 
 	setIndexStrategy(options: IIndexOptions, doNotBuild?: boolean) {

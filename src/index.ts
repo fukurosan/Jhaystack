@@ -7,6 +7,7 @@ import * as tokenizerStrategy from "./Tokenizer/TokenizerStrategy"
 import * as clusterStrategy from "./Clustering/clusterStrategy"
 import * as rankingStrategy from "./Indexing/Ranking/rankingStrategy"
 import * as spellingStrategy from "./Spelling/spellingStrategy"
+import * as fullTextScoringStrategy from "./Indexing/FullTextScoring/fullTextScoringStrategy"
 
 export {
 	Jhaystack,
@@ -17,5 +18,6 @@ export {
 	tokenizerStrategy,
 	clusterStrategy,
 	rankingStrategy,
-	spellingStrategy
+	spellingStrategy,
+	fullTextScoringStrategy
 }
