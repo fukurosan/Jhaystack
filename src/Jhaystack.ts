@@ -11,6 +11,7 @@ import IIndexOptions from "./Indexing/IIndexOptions"
 import IClusterSpecification from "./Model/IClusterSpecification"
 import ISpelling from "./Model/ISpelling"
 import { IQuery } from "./Model/IQuery"
+import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 
 /**
  * The main Jhaystack class.
@@ -213,27 +214,30 @@ export default class Jhaystack {
 	/**
 	 * Perform a search
 	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsSearch} options - Optional options
 	 * @returns {SearchResult[]} - Search results
 	 */
-	search(searchValue: any): SearchResult[] {
-		return this.engine.search(searchValue)
+	search(searchValue: any, options?: ISearchOptionsSearch): SearchResult[] {
+		return this.engine.search(searchValue, options)
 	}
 
 	/**
 	 * Perform a full-text search
 	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsFullText} options - Optional options
 	 * @returns {SearchResult[]} - Search results
 	 */
-	fulltext(searchValue: any): SearchResult[] {
-		return this.engine.fulltext(searchValue)
+	fulltext(searchValue: any, options?: ISearchOptionsFullText): SearchResult[] {
+		return this.engine.fulltext(searchValue, options)
 	}
 
 	/**
 	 * Execute a binary query
 	 * @param {IQuery} query - Query to execute
+	 * @param {ISearchOptionsQuery} options - Optional options
 	 * @returns {SearchResult[]} - Search results
 	 */
-	query(query: IQuery): SearchResult[] {
-		return this.engine.query(query)
+	query(query: IQuery, options?: ISearchOptionsQuery): SearchResult[] {
+		return this.engine.query(query, options)
 	}
 }

@@ -24,6 +24,7 @@ import { IFullTextScoring } from "./Model/IFullTextScoring"
 import { QueryPlanner } from "./QueryPlanner/QueryPlanner"
 import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, IQuery } from "./Model/IQuery"
 import { createEmptyIndexDocument, createDocumentFromValue } from "./Utility/Helpers"
+import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -47,7 +48,7 @@ export default class SearchEngine {
 	/** The original data set provided by the user */
 	private originData: any[]
 	/** Maximum number of matches before search ends */
-	private limit: number | null
+	private limit: number
 	/** Filters for what data should or should not be searchable */
 	private filters: IFilter[]
 	/** Weighted pattern functions */
@@ -145,7 +146,7 @@ export default class SearchEngine {
 		const index = this.originData.indexOf(item)
 		if (index !== -1) {
 			this.originData.splice(index, 1)
-			const doc = <Document> this.corpus.find(doc => doc.originIndex === index)
+			const doc = <Document>this.corpus.find(doc => doc.originIndex === index)
 			if (this.indexStrategy) {
 				this.indexStrategy.removeDocument(doc)
 			}
@@ -372,14 +373,19 @@ export default class SearchEngine {
 			.map(doc => doc.id)
 	}
 
-	search(searchValueIn: any): SearchResult[] {
+	search(searchValueIn: any, options?: ISearchOptionsSearch): SearchResult[] {
 		const searchValue = this.getProcessedTermValue(searchValueIn)
-		const searchResult = FULL_SCAN(this.corpus, searchValue, this.comparisonStrategy, this.limit)
+		let data = this.corpus
+		if (options?.filter) {
+			const filterIDs = new Set(this.queryPlanner.executeQuery(options.filter))
+			data = this.corpus.filter(doc => filterIDs.has(doc.id))
+		}
+		const searchResult = FULL_SCAN(data, searchValue, this.comparisonStrategy, options?.limit ? options.limit : this.limit)
 		this.sortSearchResults(searchResult)
 		return searchResult
 	}
 
-	fulltext(searchValue: any): SearchResult[] {
+	fulltext(searchValue: any, options?: ISearchOptionsFullText): SearchResult[] {
 		if (!this.indexStrategy) {
 			throw new Error("No index strategy has been configured!")
 		}
@@ -388,12 +394,19 @@ export default class SearchEngine {
 		}
 		const value = this.applyPreProcessors(searchValue) //Always apply preprocessors for index retrieval
 		const tokenMap = this.indexStrategy!.getQueryTokenMapFromValue(value)
-		const documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap)
+		let filter = undefined
+		if (options?.filter) {
+			filter = this.queryPlanner.executeQuery(options.filter)
+		}
+		const exact = options?.exact ? options.exact : undefined
+		const field = options?.field ? options.field : undefined
+		const documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap, filter, exact, field)
 		if (!documentIDs.length) {
 			return []
 		}
-		if (this.limit && this.limit <= documentIDs.length) {
-			documentIDs.splice(this.limit - 1)
+		const limit = options?.limit ? options.limit : this.limit
+		if (limit <= documentIDs.length) {
+			documentIDs.splice(limit - 1)
 		}
 		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
 		const searchResult = sparseVectors.map(vectors => {
@@ -407,10 +420,11 @@ export default class SearchEngine {
 		return searchResult
 	}
 
-	query(query: IQuery): SearchResult[] {
+	query(query: IQuery, options?: ISearchOptionsQuery): SearchResult[] {
 		const resultIDs = this.queryPlanner.executeQuery(query)
-		if (this.limit && this.limit <= resultIDs.length) {
-			resultIDs.splice(this.limit - 1)
+		const limit = options?.limit ? options.limit : this.limit
+		if (limit <= resultIDs.length) {
+			resultIDs.splice(limit - 1)
 		}
 		const resultIDsSet = new Set(resultIDs)
 		const searchResult = this.corpus
