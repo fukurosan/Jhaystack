@@ -32,9 +32,9 @@ export class KMeans implements ICluster {
 		}
 	}
 
-	evaluate(document: IIndexDocument): DocumentID[] {
+	evaluate(document?: IIndexDocument): DocumentID[] {
 		const clusterLeaders = [...this.clusterMap.keys()]
-		return this.clusterMap.get(clusterLeaders[this.findLeaderVectorIndex(clusterLeaders, document.vector)])!
+		return this.clusterMap.get(clusterLeaders[this.findLeaderVectorIndex(clusterLeaders, document!.vector)])!
 	}
 
 	build(documents: IIndexDocument[], statistics: IIndexStatistics) {

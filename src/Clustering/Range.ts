@@ -24,17 +24,17 @@ export class Range implements ICluster {
 		this.options = options
 	}
 
-	evaluate(document: IIndexDocument, options: IRangeClusterQuery): DocumentID[] {
-		if (!options.greaterThan && !options.lessThan) {
+	evaluate(document?: IIndexDocument, options?: IRangeClusterQuery): DocumentID[] {
+		if (!options!.greaterThan && !options!.lessThan) {
 			return []
 		}
 		let result = this.sortedIndex
 		//TODO:: This can be sped up significantly in the future
-		if (options.greaterThan) {
-			result = result.filter(item => item[1] > options.greaterThan)
+		if (options!.greaterThan) {
+			result = result.filter(item => item[1] > options!.greaterThan)
 		}
-		if (options.lessThan) {
-			result = result.filter(item => item[1] < options.lessThan)
+		if (options!.lessThan) {
+			result = result.filter(item => item[1] < options!.lessThan)
 		}
 		return result.map(item => item[0])
 	}
