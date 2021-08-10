@@ -7,15 +7,19 @@ import IExtraction from "./IExtraction"
 import IIndexOptions from "../Indexing/IIndexOptions"
 import IClusterSpecification from "./IClusterSpecification"
 import ISpelling from "./ISpelling"
+import { IFullTextScoring } from "./IFullTextScoring"
 
 export default interface IOptions {
 	/** Default comparison function to be used for evaluating matches. */
 	comparison?: IComparison
 	/** Sets the extraction strategy to be used. I.e. how documents should be extracted from the dataset. */
 	extraction?: IExtraction
+	/** Sets the scoring function used for comparing full-text vector matches. */
+	fullTextScoringStrategy?: IFullTextScoring
 	/** Sets the indexing strategy to be used */
 	indexing?: {
-		options: IIndexOptions
+		enable: boolean
+		options?: IIndexOptions
 		doNotBuild?: boolean
 	}
 	/** Sets the cluster strategy to be used */

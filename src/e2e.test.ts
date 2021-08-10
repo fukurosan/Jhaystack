@@ -1,4 +1,4 @@
-import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy } from "./index"
+import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, PreProcessingStrategy, fullTextScoringStrategy } from "./index"
 import SearchResult from "./Model/SearchResult"
 
 describe("End to end", () => {
@@ -128,5 +128,22 @@ describe("End to end", () => {
 		se.setFilters([path => /lastName/.test(path.join(".")), (path, value) => !/Duck/.test(value)])
 		result = se.search("uck")
 		expect(result.length).toBe(1)
+	})
+
+	it("Typical full-text search works", () => {
+		const se = new Jhaystack({
+			data,
+			indexing: {
+				enable: true,
+				options: {
+					preProcessors: [PreProcessingStrategy.PORTER2]
+				}
+			},
+			fullTextScoringStrategy: fullTextScoringStrategy.FULLTEXT_COSINE
+		})
+		const result = se.fulltext("nest")
+		expect(result.length).toBe(1)
+		expect(result[0].item.id).toBe("1")
+		expect(result[0].relevance).toBe(0.7071067811865475)
 	})
 })

@@ -42,7 +42,7 @@ export class Index {
 	/** Combined length of all tokens in all documents (including repeated tokens!) */
 	private totalDocumentLength = 0
 
-	constructor(corpus: Document[], options: IIndexOptions) {
+	constructor(corpus: Document[], options: IIndexOptions = {}) {
 		this.filters = options.filters ? options.filters : []
 		this.preProcessors = options.preProcessors ? options.preProcessors : []
 		this.tokenizer = options.tokenizer ? options.tokenizer : WORD

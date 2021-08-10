@@ -84,11 +84,14 @@ export default class SearchEngine {
 			options.filters && this.setFilters(options.filters)
 			options.weights && this.setWeights(options.weights)
 			options.preProcessing && this.setPreProcessingStrategy(options.preProcessing)
-			options.indexing && options.indexing.options && this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
+			options.fullTextScoringStrategy && this.setFullTextScoringStrategy(options.fullTextScoringStrategy)
 			options.clustering && options.clustering.options && this.setClusterStrategy(options.clustering.options, options.clustering.doNotBuild)
 			options.spelling && options.spelling.strategy && this.setSpellingStrategy(options.spelling.strategy, options.spelling.doNotBuild)
 			typeof options.applyPreProcessorsToTerm === "boolean" && (this.isApplyPreProcessorsToTerm = options.applyPreProcessorsToTerm)
 			options.data && this.setDataset(options.data)
+			if (options.indexing && options.indexing.enable) {
+				this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
+			}
 		}
 	}
 
@@ -216,7 +219,7 @@ export default class SearchEngine {
 		this.fullTextScoringStrategy = strategy
 	}
 
-	setIndexStrategy(options: IIndexOptions, doNotBuild?: boolean) {
+	setIndexStrategy(options?: IIndexOptions, doNotBuild?: boolean) {
 		const index = new Index(this.corpus, options)
 		if (!doNotBuild) {
 			index.build()
