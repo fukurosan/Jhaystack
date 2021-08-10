@@ -146,7 +146,7 @@ export default class SearchEngine {
 		const index = this.originData.indexOf(item)
 		if (index !== -1) {
 			this.originData.splice(index, 1)
-			const doc = <Document>this.corpus.find(doc => doc.originIndex === index)
+			const doc = <Document> this.corpus.find(doc => doc.originIndex === index)
 			if (this.indexStrategy) {
 				this.indexStrategy.removeDocument(doc)
 			}
