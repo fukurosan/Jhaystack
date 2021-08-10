@@ -286,25 +286,14 @@ export class Index {
 	 * @param exactPosition - Should the token positions be exact?
 	 * @param field - An optional specific field to be searched. Note that if fields are encoded in the index then this becomes a mandatory property.
 	 */
-	inexactKRetrievalByDocument(
-		doc: Document,
-		filter?: DocumentID[],
-		exactPosition?: boolean,
-		field?: string
-	): { queryVector: number[]; documents: DocumentID[] } {
+	inexactKRetrievalByDocument(doc: Document, filter?: DocumentID[], exactPosition?: boolean, field?: string): DocumentID[] {
 		//Validate input
 		if (this.ENCODE_FIELDS && !field) {
 			console.error("Invalid query. No field was specified, but ENCODE_FIELDS is set to true.")
-			return {
-				queryVector: [],
-				documents: []
-			}
+			return []
 		} else if (field && !this.fieldIndex.has(field)) {
 			console.error("Invalid query. No such field exists: " + field)
-			return {
-				queryVector: [],
-				documents: []
-			}
+			return []
 		}
 		//Compute document list
 		const tokenMap = this.getDocumentTokenMap(doc, false)
@@ -320,10 +309,7 @@ export class Index {
 		for (const [token] of tokenMap) {
 			if (!this.invertedIndex.has(token)) {
 				//If the token does not exist we return an empty result
-				return {
-					queryVector: [],
-					documents: []
-				}
+				return []
 			}
 			if (this.ENCODE_FIELDS || !field) {
 				//If fields are encoded or no field was specified then we can use the standard inverted index
@@ -356,10 +342,7 @@ export class Index {
 				.sort()
 				.map(key => flatTokenMap.get(key))
 			if (tokenList.length === 1) {
-				return {
-					queryVector: this.getDenseVectorFromTokenMap(tokenMap),
-					documents: intersection
-				}
+				return intersection
 			}
 			const firstToken = tokenList.shift()
 			const exactIntersection = intersection.filter(documentID => {
@@ -377,15 +360,8 @@ export class Index {
 				}
 				return true
 			})
-			return {
-				queryVector: this.getDenseVectorFromTokenMap(tokenMap),
-				documents: exactIntersection
-			}
+			return exactIntersection
 		}
-		return {
-			queryVector: this.getDenseVectorFromTokenMap(tokenMap),
-			documents: intersection
-		}
+		return intersection
 	}
-
 }

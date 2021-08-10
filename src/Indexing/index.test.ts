@@ -129,32 +129,30 @@ describe("Index Module", () => {
 		//With two matches
 		const fishDocument = createSimpleDocumentByString("fish")
 		const fishResult = index.inexactKRetrievalByDocument(fishDocument)
-		expect(fishResult.documents.length).toBe(2)
-		expect(fishResult.documents).toContain(0)
-		expect(fishResult.documents).toContain(1)
-		expect(fishResult.queryVector).toContain(1e-15)
+		expect(fishResult.length).toBe(2)
+		expect(fishResult).toContain(0)
+		expect(fishResult).toContain(1)
 
 		//With one match
 		const humanDocument = createSimpleDocumentByString("humans")
 		const humanResult = index.inexactKRetrievalByDocument(humanDocument)
-		expect(humanResult.documents.length).toBe(1)
-		expect(humanResult.documents).toContain(1)
-		expect(humanResult.queryVector).toContain(1)
+		expect(humanResult.length).toBe(1)
+		expect(humanResult).toContain(1)
 
 		//With a filter
 		const filterResult = index.inexactKRetrievalByDocument(fishDocument, [0])
-		expect(filterResult.documents.length).toBe(1)
-		expect(filterResult.documents).toContain(0)
+		expect(filterResult.length).toBe(1)
+		expect(filterResult).toContain(0)
 
 		//With positional mathing
 		const positionalFishDocument = createSimpleDocumentByString("other fish")
 		const positionalResult = index.inexactKRetrievalByDocument(positionalFishDocument, undefined, true)
-		expect(positionalResult.documents.length).toBe(1)
-		expect(positionalResult.documents).toContain(0)
+		expect(positionalResult.length).toBe(1)
+		expect(positionalResult).toContain(0)
 
 		//With field search
 		const fieldFishResult = index.inexactKRetrievalByDocument(fishDocument, undefined, undefined, "name")
-		expect(fieldFishResult.documents.length).toBe(1)
-		expect(fieldFishResult.documents).toContain(0)
+		expect(fieldFishResult.length).toBe(1)
+		expect(fieldFishResult).toContain(0)
 	})
 })
