@@ -2,7 +2,7 @@
 import { BITAP } from "./Comparison/Bitap"
 import { BY_VALUE } from "./Extraction/ByValue"
 import { mergeArraySortFunctions } from "./Utility/JsonUtility"
-import Document from "./Model/Document"
+import Document, { DocumentID } from "./Model/Document"
 import SearchResult from "./Model/SearchResult"
 import { RELEVANCE } from "./Sorting/Relevance"
 import IOptions from "./Model/IOptions"
@@ -17,10 +17,13 @@ import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
 import { Index } from "./Indexing/Index"
 import IIndexOptions from "./Indexing/IIndexOptions"
-import IClusterSpecification from "./Clustering/IClusterSpecification"
-import ICluster from "./Clustering/ICluster"
+import IClusterSpecification from "./Model/IClusterSpecification"
+import ICluster from "./Model/ICluster"
 import ISpelling from "./Model/ISpelling"
 import { IFullTextScoring } from "./Model/IFullTextScoring"
+import { QueryPlanner } from "./QueryPlanner/QueryPlanner"
+import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria } from "./Model/IQuery"
+import { createEmptyIndexDocument, createDocumentFromValue } from "./Utility/Helpers"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -51,6 +54,8 @@ export default class SearchEngine {
 	private weights: IWeight[]
 	/** Should preprocessors be applied to the search term as well? */
 	private isApplyPreProcessorsToTerm: boolean
+	/** Query Planner for the engine */
+	private queryPlanner: QueryPlanner
 	/** Next available document identifier */
 	private nextDocumentID = 0
 
@@ -69,6 +74,7 @@ export default class SearchEngine {
 		this.weights = []
 		this.preProcessingStrategy = [TO_STRING, TO_LOWER_CASE]
 		this.isApplyPreProcessorsToTerm = true
+		this.queryPlanner = new QueryPlanner(this)
 
 		if (options) {
 			options.comparison && this.setComparisonStrategy(options.comparison)
@@ -184,6 +190,11 @@ export default class SearchEngine {
 		return maxWeight
 	}
 
+	/**
+	 * Processes declarations by applying filters, preprocessors and weighting
+	 * @param declarations - List to process
+	 * @param maxWeight - Maximum weight recorded
+	 */
 	processDeclarations(declarations: Declaration[], maxWeight: number) {
 		return declarations
 			.filter(declaration => this.filters.every(filter => filter(declaration.path, declaration.originValue)))
@@ -196,7 +207,7 @@ export default class SearchEngine {
 					}
 					declaration.normalizedWeight = minMax(declaration.weight, maxWeight, 0)
 				}
-				this.preProcessingStrategy.forEach(processor => (declaration.value = processor(declaration.value)))
+				declaration.value = this.applyPreProcessors(declaration.value)
 				return declaration
 			})
 	}
@@ -270,11 +281,82 @@ export default class SearchEngine {
 		this.spellingStrategy.forEach(speller => speller.build(allWords))
 	}
 
-	search(searchValueIn: any): SearchResult[] {
-		let searchValue = searchValueIn
+	/**
+	 * If preprocessors should be applied to the term then this will return the applied value, otherwise the original value.
+	 * @param value - Value to process
+	 */
+	getProcessedTermValue(value: any) {
 		if (this.isApplyPreProcessorsToTerm) {
-			this.preProcessingStrategy.forEach(processor => (searchValue = processor(searchValue)))
+			return this.applyPreProcessors(value)
 		}
+		return value
+	}
+
+	/**
+	 * Applies all preprocessor to a given value.
+	 * @param value - Value to process
+	 */
+	applyPreProcessors(value: any) {
+		const result = this.preProcessingStrategy.reduce((acc, processor) => {
+			acc = processor(acc)
+			return acc
+		}, value)
+		return result
+	}
+
+	/**
+	 * Executes an inexact K retrieval using clustering
+	 * @param criteria - Criteria
+	 * @param value - Optional root search value
+	 */
+	clusterRetrieval(criteria: IClusterQueryCriteria, value?: any): DocumentID[] {
+		const cluster = this.clusterStrategy.find(cluster => cluster.id === criteria.id)
+		if (!cluster) {
+			throw new Error("No such cluster found: " + criteria.id)
+		}
+		let indexDocument = createEmptyIndexDocument()
+		if (value) {
+			const processedValue = this.getProcessedTermValue(value)
+			indexDocument.document = createDocumentFromValue(processedValue)
+			if (this.indexStrategy) {
+				indexDocument = this.indexStrategy.getQueryIndexDocument(indexDocument.document)
+			}
+		}
+		return cluster.evaluate(indexDocument, criteria.options)
+	}
+
+	/**
+	 * Executes an inexact K retrieval using a full-text index
+	 * @param criteria - Criteria
+	 * @param filter - Optional filtered corpus by ID
+	 */
+	indexRetrieval(criteria: IIndexQueryCriteria, filter?: DocumentID[]): DocumentID[] {
+		if (!this.indexStrategy) {
+			throw new Error("No index strategy has been configured!")
+		}
+		const value = this.applyPreProcessors(criteria.value) //Always apply preprocessors for index retrieval
+		const doc = createDocumentFromValue(value)
+		return this.indexStrategy.inexactKRetrievalByDocument(doc, filter, criteria.exact, criteria.field)
+	}
+
+	/**
+	 * Executes an inexact K retrieval using value comparison
+	 * @param criteria - Criteria
+	 * @param filter - Optional filtered corpus by ID
+	 */
+	comparisonRetrieval(criteria: IComparisonQueryCriteria, filter?: DocumentID[]): DocumentID[] {
+		const strategy = criteria.strategy ? criteria.strategy : this.comparisonStrategy
+		const value = this.getProcessedTermValue(criteria.value)
+		let documentArray = this.corpus
+		if (filter) {
+			const filterSet = new Set(filter)
+			documentArray = documentArray.filter(doc => filterSet.has(doc.id))
+		}
+		return documentArray.filter(doc => doc.declarations.find(declaration => strategy(value, declaration.value))).map(doc => doc.id)
+	}
+
+	search(searchValueIn: any): SearchResult[] {
+		const searchValue = this.getProcessedTermValue(searchValueIn)
 		const searchResult = FULL_SCAN(this.corpus, searchValue, this.comparisonStrategy, this.limit)
 		if (this.sortingStrategy.length > 0) {
 			searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))

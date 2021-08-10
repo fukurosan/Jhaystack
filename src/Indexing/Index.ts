@@ -280,6 +280,21 @@ export class Index {
 	}
 
 	/**
+	 * Creates an query index document.
+	 * @param doc - The document to convert into a index document
+	 */
+	getQueryIndexDocument(doc: Document): IIndexDocument {
+		const tokenMap = this.getDocumentTokenMap(doc, false)
+		this.ranker.getQueryTFMagnitude(tokenMap)
+		const vector = this.getDenseVectorFromTokenMap(tokenMap)
+		return {
+			document: doc,
+			tokenMap,
+			vector
+		}
+	}
+
+	/**
 	 * Finds all document IDs compatible with the search document
 	 * @param doc - The string to the searched for.
 	 * @param filter - A filter of document IDs to quicker narrow down the search.

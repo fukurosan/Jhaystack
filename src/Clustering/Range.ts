@@ -1,4 +1,4 @@
-import ICluster from "./ICluster"
+import ICluster from "../Model/ICluster"
 import { DocumentID } from "../Model/Document"
 import IIndexDocument from "../Model/IIndexDocument"
 

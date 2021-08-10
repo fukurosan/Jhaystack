@@ -8,7 +8,7 @@ import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import IIndexOptions from "./Indexing/IIndexOptions"
-import IClusterSpecification from "./Clustering/IClusterSpecification"
+import IClusterSpecification from "./Model/IClusterSpecification"
 import ISpelling from "./Model/ISpelling"
 
 /**

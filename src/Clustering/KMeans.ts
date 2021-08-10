@@ -1,4 +1,4 @@
-import ICluster from "./ICluster"
+import ICluster from "../Model/ICluster"
 import { DocumentID } from "../Model/Document"
 import { IIndexStatistics } from "../Indexing/IIndexStatistics"
 import { getRandomNumberInRange } from "../Utility/MathUtils"

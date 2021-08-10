@@ -5,7 +5,7 @@ import IWeight from "./IWeight"
 import IPreProcessor from "./IPreProcessor"
 import IExtraction from "./IExtraction"
 import IIndexOptions from "../Indexing/IIndexOptions"
-import IClusterSpecification from "../Clustering/IClusterSpecification"
+import IClusterSpecification from "./IClusterSpecification"
 import ISpelling from "./ISpelling"
 
 export default interface IOptions {
@@ -24,7 +24,7 @@ export default interface IOptions {
 		doNotBuild?: boolean
 	}
 	/** Sets the spelling strategy to use */
-	spelling: {
+	spelling?: {
 		strategy: (new () => ISpelling)[]
 		doNotBuild?: boolean
 	}
