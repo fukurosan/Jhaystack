@@ -69,7 +69,7 @@ export default class SearchEngine {
 		this.sortingStrategy = [RELEVANCE.DESCENDING]
 		this.corpus = []
 		this.originData = []
-		this.limit = null
+		this.limit = 100000
 		this.filters = []
 		this.weights = []
 		this.preProcessingStrategy = [TO_STRING, TO_LOWER_CASE]
