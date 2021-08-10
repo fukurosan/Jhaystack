@@ -1,6 +1,6 @@
 import { Index } from "../Index"
 import IIndexTokenMeta from "../IIndexTokenMeta"
-import IRanker from "./IRanker"
+import IRanker from "../../Model/IRanker"
 
 interface ITFIDFOptions {
 	/** Three characters defining the tf, idf and normalization type to be used. */

@@ -1,4 +1,4 @@
-import IIndexTokenMeta from "../IIndexTokenMeta"
+import IIndexTokenMeta from "../Indexing/IIndexTokenMeta"
 
 export default interface IRanker {
 	getIDFMagnitude: (term: string) => number

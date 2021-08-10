@@ -1,7 +1,7 @@
 import IFilter from "../Model/IFilter"
 import IPreProcessor from "../Model/IPreProcessor"
 import ITokenizer from "../Model/ITokenizer"
-import IRanker from "./Ranking/IRanker"
+import IRanker from "../Model/IRanker"
 import { Index } from "./Index"
 
 export default interface IIndexOptions {

@@ -1,4 +1,4 @@
-import IRanker from "./IRanker"
+import IRanker from "../../Model/IRanker"
 import IIndexTokenMeta from "../IIndexTokenMeta"
 import { Index } from "../Index"
 
