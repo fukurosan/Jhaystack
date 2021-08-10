@@ -20,6 +20,9 @@
 - Added Cosine Full-Text scoring strategy
 - Added Magnitude Full-Text scoring strategy
 - Added Query Planner
+- Added full-text search
+- Added binary queries
+- Added new options for search functions
 - Added optional automatic k-value computation for Bitap based on term length
 - Improved test runner performance by lowering concurrent number of workers
 - Ended support for legacy browsers (IE11)
