@@ -6,8 +6,8 @@ import IComparisonResult from "../Model/IComparisonResult"
 
 interface IComparisonMatch {
 	declaration: Declaration | null
-	comparisonScore: number
-	weightedComparisonScore: number
+	score: number
+	weightedScore: number
 	metaData: IComparisonResult | null
 }
 
@@ -30,30 +30,30 @@ export const FULL_SCAN = (documentArray: Document[], searchValue: any, compariso
 		const foundDeclaration = doc.declarations.reduce(
 			(bestMatch: IComparisonMatch, declaration) => {
 				const comparisonResult = comparisonFunction(searchValue, declaration.value)
-				const comparisonScore =
+				const score =
 					typeof comparisonResult === "number" && isFinite(comparisonResult) ? comparisonResult : (<IComparisonResult>comparisonResult).score
-				const weightedComparisonScore = comparisonScore * declaration.normalizedWeight
-				if (weightedComparisonScore > bestMatch.weightedComparisonScore) {
+				const weightedScore = score * declaration.normalizedWeight
+				if (weightedScore > bestMatch.weightedScore) {
 					return {
 						declaration,
-						comparisonScore,
-						weightedComparisonScore,
+						score,
+						weightedScore,
 						metaData: typeof comparisonResult === "object" ? comparisonResult : null
 					}
 				}
 				return bestMatch
 			},
-			{ comparisonScore: 0, weightedComparisonScore: 0, declaration: null, metaData: null }
+			{ score: 0, weightedScore: 0, declaration: null, metaData: null }
 		)
-		if (foundDeclaration.comparisonScore) {
+		if (foundDeclaration.score) {
 			matches.push(
 				new SearchResult(
 					doc.origin,
 					doc.originIndex,
 					foundDeclaration.declaration!.path,
 					foundDeclaration.declaration!.originValue,
-					foundDeclaration.weightedComparisonScore,
-					foundDeclaration.comparisonScore,
+					foundDeclaration.weightedScore,
+					foundDeclaration.score,
 					foundDeclaration.declaration!.weight,
 					foundDeclaration.declaration!.normalizedWeight,
 					foundDeclaration.metaData

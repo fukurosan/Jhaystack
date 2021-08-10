@@ -12,7 +12,7 @@ export default class SearchResult {
 	/** The relevance of the match */
 	relevance: number
 	/** The score from the value comparison function */
-	comparisonScore: number
+	score: number
 	/** The weight of the result */
 	weight: number
 	/** The normalized weight of the result (0-1) */
@@ -26,7 +26,7 @@ export default class SearchResult {
 		path: (string | number)[],
 		value: any,
 		relevance: number,
-		comparisonScore: number,
+		score: number,
 		weight: number,
 		normalizedWeight: number,
 		metaData?: ObjectLiteral | null
@@ -36,7 +36,7 @@ export default class SearchResult {
 		this.path = path
 		this.value = value
 		this.relevance = relevance
-		this.comparisonScore = comparisonScore
+		this.score = score
 		this.weight = weight
 		this.normalizedWeight = normalizedWeight
 		this.metaData = {}

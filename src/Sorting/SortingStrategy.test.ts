@@ -53,10 +53,10 @@ describe("Sorting Strategy", () => {
 
 	it("Sorts by comparison score", () => {
 		let result = items.sort(COMPARISON_SCORE.DESCENDING)
-		expect(result[0].comparisonScore).toBe(1)
-		expect(result[5].comparisonScore).toBe(0.4)
+		expect(result[0].score).toBe(1)
+		expect(result[5].score).toBe(0.4)
 		result = items.sort(COMPARISON_SCORE.ASCENDING)
-		expect(result[0].comparisonScore).toBe(0.4)
-		expect(result[5].comparisonScore).toBe(1)
+		expect(result[0].score).toBe(0.4)
+		expect(result[5].score).toBe(1)
 	})
 })

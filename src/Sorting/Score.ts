@@ -6,13 +6,13 @@ import SearchResult from "../Model/SearchResult"
  */
 export const COMPARISON_SCORE = {
 	DESCENDING: (a: SearchResult, b: SearchResult): number => {
-		if (a.comparisonScore < b.comparisonScore) return 1
-		if (a.comparisonScore > b.comparisonScore) return -1
+		if (a.score < b.score) return 1
+		if (a.score > b.score) return -1
 		return 0
 	},
 	ASCENDING: (a: SearchResult, b: SearchResult): number => {
-		if (a.comparisonScore < b.comparisonScore) return -1
-		if (a.comparisonScore > b.comparisonScore) return 1
+		if (a.score < b.score) return -1
+		if (a.score > b.score) return 1
 		return 0
 	}
 }
