@@ -10,6 +10,7 @@ import IRanker from "./Ranking/IRanker"
 import { TFIDF } from "./Ranking/rankingStrategy"
 import { IIndexStatistics } from "./IIndexStatistics"
 import IIndexDocument from "../Model/IIndexDocument"
+import { createDocumentFromValue } from "../Utility/Helpers"
 
 interface IInvertedIndexRow {
 	documents: Set<DocumentID>
@@ -296,12 +297,12 @@ export class Index {
 
 	/**
 	 * Finds all document IDs compatible with the search document
-	 * @param doc - The string to the searched for.
+	 * @param value - The value to be searched for.
 	 * @param filter - A filter of document IDs to quicker narrow down the search.
 	 * @param exactPosition - Should the token positions be exact?
 	 * @param field - An optional specific field to be searched. Note that if fields are encoded in the index then this becomes a mandatory property.
 	 */
-	inexactKRetrievalByDocument(doc: Document, filter?: DocumentID[], exactPosition?: boolean, field?: string): DocumentID[] {
+	inexactKRetrievalByValue(value: any, filter?: DocumentID[], exactPosition?: boolean, field?: string): DocumentID[] {
 		//Validate input
 		if (this.ENCODE_FIELDS && !field) {
 			console.error("Invalid query. No field was specified, but ENCODE_FIELDS is set to true.")
@@ -311,6 +312,7 @@ export class Index {
 			return []
 		}
 		//Compute document list
+		const doc = createDocumentFromValue(value)
 		const tokenMap = this.getDocumentTokenMap(doc, false)
 		this.ranker.getQueryTFMagnitude(tokenMap)
 		let documents: Set<DocumentID>[] = []

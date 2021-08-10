@@ -17,7 +17,3 @@ const documents = [
 ]
 
 export const simpleDocuments = documents.map((doc, i) => new Document(i, doc, i, BY_OBJECT(doc)[0]))
-
-export const createSimpleDocumentByString = (string: string) => {
-	return new Document(0, string, 0, BY_OBJECT(string)[0])
-}

@@ -335,8 +335,7 @@ export default class SearchEngine {
 			throw new Error("No index strategy has been configured!")
 		}
 		const value = this.applyPreProcessors(criteria.value) //Always apply preprocessors for index retrieval
-		const doc = createDocumentFromValue(value)
-		return this.indexStrategy.inexactKRetrievalByDocument(doc, filter, criteria.exact, criteria.field)
+		return this.indexStrategy.inexactKRetrievalByValue(value, filter, criteria.exact, criteria.field)
 	}
 
 	/**

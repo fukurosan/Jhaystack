@@ -1,5 +1,5 @@
 import { Index } from "./Index"
-import { simpleDocuments, createSimpleDocumentByString } from "./__test__/testDocuments"
+import { simpleDocuments } from "./__test__/testDocuments"
 
 describe("Index Module", () => {
 	const defaultOptions = {}
@@ -127,31 +127,28 @@ describe("Index Module", () => {
 		})
 		index.build()
 		//With two matches
-		const fishDocument = createSimpleDocumentByString("fish")
-		const fishResult = index.inexactKRetrievalByDocument(fishDocument)
+		const fishResult = index.inexactKRetrievalByValue("fish")
 		expect(fishResult.length).toBe(2)
 		expect(fishResult).toContain(0)
 		expect(fishResult).toContain(1)
 
 		//With one match
-		const humanDocument = createSimpleDocumentByString("humans")
-		const humanResult = index.inexactKRetrievalByDocument(humanDocument)
+		const humanResult = index.inexactKRetrievalByValue("humans")
 		expect(humanResult.length).toBe(1)
 		expect(humanResult).toContain(1)
 
 		//With a filter
-		const filterResult = index.inexactKRetrievalByDocument(fishDocument, [0])
+		const filterResult = index.inexactKRetrievalByValue("fish", [0])
 		expect(filterResult.length).toBe(1)
 		expect(filterResult).toContain(0)
 
 		//With positional mathing
-		const positionalFishDocument = createSimpleDocumentByString("other fish")
-		const positionalResult = index.inexactKRetrievalByDocument(positionalFishDocument, undefined, true)
+		const positionalResult = index.inexactKRetrievalByValue("other fish", undefined, true)
 		expect(positionalResult.length).toBe(1)
 		expect(positionalResult).toContain(0)
 
 		//With field search
-		const fieldFishResult = index.inexactKRetrievalByDocument(fishDocument, undefined, undefined, "name")
+		const fieldFishResult = index.inexactKRetrievalByValue("fish", undefined, undefined, "name")
 		expect(fieldFishResult.length).toBe(1)
 		expect(fieldFishResult).toContain(0)
 	})
