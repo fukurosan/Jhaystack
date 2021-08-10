@@ -365,10 +365,11 @@ export default class SearchEngine {
 	}
 
 	query(query: IQuery): SearchResult[] {
-		const resultIDs = new Set(this.queryPlanner.executeQuery(query))
-		return this.corpus
-		.filter(doc => resultIDs.has(doc.id))
-		.map(doc => new SearchResult(doc.origin, doc.originIndex, [], "", 1, 0, 0, 0, null))
+		const resultIDs = this.queryPlanner.executeQuery(query)
+		if (this.limit) {
+			resultIDs.splice(0, this.limit)
+		}
+		const resultIDsSet = new Set(resultIDs)
+		return this.corpus.filter(doc => resultIDsSet.has(doc.id)).map(doc => new SearchResult(doc.origin, doc.originIndex, [], "", 1, 0, 0, 0, null))
 	}
-
 }
