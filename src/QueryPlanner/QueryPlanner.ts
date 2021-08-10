@@ -167,7 +167,7 @@ export class QueryPlanner {
 				} else if (criteria.type === "comparison") {
 					docs = this.engine.comparisonRetrieval(criteria, pathResult)
 					pathResult = docs
-				}				
+				}
 			}
 			documentIDs = i === 0 ? pathResult! : this.getOuterJoinList(documentIDs, pathResult!)
 			if (limit && documentIDs.length >= limit) {
@@ -176,5 +176,4 @@ export class QueryPlanner {
 		}
 		return documentIDs
 	}
-
 }
