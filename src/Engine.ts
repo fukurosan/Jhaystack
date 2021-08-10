@@ -11,7 +11,7 @@ import IComparison from "./Model/IComparison"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
-import { TO_STRING, TO_LOWER_CASE, SCRUB } from "./PreProcessing/PreProcessingStrategy"
+import { TO_STRING, TO_LOWER_CASE } from "./PreProcessing/PreProcessingStrategy"
 import { FULL_SCAN } from "./Utility/Scan"
 import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
@@ -23,8 +23,9 @@ import ISpelling from "./Model/ISpelling"
 import { IFullTextScoring } from "./Model/IFullTextScoring"
 import { QueryPlanner } from "./QueryPlanner/QueryPlanner"
 import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, IQuery } from "./Model/IQuery"
-import { createEmptyIndexDocument, createDocumentFromValue } from "./Utility/Helpers"
+import { createEmptyIndexDocument, createDocumentFromValue, removeStopCharacters } from "./Utility/Helpers"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
+import { ISpellingResult } from "./Model/ISpellingResult"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -43,6 +44,8 @@ export default class SearchEngine {
 	private clusterStrategy: ICluster[]
 	/** The speller strategy to use */
 	private spellingStrategy: ISpelling[]
+	/** All words in the dataset */
+	private allWords: Set<string>
 	/** The processed data set used for searching */
 	private corpus: Document[]
 	/** The original data set provided by the user */
@@ -67,6 +70,7 @@ export default class SearchEngine {
 		this.indexStrategy = null
 		this.clusterStrategy = []
 		this.spellingStrategy = []
+		this.allWords = new Set()
 		this.sortingStrategy = [RELEVANCE.DESCENDING]
 		this.corpus = []
 		this.originData = []
@@ -86,13 +90,13 @@ export default class SearchEngine {
 			options.weights && this.setWeights(options.weights)
 			options.preProcessing && this.setPreProcessingStrategy(options.preProcessing)
 			options.fullTextScoringStrategy && this.setFullTextScoringStrategy(options.fullTextScoringStrategy)
-			options.clustering && options.clustering.options && this.setClusterStrategy(options.clustering.options, options.clustering.doNotBuild)
-			options.spelling && options.spelling.strategy && this.setSpellingStrategy(options.spelling.strategy, options.spelling.doNotBuild)
 			typeof options.applyPreProcessorsToTerm === "boolean" && (this.isApplyPreProcessorsToTerm = options.applyPreProcessorsToTerm)
 			options.data && this.setDataset(options.data)
 			if (options.indexing && options.indexing.enable) {
 				this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
 			}
+			options.spelling && options.spelling.strategy && this.setSpellingStrategy(options.spelling.strategy, options.spelling.doNotBuild)
+			options.clustering && options.clustering.options && this.setClusterStrategy(options.clustering.options, options.clustering.doNotBuild)
 		}
 	}
 
@@ -271,17 +275,18 @@ export default class SearchEngine {
 	}
 
 	buildSpellers() {
-		const allWordsSet = new Set()
+		this.allWords = new Set()
 		this.corpus.forEach(doc => {
 			doc.declarations.forEach(declaration => {
 				if (typeof declaration.originValue === "string") {
-					SCRUB(declaration.originValue)
+					removeStopCharacters(declaration.originValue)
 						.split(" ")
-						.forEach((word: string) => allWordsSet.add(word))
+						.map(word => word.toLowerCase())
+						.forEach((word: string) => this.allWords.add(word))
 				}
 			})
 		})
-		const allWords = Array.from(allWordsSet)
+		const allWords = Array.from(this.allWords)
 		this.spellingStrategy.forEach(speller => speller.build(allWords))
 	}
 
@@ -313,6 +318,30 @@ export default class SearchEngine {
 			list.sort(mergeArraySortFunctions(this.sortingStrategy))
 		}
 		return list
+	}
+
+	checkSpelling(value: string): ISpellingResult {
+		const words: string[] = removeStopCharacters(this.applyPreProcessors(value))
+			.split(" ")
+			.map(word => word.toLowerCase())
+		const result: ISpellingResult = {
+			result: "",
+			corrections: []
+		}
+		words
+			.filter(word => !this.allWords.has(word))
+			.forEach(word => {
+				let suggestion = null
+				this.spellingStrategy.some(strategy => {
+					suggestion = strategy.evaluate(word)
+					return suggestion
+				})
+				suggestion && result.corrections.push({ word, suggestion })
+			})
+		result.result = result.corrections.reduce((acc, correction) => {
+			return value.split(correction.word).join(correction.suggestion)
+		}, value)
+		return result
 	}
 
 	/**

@@ -1,5 +1,6 @@
 import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, PreProcessingStrategy, fullTextScoringStrategy } from "./index"
 import SearchResult from "./Model/SearchResult"
+import { TRIGRAM_SPELLER } from "./Spelling/Trigram"
 
 describe("End to end", () => {
 	const data = [
@@ -145,5 +146,19 @@ describe("End to end", () => {
 		expect(result.length).toBe(1)
 		expect(result[0].item.id).toBe("1")
 		expect(result[0].relevance).toBe(0.7071067811865475)
+	})
+
+	it("Typical spelling check works", () => {
+		const se = new Jhaystack({
+			data,
+			spelling: {
+				strategy: [TRIGRAM_SPELLER]
+			}
+		})
+		const result = se.checkSpelling("arnlo")
+		expect(result.result).toBe("arnold")
+		expect(result.corrections.length).toBe(1)
+		expect(result.corrections[0].word).toBe("arnlo")
+		expect(result.corrections[0].suggestion).toBe("arnold")
 	})
 })

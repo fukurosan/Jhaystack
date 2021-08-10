@@ -38,7 +38,7 @@ const getScrubbedWord = (word: string) => {
 		.join(" ")
 }
 
-const stopCharacters = new Set([
+export const stopCharacters = new Set([
 	".",
 	",",
 	"!",

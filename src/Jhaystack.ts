@@ -12,6 +12,7 @@ import IClusterSpecification from "./Model/IClusterSpecification"
 import ISpelling from "./Model/ISpelling"
 import { IQuery } from "./Model/IQuery"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
+import { ISpellingResult } from "./Model/ISpellingResult"
 
 /**
  * The main Jhaystack class.
@@ -209,6 +210,14 @@ export default class Jhaystack {
 	buildSpellers() {
 		this.engine.buildSpellers()
 		return this
+	}
+
+	/**
+	 * Executes the provided spelling strategies and provides suggestions for changes if necessary
+	 * @param value - String to check spelling for
+	 */
+	checkSpelling(value: string): ISpellingResult {
+		return this.engine.checkSpelling(value)
 	}
 
 	/**
