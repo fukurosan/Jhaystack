@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { BITAP } from "./Comparison/Bitap"
 import { BY_VALUE } from "./Extraction/ByValue"
 import { mergeArraySortFunctions } from "./Utility/JsonUtility"
@@ -251,16 +250,16 @@ export default class SearchEngine {
 		const documents = this.indexStrategy
 			? this.indexStrategy.getAllIndexDocuments()
 			: this.corpus.map(doc => ({
-					document: doc,
-					tokenMap: new Map(),
-					vector: []
+				document: doc,
+				tokenMap: new Map(),
+				vector: []
 			  }))
 		const statistics = this.indexStrategy
 			? this.indexStrategy.getStatistics()
 			: {
-					numberOfDocuments: this.corpus.length,
-					numberOfTokens: -1,
-					averageDocumentLength: -1
+				numberOfDocuments: this.corpus.length,
+				numberOfTokens: -1,
+				averageDocumentLength: -1
 			  }
 		this.clusterStrategy.forEach(cluster => {
 			cluster.build(documents, statistics)
