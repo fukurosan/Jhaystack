@@ -11,6 +11,7 @@ import { TFIDF } from "./Ranking/rankingStrategy"
 import { IIndexStatistics } from "./IIndexStatistics"
 import IIndexDocument from "../Model/IIndexDocument"
 import { createDocumentFromValue } from "../Utility/Helpers"
+import { IIndexVector } from "../Model/IFullTextScoring"
 
 interface IInvertedIndexRow {
 	documents: Set<DocumentID>
@@ -295,6 +296,39 @@ export class Index {
 		}
 	}
 
+	getSparseIndexVectorsFromArray(
+		matchValue: Map<string, IIndexTokenMeta>,
+		idArray: DocumentID[]
+	): { vector1: IIndexVector; vector2: IIndexVector; document: Document }[] {
+		const isQueryUnitLength = this.ranker.isQueryUnitLength
+		const isDocumentUnitLength = this.ranker.isDocumentUnitLength
+		return idArray.map(id => {
+			const tokenMapForID = this.forwardIndex.get(id)!
+			const sparseVectors = this.convertDocumentsToMatchingSparseVectors(matchValue, tokenMapForID)
+			return {
+				vector1: {
+					isUnitLength: isQueryUnitLength,
+					vector: sparseVectors[0]
+				},
+				vector2: {
+					isUnitLength: isDocumentUnitLength,
+					vector: sparseVectors[1]
+				},
+				document: this.documentIndex.get(id)!
+			}
+		})
+	}
+
+	/**
+	 * Creates a token map based on a provided value
+	 */
+	getQueryTokenMapFromValue(value: any): Map<string, IIndexTokenMeta> {
+		const doc = createDocumentFromValue(value)
+		const tokenMap = this.getDocumentTokenMap(doc, false)
+		this.ranker.getQueryTFMagnitude(tokenMap)
+		return tokenMap
+	}
+
 	/**
 	 * Finds all document IDs compatible with the search document
 	 * @param value - The value to be searched for.
@@ -303,6 +337,17 @@ export class Index {
 	 * @param field - An optional specific field to be searched. Note that if fields are encoded in the index then this becomes a mandatory property.
 	 */
 	inexactKRetrievalByValue(value: any, filter?: DocumentID[], exactPosition?: boolean, field?: string): DocumentID[] {
+		return this.inexactKRetrievalByTokenMap(this.getQueryTokenMapFromValue(value), filter, exactPosition, field)
+	}
+
+	/**
+	 * Finds all document IDs compatible with the search document
+	 * @param value - The value to be searched for.
+	 * @param filter - A filter of document IDs to quicker narrow down the search.
+	 * @param exactPosition - Should the token positions be exact?
+	 * @param field - An optional specific field to be searched. Note that if fields are encoded in the index then this becomes a mandatory property.
+	 */
+	inexactKRetrievalByTokenMap(tokenMap: Map<string, IIndexTokenMeta>, filter?: DocumentID[], exactPosition?: boolean, field?: string): DocumentID[] {
 		//Validate input
 		if (this.ENCODE_FIELDS && !field) {
 			console.error("Invalid query. No field was specified, but ENCODE_FIELDS is set to true.")
@@ -312,9 +357,6 @@ export class Index {
 			return []
 		}
 		//Compute document list
-		const doc = createDocumentFromValue(value)
-		const tokenMap = this.getDocumentTokenMap(doc, false)
-		this.ranker.getQueryTFMagnitude(tokenMap)
 		let documents: Set<DocumentID>[] = []
 		//Handle field encoding for the query
 		if (this.ENCODE_FIELDS) {

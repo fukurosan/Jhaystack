@@ -220,7 +220,16 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Executes a binary query
+	 * Perform a full-text search
+	 * @param {any} searchValue - Value to search for
+	 * @returns {SearchResult[]} - Search results
+	 */
+	fulltext(searchValue: any): SearchResult[] {
+		return this.engine.fulltext(searchValue)
+	}
+
+	/**
+	 * Execute a binary query
 	 * @param {IQuery} query - Query to execute
 	 * @returns {SearchResult[]} - Search results
 	 */

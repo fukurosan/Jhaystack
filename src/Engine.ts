@@ -304,6 +304,13 @@ export default class SearchEngine {
 		return result
 	}
 
+	sortSearchResults(list: SearchResult[]) {
+		if (this.sortingStrategy.length > 0) {
+			list.sort(mergeArraySortFunctions(this.sortingStrategy))
+		}
+		return list
+	}
+
 	/**
 	 * Executes an inexact K retrieval using clustering
 	 * @param criteria - Criteria
@@ -357,9 +364,35 @@ export default class SearchEngine {
 	search(searchValueIn: any): SearchResult[] {
 		const searchValue = this.getProcessedTermValue(searchValueIn)
 		const searchResult = FULL_SCAN(this.corpus, searchValue, this.comparisonStrategy, this.limit)
-		if (this.sortingStrategy.length > 0) {
-			searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))
+		this.sortSearchResults(searchResult)
+		return searchResult
+	}
+
+	fulltext(searchValue: any): SearchResult[] {
+		if (!this.indexStrategy) {
+			throw new Error("No index strategy has been configured!")
 		}
+		if (!this.fullTextScoringStrategy) {
+			throw new Error("No full-text scoring strategy has been configured!")
+		}
+		const value = this.applyPreProcessors(searchValue) //Always apply preprocessors for index retrieval
+		const tokenMap = this.indexStrategy!.getQueryTokenMapFromValue(value)
+		const documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap)
+		if (!documentIDs.length) {
+			return []
+		}
+		if (this.limit && this.limit > documentIDs.length) {
+			documentIDs.splice(0, this.limit)
+		}
+		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
+		const searchResult = sparseVectors.map(vectors => {
+			const score = this.fullTextScoringStrategy!(vectors.vector1, vectors.vector2)
+			if (typeof score === "number") {
+				return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score, score, 0, 0)
+			}
+			return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score.score, score.score, 0, 0, score)
+		})
+		this.sortSearchResults(searchResult)
 		return searchResult
 	}
 
@@ -369,6 +402,10 @@ export default class SearchEngine {
 			resultIDs.splice(0, this.limit)
 		}
 		const resultIDsSet = new Set(resultIDs)
-		return this.corpus.filter(doc => resultIDsSet.has(doc.id)).map(doc => new SearchResult(doc.origin, doc.originIndex, [], "", 1, 0, 0, 0, null))
+		const searchResult = this.corpus
+			.filter(doc => resultIDsSet.has(doc.id))
+			.map(doc => new SearchResult(doc.origin, doc.originIndex, [], "", 1, 0, 0, 0, null))
+		this.sortSearchResults(searchResult)
+		return searchResult
 	}
 }
