@@ -10,6 +10,7 @@ import IPreProcessor from "./Model/IPreProcessor"
 import IIndexOptions from "./Indexing/IIndexOptions"
 import IClusterSpecification from "./Model/IClusterSpecification"
 import ISpelling from "./Model/ISpelling"
+import { IQuery } from "./Model/IQuery"
 
 /**
  * The main Jhaystack class.
@@ -216,5 +217,14 @@ export default class Jhaystack {
 	 */
 	search(searchValue: any): SearchResult[] {
 		return this.engine.search(searchValue)
+	}
+
+	/**
+	 * Executes a binary query
+	 * @param {IQuery} query - Query to execute
+	 * @returns {SearchResult[]} - Search results
+	 */
+	query(query: IQuery): SearchResult[] {
+		return this.engine.query(query)
 	}
 }

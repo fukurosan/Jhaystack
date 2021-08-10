@@ -22,7 +22,7 @@ import ICluster from "./Model/ICluster"
 import ISpelling from "./Model/ISpelling"
 import { IFullTextScoring } from "./Model/IFullTextScoring"
 import { QueryPlanner } from "./QueryPlanner/QueryPlanner"
-import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria } from "./Model/IQuery"
+import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, IQuery } from "./Model/IQuery"
 import { createEmptyIndexDocument, createDocumentFromValue } from "./Utility/Helpers"
 
 export default class SearchEngine {
@@ -363,4 +363,12 @@ export default class SearchEngine {
 		}
 		return searchResult
 	}
+
+	query(query: IQuery): SearchResult[] {
+		const resultIDs = new Set(this.queryPlanner.executeQuery(query))
+		return this.corpus
+		.filter(doc => resultIDs.has(doc.id))
+		.map(doc => new SearchResult(doc.origin, doc.originIndex, [], "", 1, 0, 0, 0, null))
+	}
+
 }
