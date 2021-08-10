@@ -361,7 +361,15 @@ export default class SearchEngine {
 			const filterSet = new Set(filter)
 			documentArray = documentArray.filter(doc => filterSet.has(doc.id))
 		}
-		return documentArray.filter(doc => doc.declarations.find(declaration => strategy(value, declaration.value))).map(doc => doc.id)
+		return documentArray
+			.filter(doc => {
+				let declarations = doc.declarations
+				if (criteria.field) {
+					declarations = doc.declarations.filter(declaration => declaration.normalizedPath === criteria.field)
+				}
+				return declarations.find(declaration => strategy(value, declaration.value))
+			})
+			.map(doc => doc.id)
 	}
 
 	search(searchValueIn: any): SearchResult[] {
@@ -384,8 +392,8 @@ export default class SearchEngine {
 		if (!documentIDs.length) {
 			return []
 		}
-		if (this.limit && this.limit > documentIDs.length) {
-			documentIDs.splice(0, this.limit)
+		if (this.limit && this.limit <= documentIDs.length) {
+			documentIDs.splice(this.limit - 1)
 		}
 		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
 		const searchResult = sparseVectors.map(vectors => {
@@ -401,8 +409,8 @@ export default class SearchEngine {
 
 	query(query: IQuery): SearchResult[] {
 		const resultIDs = this.queryPlanner.executeQuery(query)
-		if (this.limit) {
-			resultIDs.splice(0, this.limit)
+		if (this.limit && this.limit <= resultIDs.length) {
+			resultIDs.splice(this.limit - 1)
 		}
 		const resultIDsSet = new Set(resultIDs)
 		const searchResult = this.corpus
