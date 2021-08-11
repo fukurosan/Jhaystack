@@ -35,7 +35,7 @@ const optionsExclusive = {
 const seExc = new Jhaystack(optionsExclusive)
 
 const resultsIncluded = seInc.search("tm")
-//[{ path: ["otherNameAttribute"], item: { otherNameAttribute: "tim" }, value: "tim", relevance: 0.749999995, comparisonScore: 0.49999999, comparisonIndex: 0 }]
+//[{ path: ["otherNameAttribute"], item: { otherNameAttribute: "tim" }, value: "tim", relevance: 0.49999999, score: 0.49999999 }]
 const resultsExcluded = seExc.search("tm")
-//[{ path: ["name"], item: { name: "tom" }, value: "tom", relevance: 0.749999995, comparisonScore: 0.49999999, comparisonIndex: 0 }]
+//[{ path: ["name"], item: { name: "tom" }, value: "tom", relevance: 0.49999999, score: 0.49999999 }]
 ```

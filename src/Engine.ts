@@ -95,7 +95,7 @@ export default class SearchEngine {
 				this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
 			}
 			options.spelling && options.spelling.strategy && this.setSpellingStrategy(options.spelling.strategy, options.spelling.doNotBuild)
-			options.clustering && options.clustering.options && this.setClusterStrategy(options.clustering.options, options.clustering.doNotBuild)
+			options.clustering && options.clustering.strategy && this.setClusterStrategy(options.clustering.strategy, options.clustering.doNotBuild)
 		}
 	}
 

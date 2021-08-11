@@ -24,7 +24,7 @@ export default interface IOptions {
 	}
 	/** Sets the cluster strategy to be used */
 	clustering?: {
-		options: IClusterSpecification[]
+		strategy: IClusterSpecification[]
 		doNotBuild?: boolean
 	}
 	/** Sets the spelling strategy to use */

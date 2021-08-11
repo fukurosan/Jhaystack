@@ -23,7 +23,7 @@ export interface IIndexQueryCriteria extends QueryCriteria {
 	type: "index"
 	/** Value to search for */
 	value: string
-	/** Does the position of the tokens of the term matter? */
+	/** Do the positions of the tokens of the term matter? */
 	exact?: boolean
 	/** If only a specific field should be used it can be specified here as a "." (dot) separated string */
 	field?: string

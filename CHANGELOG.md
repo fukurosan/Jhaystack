@@ -3,6 +3,8 @@
 ### 1.0.0 TBR
 
 - TODO:: Implement Storage Strategy
+- TODO:: Implement configurable logging
+- TODO:: Implement Multi threading
 
 ### 0.1.0
 
@@ -11,9 +13,7 @@
 - Added KMeans cluster strategy
 - Added Range cluster strategy
 - Added Spelling Strategy support
-- Added new Trigram Spelling Strategy
-- Added Thread Planner and partly moved search execution off main thread
-- Added multi-threaded search
+- Added Trigram Spelling Strategy
 - Added Ranking Strategy support
 - Added TFIDF ranking strategy
 - Added BM25 ranking strategy
@@ -22,7 +22,6 @@
 - Added EdgeGram tokenizer strategy
 - Added Shingle tokenizer strategy
 - Added Word tokenizer strategy
-- Added Scoring Strategy support
 - Added Full-Text Scoring strategy support
 - Added Cosine Full-Text scoring strategy
 - Added Magnitude Full-Text scoring strategy
@@ -33,7 +32,7 @@
 - Added optional automatic k-value computation for Bitap based on term length
 - Improved test runner performance by lowering concurrent number of workers
 - Ended support for legacy browsers (IE11)
-- Removed ability to set multiple default comparison strategies in favor of queries and filters
+- Removed ability to set multiple default comparison strategies
 - Various bug fixes and performance improvements
 
 ### 0.0.53

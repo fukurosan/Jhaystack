@@ -1,8 +1,8 @@
-# Advanced Search
+# Tips and Tricks
 
-> ## Advanced Queries (and / or)
+> ## Make your own query functions (and / or)
 
-Jhaystack allows you to create advanced queries by either providing them as custom comparison functions, or by using the regular expression comparison function.
+Jhaystack allows you to create advanced queries through filters and the query API, but you can also create custom queries by either providing them as custom comparison functions, or by using the regular expression comparison function.
 
 ?> Your custom comparison functions can leverage built in comparison strategies of Jhaystack as well - like bitap.
 
@@ -51,24 +51,10 @@ myJhaystackInstance.search()
 
 > ## Speed
 
-Full string approximation scans will never be as fast as indexed search, but there are things you can do to help Jhaystack perform better.
+A few things to keep in mind in order to boost performance
 
 #### Limiting results
 Do you only need x amount of results? Set a result limit. This means Jhaystack can stop searching as soon as it has found enough matches.
-
-#### Limiting the amount of comparison strategies
-Do you have multiple comparison strategies, but they are all weighted the same? Provide them as one combined custom strategy. This will mean that the dataset will not have to be traversed multiple times, which tends to be more costly.
-
-Let's say that you want to find values that either start with or end with a given value. You can then combine these into one single comparison function.
-
-Example:
-```javascript
-import { ComparisonStrategy } from "jhaystack"
-const myCustomFunction = (term, context) => {
-    return ComparisonStrategy.STARTS_WITH(term, context) || ComparisonStrategy.ENDS_WITH(term, context)
-}
-myJhaystackInstance.setComparisonStrategy([myCustomFunction])
-```
 
 #### Filtering data
 If you know that there are certain values or properties that do not need to be evaluated then specifying filters for this can help speed things up.
