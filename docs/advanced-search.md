@@ -54,7 +54,7 @@ myJhaystackInstance.search()
 A few things to keep in mind in order to boost performance
 
 #### Limiting results
-Do you only need x amount of results? Set a result limit. This means Jhaystack can stop searching as soon as it has found enough matches.
+Do you only need x amount of results? Set a result limit. This means Jhaystack can stop searching as soon as it has found enough matches. Note, though, that the limit will also be applied to inexact k retrieval. So, if you are using filters or full-text search you may need to play around with the number a bit.
 
 #### Filtering data
 If you know that there are certain values or properties that do not need to be evaluated then specifying filters for this can help speed things up.

@@ -27,11 +27,11 @@ The bundle names follow the following pseudo pattern:
 !> **Tip**  
 *If you are unfamiliar with what the different terms mean then below is a cheat sheet.*
 
-- Using the library in the browser with a \<script\> element?
- - umd or iife
-- Using it in a nodejs project?
- - cjs
-- Using it inside of a bundler?
- - esm
+ - Using the library in the browser with a \<script\> element?
+   - umd or iife
+ - Using it in a nodejs project?
+   - cjs
+ - Using it inside of a bundler?
+   - esm
 
 And, generally, use the .min version for production.

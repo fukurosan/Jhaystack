@@ -16,7 +16,7 @@ The extraction strategy describes what kind of results you are looking for. It g
 
 #### Indexing Strategy
 
-The index strategy is used to create full-text indexes and defines how these should be set up. These can be used both to enable full-text search as well as super-fast filters and queries.
+The index strategy is used to create full-text indexes and defines how these should be set up. These can be used both to enable full-text search as well as filters and queries.
 
 ###### *Tokenizer Strategy*
 
@@ -24,15 +24,15 @@ The tokenizer strategy is a part of the index strategy and defines how values sh
 
 ###### *Ranking Strategy*
 
-The ranking strategy is a part of the index strategy and defines how the magnitude (or, frequencies) for tokens inside of documents should be computed. In other words, it describes how import a given token is within a document, as well as within the dataset as a whole. This is, in essence, what allows us to determine how similar two documents are.
+The ranking strategy is a part of the index strategy and defines how the magnitude (or, frequencies) for tokens inside of documents should be computed. In other words, it describes how import a given token is within a document, as well as within the dataset as a whole. This is, in essence, what allows us to determine how similar two documents are in a full-text search.
 
 ###### *Full-Text Scoring Strategy*
 
-The full-text scoring strategy is basically a comparison strategy, but for full-text vectors. They serve the exact same purpose, but the input looks differently. When you execute a full-text search the full-text scoring strategy is used to determine the score of the match.
+The full-text scoring strategy is basically a comparison strategy, but for full-text vectors. They serve the exact same purpose, but the input is different. When you execute a full-text search the full-text scoring strategy is used to determine the score of the match.
 
 #### Spelling Strategy
 
-The spelling strategy allows for configuration of spelling-correction of user provided input. This allows you to implement "Did you mean?" functionality as well as auto-correct input from the user that would otherwise had resulted in zero matches.
+The spelling strategy allows for configuration of spelling-correction of user provided input. This allows you to implement "Did you mean?" functionality, give preemptive suggestions, as well as auto-correct input from the user that would otherwise had resulted in zero matches.
 
 #### Cluster Strategy
 

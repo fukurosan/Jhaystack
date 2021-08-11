@@ -30,7 +30,7 @@ se.checkSpelling("hello wordl")
 ```
 
 !> **Tip**  
-_Note that when you add / remove documents from your Jhaystack instance you will need to manually rebuild your spellers using the buildSpellers() function. If you do not want the spellers to be built right away you can pass in the property doNotBuild: true, which will keep the index from being built._
+_Note that when you add / remove documents from your Jhaystack instance you will need to manually rebuild your spellers using the buildSpellers() function._
 
 Jhaystack comes with the following spellers built in.
 

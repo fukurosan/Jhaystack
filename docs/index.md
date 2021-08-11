@@ -2,9 +2,9 @@
 
 ## Basics
 
-Jhaystack allows you to create full-text indexes using an index strategy. Full-text indexes can be used not just for full-text search but also for super-fast search filters in queries which works great for larger data sets. Indexes have a build-step, which means that when you create an index strategy the index must be built before it can be used, which can be computationally expensive. It is also worth noting that the speed of indexed search comes at a cost of increased memory usage.
+Jhaystack allows you to create full-text indexes using an index strategy. Full-text indexes can be used not just for full-text search but also for search filters in queries which works great for larger data sets. Indexes have a build-step, which means that when you create an index strategy the index must be built before it can be used, which can be computationally expensive. It is also worth noting that the speed of indexed search comes at a cost of increased memory usage.
 
-full-text search should be considered as an alternative to using comparison strategies. The two are completely different search approaches that solve different problems. Full-text search helps you search through large data sets, focusing on the "bigger picture". Think of it as searching in a web search engine. Comparison strategies use sequential value similarity approximation to compare every single value for a "match", focusing on the "narrow picture". A typical use case for a full-text search might be to search through a collection of long news articles for everything that has to do with "penguins" and "Antarctica". A typical use case for sequential value similarity approximation might be to find all movie titles that has something in the title similar to "frrest gmp".
+full-text search should be considered as an alternative to using comparison strategies. The two are completely different search approaches that solve different problems. Full-text search helps you search through large data sets, focusing on the bigger picture. Think of it as searching in a web search engine. Comparison strategies use sequential value similarity approximation to compare every single value for a "match", focusing on the narrow picture. A typical use case for a full-text search might be to search through a collection of long news articles for everything that has to do with "penguins" and "Antarctica". A typical use case for sequential value similarity approximation might be to find all movie titles that has something in the title similar to "frrest gmp".
 
 Indexes will respect your globally configured settings such as filters, result limits, extraction strategy and sorting. The only thing currently not supported is weights.
 
@@ -41,7 +41,7 @@ se.buildIndex()
 ```
 
 !> **Tip**  
-_Note that when you add / remove documents from your Jhaystack instance you will need to manually rebuild your index using the buildIndex() function. If you do not want the index to be built right away you can pass in the property doNotBuild: true, which will keep the index from being built._
+_Note that when you add / remove documents from your Jhaystack instance you will need to manually rebuild your index using the buildIndex() function._
 
 --- 
 
@@ -50,15 +50,15 @@ _Note that when you add / remove documents from your Jhaystack instance you will
 Indexes are built to be configurable and customizable. The following options can be provided to an index:
 
 -   filter
-    -   This works the exact same way as the global filters described in the filtering chapter, but only for the index.
+    -   This works the exact same way as the global filters described in the filtering chapter, but only for the index. Global filters are always applied first.
 -   preProcessors
-    -   This works the same as the global preProcessors described in the preProcessors chapter, but only for the index. It is common to use the index specific ones to do things like stemming.
+    -   This works the same as the global preProcessors described in the preprocessors chapter, but only for the index. It is common to use the index specific ones to do things like stemming. Global preprocessors are always applied first
 -   tokenizer
-    -   Tokenizers describe how values are broken down into indexable tokens. Check the tokenizer chapter for more information
+    -   Tokenizers describe how values are broken down into indexable tokens.
 -   rankingStrategy
     -   The ranking strategy specifies how a document’s magnitude is computed.
 -   rankingStrategyOptions
-    -   These are any potential options for the given rankingStrategy (check the ranking strategy chapter for more information)
+    -   These are any potential options for the given rankingStrategy
 
 ---
 
@@ -90,7 +90,7 @@ The following additional arguments can be passed to this function:
 
 ### NGRAM
 
-The ngram tokenizer will split all values into their ngram (by default 3). This type of strategy is more memory intensive than for example WORD, but allows you to do match parts of a word in the index (essentially making it a contains search).
+The ngram tokenizer will split all values into their ngrams (by default 3). This type of strategy is more memory intensive than for example WORD, but allows you to match only parts of a word in the index (essentially making it a contains search).
 
 The following additional arguments can be passed to this function:
  - **maxGram** 
@@ -112,7 +112,7 @@ The following additional arguments can be passed to this function:
 
 ### SHINGLE
 
-A shingle is an n-long sequential collection of words. This can be used used to help with retaining information about several words that make up a single meaning. Imagine for example someone searches for “New York”. They are obviously (I mean, probably) not interested in the new ice cream store in York (UK). Shingles are a way of retaining the importance of word pairings. While shingles are not so commonly used today, for a multitude of reasons, they still can come in handy since positional indexes are just not as performant at runtime.
+A shingle is an n-long sequential collection of words. This can be used to help with retaining information about several words that make up a single meaning. Imagine for example someone searches for “New York”. They are obviously (I mean, probably) not interested in the new ice cream store in York (UK). Shingles are a way of retaining the importance of word pairings. While shingles are not so commonly used today, for a multitude of reasons, they still can come in handy.
 
 The following additional arguments can be passed to this function:
  - **n** 
@@ -140,7 +140,7 @@ The following additional arguments can be passed to this function:
 
 ### Custom Tokenizers
 
-You can easily write your own tokenizers. These are simply functions that take a value as input, and returns a list of tokens with positional information as output. Below is an interface of the expected output:
+You can easily write your own tokenizers. These are simply functions that take a value as input, and returns a list of tokens with positional information as output. You can use the below interface:
 
 ```javascript
 interface ITokenizerResultPositions {
@@ -182,7 +182,7 @@ indexOptions = {
 const se = new Jhaystack({indexing: {enable : true, options: indexOptions } })
 ```
 
-The following weighters come builtin.
+The following weighters come builtin:
 
 ### TFIDF (Default)
 
@@ -212,7 +212,7 @@ The following options can be configured:
 
 ### BM25
 
-BM25 is a newer approach to ranking that adopts ideas from probabilistic theory. BM25 can be a bit trickier to get right, since you may need to experiment with its parameters more but can sometimes provide better results than TFIDF. A generally good default starting point is provided by Jhaystack, but optimal parameters will vary greatly based on, for example, document length, word diversity and word repetition. It is recommended to use a magnitude scoring function in tandem with this.
+BM25 is a newer (well, relatively) approach to ranking that adopts ideas from probabilistic theory. BM25 can be a bit trickier to get right, since you may need to experiment with its parameters more but can sometimes provide better results than TFIDF. A generally good default starting point is provided by Jhaystack, but optimal parameters will vary greatly based on, for example, document length, word diversity and word repetition. It is recommended to use a magnitude scoring function in tandem with this.
 
 The following options can be configured:
  - **k1** 

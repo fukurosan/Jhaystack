@@ -3,7 +3,7 @@
 ### 0.2.0 TBR
 
 - TODO:: Implement Storage Strategy
-- TODO:: Implement configurable logging
+- TODO:: Implement Logging Strategy
 - TODO:: Implement Multi threading
 
 ### 0.1.0

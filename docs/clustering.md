@@ -1,6 +1,6 @@
 # Clustering Strategy
 
-Clusters are like plugins that can be used for faster and more appropriate inexact k retrieval. Clusters are typically useful for when you either have mid to large size data sets and need to squeeze out every bit of performance that you can, or when you are in need of some form of special use case functionality. Clusters have a build-phase and must be constructed before they can be used.
+Clusters are like plugins that can be used for faster and more precise inexact k retrieval. Clusters are typically useful for when you either have mid to large size data sets and need to squeeze out every bit of performance that you can, or when you are in need of some form of special use case functionality. Clusters have a build-phase and must be constructed before they can be used.
 
 Clusters can be passed options, both at build time as well as at query time.
 
@@ -47,13 +47,15 @@ Jhaystack comes with the following clusters built in:
 
 KMeans will compute groups of documents based on a KMeans algorithm applied to the documents’ vectors. You can either supply the amount of groups to create, or let Jhaystack make a guesstimate. You can also specify how many cycles Jhaystack should loop through in trying to optimize the groupings. Beware of setting this to -1 since it could lead to very long cluster construction times for large datasets.
 
+This strategy requires a built index.
+
 The following options can be configured at **build time**:
  - **k** 
    - **Description**: *Number of clusters. If set to -1 the optimal number will be estimated by the algorithm.*
    - **Type**: `number`
    - **Default**: `-1`
  - **maxRepetition** 
-   - **Description**: *Number of times to run the readjustment algorithm. A higher number becomes more accurate, a lower number executes faster at build time.*
+   - **Description**: *Number of times to run the readjustment algorithm. A higher number becomes more accurate, a lower number executes faster at build time. -1 means that the algorithm will keep going until change is no longer observed.*
    - **Type**: `number`
    - **Default**: `10`
 
@@ -61,7 +63,9 @@ No options can be passed at **query time**
 
 > ## Range
 
-Range allows you to query for ranges of values, for example numbers and dates. This cluster requires that you specify a field to be used. The index will then map all values on these field, and allow you to retrieve all documents using greater than/less than operators. The cluster internally uses a form of binary search, so beware that it does not have a constant lookup time.
+Range allows you to query for ranges of values, for example numbers and dates. This cluster requires that you specify a field to be used. The index will map all values on the field, and allow you to retrieve all documents using greater than/less than operators. Beware that the cluster does not have a constant lookup time.
+
+This strategy does not require a built index.
 
 The following options can be configured at **build time**:
  - **field** 
@@ -71,11 +75,11 @@ The following options can be configured at **build time**:
 
 The following options can be configured at **query time**
  - **lessThan** 
-   - **Description**: *Value that the result should be less than*
+   - **Description**: *Value that should be less than*
    - **Type**: `number`
    - **Default**: `undefined`
  - **greaterThan** 
-   - **Description**: *Value that the result should be greater than.*
+   - **Description**: *Value that should be greater than.*
    - **Type**: `number`
    - **Default**: `undefined`
 
