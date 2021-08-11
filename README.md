@@ -22,6 +22,7 @@ Jhaystack allows you to search through not just values but also objects and arra
 - Modular and customizable
 - Compatible with most runtime environments
 - Zero dependencies
+- Custom addons can easily be unit tested
 - Fast searches
 - Simple to use
 - No dedicated search backend needed
