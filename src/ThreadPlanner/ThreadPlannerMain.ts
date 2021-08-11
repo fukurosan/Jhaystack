@@ -85,6 +85,15 @@ export class ThreadPlanner {
 			})
 			this.freeThreads.delete(fn)
 		}
+		if (this.metaData.has(fn)) {
+			const timeout = this.metaData.get(fn)!.terminationTimeout
+			if (timeout) {
+				clearTimeout(timeout)
+			}
+			this.metaData.delete(fn)
+		}
+		this.threadQueue.filter(thread => thread[1] === fn).forEach(thread => thread[0].reject("Thread terminated"))
+		this.threadQueue = this.threadQueue.filter(thread => thread[1] !== fn)
 	}
 
 	/**
