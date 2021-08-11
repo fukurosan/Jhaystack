@@ -10,7 +10,7 @@ import { nGram } from "../Utility/ngram"
  * @param {number} minGram - Minimum size for the grams (default 3)
  * @param {boolean} captureSpace - If false all spaces will be removed before parsing (default true)
  * @param {boolean} captureStartEnd - If true the beginning and end of the term will be parsed as a custom character (default false)
- * @return {Map<string, ITokenizerResult>} - Resulting tokens
+ * @return {ITokenizerResultMap} - Resulting tokens
  */
 export const NGRAM = (value: unknown, maxGram = 3, minGram = maxGram, captureSpace = true, captureStartEnd = false): ITokenizerResultMap => {
 	if (typeof value !== "string") {

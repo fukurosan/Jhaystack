@@ -5,7 +5,7 @@ import { edgeGram } from "../Utility/ngram"
  * Tokenizes the input value based on a Set of edge grams (starts with grams).
  * @param {string} value - String to extract edge grams from
  * @param {number} n - Maximum number of grams to extract
- * @return {Map<string, ITokenizerResult>} - Resulting tokens
+ * @return {ITokenizerResultMap} - Resulting tokens
  */
 export const EDGE_GRAM = (value: unknown, n = 10): ITokenizerResultMap => {
 	if (typeof value !== "string") {

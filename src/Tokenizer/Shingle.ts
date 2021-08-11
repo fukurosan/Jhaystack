@@ -6,9 +6,9 @@ import ITokenizerResultMap from "../Model/ITokenizerResult"
  * You can configure the tokenizer to only return the actual shingles,
  * @param {unknown} value - The value to be tokenized
  * @param {number} n - Number of shingles
- * @param {string} onlyIncludeShingles - Should only shingles be included?
+ * @param {boolean} onlyIncludeShingles - Should only shingles be included?
  * @param {string} separator - Optional separator
- * @return {Map<string, ITokenizerResult>} - Resulting tokens
+ * @return {ITokenizerResultMap} - Resulting tokens
  */
 export const SHINGLE = (value: unknown, n = 2, onlyIncludeShingles = false, separator?: string): ITokenizerResultMap => {
 	if (typeof value !== "string" || n < 2) {

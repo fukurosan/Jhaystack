@@ -1,4 +1,4 @@
-import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, PreProcessingStrategy, fullTextScoringStrategy } from "./index"
+import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, PreProcessingStrategy, FullTextScoringStrategy } from "./index"
 import SearchResult from "./Model/SearchResult"
 import { TRIGRAM_SPELLER } from "./Spelling/Trigram"
 
@@ -140,7 +140,7 @@ describe("End to end", () => {
 					preProcessors: [PreProcessingStrategy.PORTER2]
 				}
 			},
-			fullTextScoringStrategy: fullTextScoringStrategy.FULLTEXT_COSINE
+			fullTextScoringStrategy: FullTextScoringStrategy.FULLTEXT_COSINE
 		})
 		const result = se.fulltext("nest")
 		expect(result.length).toBe(1)
