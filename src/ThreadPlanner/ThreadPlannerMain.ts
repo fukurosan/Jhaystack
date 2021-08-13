@@ -36,16 +36,14 @@ export interface IThreaderFunction {
  * The threadplanner will try to determine the optimal amount of threads that can be started on the host, and will run only that many threads concurrently.
  */
 export class ThreadPlanner {
-	/** Map that holds free workers for a given function */
-	private freeThreads: WeakMap<IThreaderFunction, IThreaderWorker[]>
 	/** A list of queued jobs. The first item is the promise that is waiting for the resolution of the thread. The second is the function to execute, and the third is a list of arguments. */
 	private threadQueue: [IThreaderPromise, IThreaderFunction, any[]][]
 	/** Currently running number of threads */
 	private numberOfRunningThreads: 0
-	/** A map between functions and information about how many tasks are currently pending, as well as a timeout object used to keep track of worker idle time for auto-termination. */
+	/** A map between functions and information about how many tasks are currently pending, a timeout object used to keep track of worker idle time for auto-termination, worker dependencies, as well as free worker threads. */
 	private metaData: WeakMap<
 		IThreaderFunction,
-		{ pendingTasks: number; dependencyString: string; terminationTimeout: ReturnType<typeof setTimeout> | undefined }
+		{ freeThreads: IThreaderWorker[]; pendingTasks: number; dependencyString: string; terminationTimeout: ReturnType<typeof setTimeout> | undefined }
 	>
 
 	/** Maximum idle time before workers are terminated (in ms) */
@@ -55,33 +53,22 @@ export class ThreadPlanner {
 	protected maxThreads: number
 
 	constructor() {
-		this.freeThreads = new WeakMap()
 		this.threadQueue = []
 		this.numberOfRunningThreads = 0
 		this.maxThreads = -1
 		this.metaData = new WeakMap()
 	}
 
-	/**
-	 * Creates an inline worker
-	 */
-	createInlineWorker(fn: IThreaderFunction, dependencyString: string): IThreaderWorker {
-		return this.createInlineWorker(fn, dependencyString) //This is just for the TS-compiler to calm down. The real implementation can be found in extending classes
+	getMaxThreadCount() {
+		return this.maxThreads
 	}
 
-	/**
-	 * Executes a worker
-	 * @param worker - Worker to be executed
-	 * @param args - arguments for the worker
-	 */
-	executeWorker(worker: IThreaderWorker, ...args: any[]) {
-		return new Promise((resolve, reject) => {
-			worker.onmessage = result => {
-				resolve(result.data)
-			}
-			worker.onerror = reject
-			worker.postMessage(args)
-		})
+	hasNext() {
+		return !!this.threadQueue.length
+	}
+
+	createInlineWorker(fn: IThreaderFunction, dependencyString: string): IThreaderWorker {
+		return this.createInlineWorker(fn, dependencyString) //This is just for the TS-compiler to calm down. The real implementation can be found in extending classes
 	}
 
 	/**
@@ -89,39 +76,25 @@ export class ThreadPlanner {
 	 * @param fn - Function for which workers should be terminated
 	 */
 	terminate(fn: IThreaderFunction) {
-		if (this.freeThreads.has(fn)) {
-			this.freeThreads.get(fn)!.forEach(worker => {
+		if (this.metaData.has(fn)) {
+			const meta = this.metaData.get(fn)!
+			if (meta.terminationTimeout) {
+				clearTimeout(meta.terminationTimeout)
+			}
+			meta.freeThreads.forEach(worker => {
 				worker.terminate()
 			})
-			this.freeThreads.delete(fn)
-		}
-		if (this.metaData.has(fn)) {
-			const timeout = this.metaData.get(fn)!.terminationTimeout
-			if (timeout) {
-				clearTimeout(timeout)
-			}
 			this.metaData.delete(fn)
 		}
-		this.threadQueue.filter(thread => thread[1] === fn).forEach(thread => thread[0].reject("Thread terminated"))
+		this.threadQueue.filter(thread => thread[1] === fn).forEach(thread => thread[0].reject("Thread was terminated."))
 		this.threadQueue = this.threadQueue.filter(thread => thread[1] !== fn)
 	}
 
 	/**
-	 * Executes the next thread in the queue
+	 * Recursively computes a dependency string for a given function
+	 * @param obj - Object to compute dependency string for
+	 * @param result - Should never be set externally! Recursively updated dependency string
 	 */
-	next() {
-		if (this.threadQueue.length) {
-			const nextItem = this.threadQueue.splice(0, 1)[0]
-			this.runThread(nextItem[1], ...nextItem[2])
-				.then(result => {
-					nextItem[0].resolve(result)
-				})
-				.catch(error => {
-					nextItem[0].reject(error)
-				})
-		}
-	}
-
 	getDependencyString(obj: any, result = "") {
 		if (obj._jhaystack && obj._jhaystack.dependencyString) {
 			result += `${obj._jhaystack.dependencyString}
@@ -142,7 +115,7 @@ export class ThreadPlanner {
 	}
 
 	/**
-	 * queues a function in the thread planner (and executes it immediately if possible)
+	 * Queues a function in the thread planner (and starts a thread execution loop if possible). 
 	 * @param fn - Function to run
 	 * @param args - Arguments for the function
 	 */
@@ -151,7 +124,8 @@ export class ThreadPlanner {
 			this.metaData.set(fn, {
 				pendingTasks: 0,
 				terminationTimeout: undefined,
-				dependencyString: this.getDependencyString(fn)
+				dependencyString: this.getDependencyString(fn),
+				freeThreads: []
 			})
 		}
 		const metaData = this.metaData.get(fn)!
@@ -160,16 +134,6 @@ export class ThreadPlanner {
 			delete metaData.terminationTimeout
 		}
 		metaData.pendingTasks++
-		const result = this.runThread(fn, ...args)
-		return result
-	}
-
-	/**
-	 * Executes a given function as a separate thread.
-	 * @param fn - Function to execute
-	 * @param args - Arguments for the function to be executed
-	 */
-	async runThread(fn: IThreaderFunction, ...args: any[]) {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		let resolve: IThreaderFunction = () => {}
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -178,29 +142,62 @@ export class ThreadPlanner {
 			resolve = outerResolve
 			reject = outerReject
 		})
-		if (!this.freeThreads.has(fn)) {
-			this.freeThreads.set(fn, [])
+		this.threadQueue.push([{ resolve, reject }, fn, [...args]])
+		if (this.numberOfRunningThreads !== this.maxThreads) {
+			//There should never be more execution loops than max thread count.
+			this.executeQueueLoop()
 		}
-		if (this.numberOfRunningThreads === this.maxThreads) {
-			this.threadQueue.push([{ resolve, reject }, fn, [...args]])
-			return result
-		}
-		const threads = this.freeThreads.get(fn)
-		if (!threads!.length) {
-			threads!.push(this.createInlineWorker(fn, this.metaData.get(fn)!.dependencyString))
-		}
-		const thread = threads!.splice(0, 1)[0]
-		this.numberOfRunningThreads++
-		this.executeWorker(thread, ...args)
-			.then(executionResult => {
-				this.handleThreadCompleted(fn, thread)
-				resolve(executionResult)
-			})
-			.catch(error => {
-				this.handleThreadCompleted(fn, thread)
-				reject(error)
-			})
 		return result
+	}
+
+	/**
+	 * Executes threads one by one until the queue is empty.
+	 * @param fn - Function to execute
+	 * @param args - Arguments for the function to be executed
+	 */
+	async executeQueueLoop() {
+		while (this.hasNext()) {
+			const nextItem = this.threadQueue.splice(0, 1)[0]
+			const resolve = nextItem[0].resolve
+			const reject = nextItem[0].reject
+			const fn = nextItem[1]
+			const args = nextItem[2]
+			const threads = this.metaData.get(fn)!.freeThreads
+			if (!threads.length) {
+				threads!.push(this.createInlineWorker(fn, this.metaData.get(fn)!.dependencyString))
+			}
+			const thread = threads!.splice(0, 1)[0]
+			this.numberOfRunningThreads++
+			try {
+				await this.executeWorker(thread, ...args)
+					.then(executionResult => {
+						this.handleThreadCompleted(fn, thread)
+						resolve(executionResult)
+					})
+					.catch(error => {
+						this.handleThreadCompleted(fn, thread)
+						reject(error)
+					})
+			} catch (e) {
+				console.error(e)
+			}
+			this.numberOfRunningThreads--
+		}
+	}
+
+	/**
+	 * Executes a worker and returns a promise with the result
+	 * @param worker - Worker to be executed
+	 * @param args - arguments for the worker
+	 */
+	executeWorker(worker: IThreaderWorker, ...args: any[]) {
+		return new Promise((resolve, reject) => {
+			worker.onmessage = result => {
+				resolve(result.data)
+			}
+			worker.onerror = reject
+			worker.postMessage(args)
+		})
 	}
 
 	/**
@@ -210,14 +207,12 @@ export class ThreadPlanner {
 	 */
 	handleThreadCompleted(fn: IThreaderFunction, thread: IThreaderWorker) {
 		const metaData = this.metaData.get(fn)!
-		this.freeThreads.get(fn)!.push(thread)
-		this.numberOfRunningThreads--
+		metaData.freeThreads.push(thread)
 		metaData.pendingTasks--
 		if (!metaData.pendingTasks) {
 			metaData.terminationTimeout = setTimeout(() => {
 				this.terminate(fn)
 			}, this.MAXIMUM_IDLE_TIME_MS)
 		}
-		this.next()
 	}
 }
