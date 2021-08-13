@@ -1,3 +1,5 @@
+import { ObjectLiteral } from "../Utility/JsonUtility"
+
 /**
  * Interface for workers that adopts the browser standard
  */
@@ -21,6 +23,10 @@ export interface IThreaderPromise {
  */
 export interface IThreaderFunction {
 	(...args: any[]): any
+	_jhaystack?: {
+		dependencies?: ObjectLiteral
+		dependencyString?: string
+	}
 }
 
 /**
@@ -37,7 +43,11 @@ export class ThreadPlanner {
 	/** Currently running number of threads */
 	private numberOfRunningThreads: 0
 	/** A map between functions and information about how many tasks are currently pending, as well as a timeout object used to keep track of worker idle time for auto-termination. */
-	private metaData: WeakMap<IThreaderFunction, { pendingTasks: number; terminationTimeout: ReturnType<typeof setTimeout> | undefined }>
+	private metaData: WeakMap<
+		IThreaderFunction,
+		{ pendingTasks: number; dependencyString: string; terminationTimeout: ReturnType<typeof setTimeout> | undefined }
+	>
+
 	/** Maximum idle time before workers are terminated (in ms) */
 	private readonly MAXIMUM_IDLE_TIME_MS = 10000 //10 seconds
 
@@ -55,8 +65,8 @@ export class ThreadPlanner {
 	/**
 	 * Creates an inline worker
 	 */
-	createInlineWorker(fn: IThreaderFunction): IThreaderWorker {
-		return this.createInlineWorker(fn) //This is just for the TS-compiler to calm down. The real implementation can be found in extending classes
+	createInlineWorker(fn: IThreaderFunction, dependencyString: string): IThreaderWorker {
+		return this.createInlineWorker(fn, dependencyString) //This is just for the TS-compiler to calm down. The real implementation can be found in extending classes
 	}
 
 	/**
@@ -112,6 +122,25 @@ export class ThreadPlanner {
 		}
 	}
 
+	getDependencyString(obj: any, result = "") {
+		if (obj._jhaystack && obj._jhaystack.dependencyString) {
+			result += `${obj._jhaystack.dependencyString}
+			
+			`
+		}
+		if (obj._jhaystack && obj._jhaystack.dependencies) {
+			const dependencies = obj._jhaystack.dependencies
+			Object.keys(dependencies).forEach(key => {
+				const dependency = dependencies[key]
+				result += `var ${key} = ${dependency.toString ? dependency.toString() : dependency}
+				
+				`
+				result = this.getDependencyString(dependency, result)
+			})
+		}
+		return result
+	}
+
 	/**
 	 * queues a function in the thread planner (and executes it immediately if possible)
 	 * @param fn - Function to run
@@ -121,7 +150,8 @@ export class ThreadPlanner {
 		if (!this.metaData.has(fn)) {
 			this.metaData.set(fn, {
 				pendingTasks: 0,
-				terminationTimeout: undefined
+				terminationTimeout: undefined,
+				dependencyString: this.getDependencyString(fn)
 			})
 		}
 		const metaData = this.metaData.get(fn)!
@@ -157,7 +187,7 @@ export class ThreadPlanner {
 		}
 		const threads = this.freeThreads.get(fn)
 		if (!threads!.length) {
-			threads!.push(this.createInlineWorker(fn))
+			threads!.push(this.createInlineWorker(fn, this.metaData.get(fn)!.dependencyString))
 		}
 		const thread = threads!.splice(0, 1)[0]
 		this.numberOfRunningThreads++

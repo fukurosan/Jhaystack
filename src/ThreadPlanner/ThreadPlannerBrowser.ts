@@ -10,20 +10,26 @@ export default class BrowserThreadPlanner extends ThreadPlanner {
 	 * Creates a Worker object from a given function by serializing it to a string
 	 * @param fn - Function to be inlined
 	 */
-	createInlineWorker(fn: IThreaderFunction): IThreaderWorker {
+	createInlineWorker(fn: IThreaderFunction, dependencyString: string): IThreaderWorker {
 		const functionString = fn.toString()
 		const args = functionString.substring(functionString.indexOf("(") + 1, functionString.indexOf(")"))
 		const content = functionString.substring(functionString.indexOf("{") + 1, functionString.lastIndexOf("}"))
 		const code = `
+		${dependencyString}
+
         function execute(${args}) {
             ${content}
         }
             self.onmessage = async (params) => {
-                let result = execute(...params.data)
-                if(result instanceof Promise) {
-                    result = await result
-                }
-            postMessage(result)
+				let result = []
+				for(let i = 0; i < params.length; i++) {
+					result.push(execute(...params[i]))
+				}
+				for(let i = 0; i < params.length; i++)
+				if(result[i] instanceof Promise) {
+					result[i] = await result[i]
+				}
+				postMessage(result)
         }
     `
 		const worker = new Worker(URL.createObjectURL(new Blob([code], { type: "text/javascript" })))

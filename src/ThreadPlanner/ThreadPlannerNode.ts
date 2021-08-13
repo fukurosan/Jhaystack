@@ -13,23 +13,30 @@ export default class NodeThreadPlanner extends ThreadPlanner {
 	/**
 	 * @param fn - Function to be inlined
 	 */
-	createInlineWorker(fn: IThreaderFunction): IThreaderWorker {
+	createInlineWorker(fn: IThreaderFunction, dependencyString: string): IThreaderWorker {
 		const functionString = fn.toString()
 		const args = functionString.substring(functionString.indexOf("(") + 1, functionString.indexOf(")"))
 		const content = functionString.substring(functionString.indexOf("{") + 1, functionString.lastIndexOf("}"))
 		const code = `
         const { workerData, parentPort } = require("worker_threads")
-        function execute(${args}) {
+		
+		${dependencyString}
+		
+		function execute(${args}) {
             ${content}
         }
         parentPort.on("message", async (params) => {
-            let result = execute(...params)
-            if(result instanceof Promise) {
-                result = await result
-            }
+			let result = []
+			for(let i = 0; i < params.length; i++) {
+				result.push(execute(...params[i]))
+			}
+			for(let i = 0; i < params.length; i++)
+            if(result[i] instanceof Promise) {
+                result[i] = await result[i]
+			}
             parentPort.postMessage(result)
         })
-        `
+		`
 		const worker = new this.Worker(code, { eval: true })
 		const workerInterface: IThreaderWorker = {
 			//This will be assigned by the threadplanner at a later time
