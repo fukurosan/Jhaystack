@@ -69,7 +69,7 @@ export const FULL_SCAN = (documentArray: Document[], searchValue: any, compariso
 
 /**
  * TODO:: Function ready, not yet implemented
- * Finds all documents in the given document array with matching declarations. Always finds the best matching declaration. 
+ * Finds all documents in the given document array with matching declarations. Always finds the best matching declaration.
  * This function is multi-threaded and runs off the main thread.
  * @param {Document[]} documentArray - Array of documents to traverse
  * @param {any} searchValue - Value to search for
@@ -102,10 +102,12 @@ export const FULL_SCAN_ASYNC = async (
 		})
 		if (!((documentIndex + 1) % operationBatchSize) || documentIndex === documentArray.length - 1) {
 			const operationHolder = [...documentOperations]
-			const flatOperationList = documentOperations.map(op => op.operations).reduce((acc, operation) => {
-				operation.forEach(args => acc.push(args))
-				return acc
-			}, [])
+			const flatOperationList = documentOperations
+				.map(op => op.operations)
+				.reduce((acc, operation) => {
+					operation.forEach(args => acc.push(args))
+					return acc
+				}, [])
 			const batchPromise = runManyInThread(comparisonFunction, ...flatOperationList).then(results => {
 				operationHolder.forEach(operation => {
 					const documentResults = results.splice(0, operation.operations.length)

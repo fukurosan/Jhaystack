@@ -115,7 +115,7 @@ export class ThreadPlanner {
 	}
 
 	/**
-	 * Queues a function in the thread planner (and starts a thread execution loop if possible). 
+	 * Queues a function in the thread planner (and starts a thread execution loop if possible).
 	 * @param fn - Function to run
 	 * @param args - Arguments for the function
 	 */
