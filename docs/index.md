@@ -59,6 +59,8 @@ Indexes are built to be configurable and customizable. The following options can
     -   The ranking strategy specifies how a document’s magnitude is computed.
 -   rankingStrategyOptions
     -   These are any potential options for the given rankingStrategy
+-   encodeFields
+    - If set to true fields will be encoded into tokens. This means that the magnitude (ranking) of tokens will be determined on a field-by-field basis, and performance of field searches will improve at the cost of additional memory usage. Note that if encodeFields is set to true then fields *must* be included when searching the index.
 
 ---
 
