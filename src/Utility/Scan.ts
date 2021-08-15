@@ -68,7 +68,6 @@ export const FULL_SCAN = (documentArray: Document[], searchValue: any, compariso
 }
 
 /**
- * TODO:: Function ready, not yet implemented
  * Finds all documents in the given document array with matching declarations. Always finds the best matching declaration.
  * This function is multi-threaded and runs off the main thread.
  * @param {Document[]} documentArray - Array of documents to traverse
@@ -89,10 +88,12 @@ export const FULL_SCAN_ASYNC = async (
 	const matches: SearchResult[] = []
 	let promises = []
 	//Documents to be parsed per thread
-	const operationBatchSize = limit ? 300 : Math.round(documentArray.length / getMaxThreadCount())
+	//Note: If this number is set to high it will cause a maximum call stack exceeded error.
+	const operationBatchSize = limit ? 300 : Math.min(Math.round(documentArray.length / getMaxThreadCount()), 2000)
 	//Amount of threads to queue before waiting
 	const threadBatchSize = getMaxThreadCount()
 	let documentOperations = []
+	let operationsSize = 0
 	for (let documentIndex = 0; documentIndex < documentArray.length; documentIndex++) {
 		const doc = documentArray[documentIndex]
 		const operations = doc.declarations.map(declaration => [searchValue, declaration.value])
@@ -100,7 +101,9 @@ export const FULL_SCAN_ASYNC = async (
 			doc,
 			operations
 		})
-		if (!((documentIndex + 1) % operationBatchSize) || documentIndex === documentArray.length - 1) {
+		operationsSize += operations.length
+		if (operationsSize >= operationBatchSize || documentIndex === documentArray.length - 1) {
+			operationsSize = 0
 			const operationHolder = [...documentOperations]
 			const flatOperationList = documentOperations
 				.map(op => op.operations)
@@ -136,7 +139,6 @@ export const FULL_SCAN_ASYNC = async (
 }
 
 /**
- * TODO:: Function ready, not yet implemented
  * Finds the best comparison result for a document and returns a search result object for it.
  * @param declarationResults - Array of comparison results
  * @param doc - Document that the declarations belong to

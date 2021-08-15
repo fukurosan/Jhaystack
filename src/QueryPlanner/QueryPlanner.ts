@@ -176,4 +176,38 @@ export class QueryPlanner {
 		}
 		return documentIDs
 	}
+
+	/**
+	 * Executes an async inexact K retrieval query and returns a list of resulting document IDs
+	 * @param query - Query to execute
+	 * @param value - If the query has a root search value
+	 * @param limit - Optional limit for how many IDs to return
+	 */
+	async executeQueryAsync(query: IQuery, value?: any, limit?: number) {
+		const queryPlan = this.getQueryPlan(query)
+		let documentIDs: DocumentID[] = []
+		for (let i = 0; i < queryPlan.length; i++) {
+			const executionPath = queryPlan[i]
+			let pathResult: DocumentID[] | undefined = undefined
+			for (let j = 0; j < executionPath.length; j++) {
+				const criteria = executionPath[j]
+				let docs: DocumentID[] = []
+				if (criteria.type === "cluster") {
+					docs = this.engine.clusterRetrieval(criteria, value)
+					pathResult = j === 0 ? docs : this.getIntersectionList(docs, pathResult!)
+				} else if (criteria.type === "index") {
+					docs = this.engine.indexRetrieval(criteria, pathResult)
+					pathResult = docs
+				} else if (criteria.type === "comparison") {
+					docs = await this.engine.comparisonRetrievalAsync(criteria, pathResult)
+					pathResult = docs
+				}
+			}
+			documentIDs = i === 0 ? pathResult! : this.getOuterJoinList(documentIDs, pathResult!)
+			if (limit && documentIDs.length >= limit) {
+				return documentIDs
+			}
+		}
+		return documentIDs
+	}
 }

@@ -60,7 +60,7 @@ export class ThreadPlanner {
 	}
 
 	setMaxThreadCount(maxThreadCount: number) {
-		return this.maxThreads = maxThreadCount
+		return (this.maxThreads = maxThreadCount)
 	}
 
 	getMaxThreadCount() {
@@ -161,7 +161,7 @@ export class ThreadPlanner {
 	 */
 	async executeQueueLoop() {
 		while (this.hasNext()) {
-			const nextItem = this.threadQueue.splice(0, 1)[0]
+			const nextItem = this.threadQueue.shift()!
 			const resolve = nextItem[0].resolve
 			const reject = nextItem[0].reject
 			const fn = nextItem[1]

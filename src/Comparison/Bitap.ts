@@ -168,3 +168,7 @@ export const BITAP = (
 	}
 	return 0
 }
+
+BITAP._jhaystack = { 
+	dependencies: { generateBitMask, getRelativeRelevance, sigmoidPositive, getScorePenaltyValue }
+}

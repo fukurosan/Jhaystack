@@ -34,8 +34,11 @@ export default interface IOptions {
 	}
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	sorting?: ((a: SearchResult, b: SearchResult) => number)[]
-	/** Maximum amount threads allowed to run in parallel */
-	maxThreadCount?: number
+	/** Options related to the thread planner */
+	threadPlanner?: {
+		/** Maximum amount threads allowed to run in parallel */
+		maxThreadCount?: number
+	}
 	/** Maximum number of matches before search ends */
 	limit?: null | number
 	/** Filters for what data should or should not be searchable */

@@ -231,6 +231,16 @@ export default class Jhaystack {
 	}
 
 	/**
+	 * Perform an async search
+	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsSearch} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	searchAsync(searchValue: any, options?: ISearchOptionsSearch): Promise<SearchResult[]> {
+		return this.engine.searchAsync(searchValue, options)
+	}
+
+	/**
 	 * Perform a full-text search
 	 * @param {any} searchValue - Value to search for
 	 * @param {ISearchOptionsFullText} options - Optional options
@@ -248,5 +258,15 @@ export default class Jhaystack {
 	 */
 	query(query: IQuery, options?: ISearchOptionsQuery): SearchResult[] {
 		return this.engine.query(query, options)
+	}
+
+	/**
+	 * Execute a binary query
+	 * @param {IQuery} query - Query to execute
+	 * @param {ISearchOptionsQuery} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	queryAsync(query: IQuery, options?: ISearchOptionsQuery): Promise<SearchResult[]> {
+		return this.engine.queryAsync(query, options)
 	}
 }

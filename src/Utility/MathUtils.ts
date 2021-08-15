@@ -53,6 +53,9 @@ export const sigmoid = (z: number): number => {
 export const sigmoidPositive = (z: number): number => {
 	return (sigmoid(z) - 0.5) * 2
 }
+sigmoidPositive._jhaystack = {
+	dependencies: { sigmoid }
+}
 
 /**
  * Normalizes a value using minmax

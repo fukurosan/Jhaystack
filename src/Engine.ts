@@ -11,7 +11,7 @@ import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import { TO_STRING, TO_LOWER_CASE } from "./PreProcessing/PreProcessingStrategy"
-import { FULL_SCAN } from "./Utility/Scan"
+import { FULL_SCAN, FULL_SCAN_ASYNC } from "./Utility/Scan"
 import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
 import { Index } from "./Indexing/Index"
@@ -25,7 +25,7 @@ import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, I
 import { createEmptyIndexDocument, createDocumentFromValue, removeStopCharacters } from "./Utility/Helpers"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 import { ISpellingResult } from "./Model/ISpellingResult"
-import { setMaxThreadCount } from "./ThreadPlanner/ThreadPlanner"
+import { setMaxThreadCount, runManyInThread } from "./ThreadPlanner/ThreadPlanner"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -51,7 +51,7 @@ export default class SearchEngine {
 	/** The original data set provided by the user */
 	private originData: any[]
 	/** Maximum number of matches before search ends */
-	private limit: number
+	private limit: number | null
 	/** Filters for what data should or should not be searchable */
 	private filters: IFilter[]
 	/** Weighted pattern functions */
@@ -74,7 +74,7 @@ export default class SearchEngine {
 		this.sortingStrategy = [RELEVANCE.DESCENDING]
 		this.corpus = []
 		this.originData = []
-		this.limit = 100000
+		this.limit = null
 		this.filters = []
 		this.weights = []
 		this.preProcessingStrategy = [TO_STRING, TO_LOWER_CASE]
@@ -82,7 +82,7 @@ export default class SearchEngine {
 		this.queryPlanner = new QueryPlanner(this)
 
 		if (options) {
-			options.maxThreadCount && setMaxThreadCount(options.maxThreadCount)
+			options.threadPlanner && options.threadPlanner.maxThreadCount && setMaxThreadCount(options.threadPlanner.maxThreadCount)
 			options.comparison && this.setComparisonStrategy(options.comparison)
 			options.extraction && this.setExtractionStrategy(options.extraction)
 			options.sorting && this.setSortingStrategy(options.sorting)
@@ -403,6 +403,40 @@ export default class SearchEngine {
 			.map(doc => doc.id)
 	}
 
+	/**
+	 * Executes an async inexact K retrieval using value comparison
+	 * @param criteria - Criteria
+	 * @param filter - Optional filtered corpus by ID
+	 */
+	async comparisonRetrievalAsync(criteria: IComparisonQueryCriteria, filter?: DocumentID[]): Promise<DocumentID[]> {
+		const strategy = criteria.strategy ? criteria.strategy : this.comparisonStrategy
+		const value = this.getProcessedTermValue(criteria.value)
+		let documentArray = this.corpus
+		if (filter) {
+			const filterSet = new Set(filter)
+			documentArray = documentArray.filter(doc => filterSet.has(doc.id))
+		}
+		const matches: Document[] = []
+		const promises = documentArray.reduce((acc: Promise<any>[], doc) => {
+			let declarations = doc.declarations
+			if (criteria.field) {
+				declarations = doc.declarations.filter(declaration => declaration.normalizedPath === criteria.field)
+			}
+			if (declarations.length) {
+				acc.push(
+					runManyInThread(strategy, ...declarations.map(declaration => [value, declaration.value])).then(result => {
+						if (result && result.some((resultItem: any) => resultItem && (typeof resultItem === "number" || resultItem.score))) {
+							matches.push(doc)
+						}
+					})
+				)
+			}
+			return acc
+		}, [])
+		await Promise.all(promises)
+		return matches.map(doc => doc.id)
+	}
+
 	search(searchValueIn: any, options?: ISearchOptionsSearch): SearchResult[] {
 		const searchValue = this.getProcessedTermValue(searchValueIn)
 		let data = this.corpus
@@ -411,6 +445,18 @@ export default class SearchEngine {
 			data = this.corpus.filter(doc => filterIDs.has(doc.id))
 		}
 		const searchResult = FULL_SCAN(data, searchValue, this.comparisonStrategy, options?.limit ? options.limit : this.limit)
+		this.sortSearchResults(searchResult)
+		return searchResult
+	}
+
+	async searchAsync(searchValueIn: any, options?: ISearchOptionsSearch): Promise<SearchResult[]> {
+		const searchValue = this.getProcessedTermValue(searchValueIn)
+		let data = this.corpus
+		if (options?.filter) {
+			const filterIDs = new Set(await this.queryPlanner.executeQueryAsync(options.filter))
+			data = this.corpus.filter(doc => filterIDs.has(doc.id))
+		}
+		const searchResult = await FULL_SCAN_ASYNC(data, searchValue, this.comparisonStrategy, options?.limit ? options.limit : this.limit)
 		this.sortSearchResults(searchResult)
 		return searchResult
 	}
@@ -435,7 +481,7 @@ export default class SearchEngine {
 			return []
 		}
 		const limit = options?.limit ? options.limit : this.limit
-		if (limit <= documentIDs.length) {
+		if (limit && limit <= documentIDs.length) {
 			documentIDs.splice(limit - 1)
 		}
 		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
@@ -452,8 +498,17 @@ export default class SearchEngine {
 
 	query(query: IQuery, options?: ISearchOptionsQuery): SearchResult[] {
 		const resultIDs = this.queryPlanner.executeQuery(query)
+		return this.processQueryResult(resultIDs, options)
+	}
+
+	async queryAsync(query: IQuery, options?: ISearchOptionsQuery): Promise<SearchResult[]> {
+		const resultIDs = await this.queryPlanner.executeQueryAsync(query)
+		return this.processQueryResult(resultIDs, options)
+	}
+
+	processQueryResult(resultIDs: number[], options?: ISearchOptionsQuery) {
 		const limit = options?.limit ? options.limit : this.limit
-		if (limit <= resultIDs.length) {
+		if (limit && limit <= resultIDs.length) {
 			resultIDs.splice(limit - 1)
 		}
 		const resultIDsSet = new Set(resultIDs)

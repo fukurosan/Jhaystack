@@ -174,4 +174,44 @@ describe("Query Planner", () => {
 		expect(result2).toContain(0)
 		expect(result2).toContain(3)
 	})
+
+	it("Executes an async query", async () => {
+		const strategy = (term: any, context: any) => {
+			return context.includes(term) ? 1 : 0
+		}
+		const query: IQuery = [
+			{
+				type: "comparison",
+				value: "hello",
+				strategy
+			},
+			"OR",
+			{
+				type: "comparison",
+				value: "hi",
+				strategy
+			},
+			"OR",
+			{
+				type: "comparison",
+				value: "good morning",
+				strategy
+			},
+			"AND",
+			{
+				type: "comparison",
+				value: "tokyo",
+				strategy
+			}
+		]
+		const result1 = await queryPlanner.executeQueryAsync(query)
+		const result2 = await queryPlanner.executeQueryAsync(query, undefined, 2)
+		expect(result1.length).toBe(3)
+		expect(result1).toContain(0)
+		expect(result1).toContain(3)
+		expect(result1).toContain(1)
+		expect(result2.length).toBe(2)
+		expect(result2).toContain(0)
+		expect(result2).toContain(3)
+	})
 })

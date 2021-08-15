@@ -47,6 +47,18 @@ describe("End to end", () => {
 		expect(result[0].path.length).toBe(1)
 	})
 
+	it("Typical async search works", async () => {
+		const contains = (term: any, context: any) => {
+			return context.toLowerCase().includes(term.toLowerCase()) ? 1 : 0
+		}
+		const se = new Jhaystack().setComparisonStrategy(contains).setExtractionStrategy(ExtractionStrategy.BY_VALUE).setDataset(data)
+		const result = await se.searchAsync("duck")
+		expect(result.length).toBe(1)
+		expect(result[0].item.firstName).toBe("Arnold")
+		expect(result[0].path[0]).toBe("lastName")
+		expect(result[0].path.length).toBe(1)
+	})
+
 	it("Library correctly parses incorrectly specified comparison strategy", () => {
 		const se = new Jhaystack()
 			//@ts-ignore
