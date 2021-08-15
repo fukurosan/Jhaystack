@@ -89,7 +89,7 @@ export const FULL_SCAN_ASYNC = async (
 	const matches: SearchResult[] = []
 	let promises = []
 	//Documents to be parsed per thread
-	const operationBatchSize = limit ? 200 : Math.round(documentArray.length / getMaxThreadCount())
+	const operationBatchSize = limit ? 300 : Math.round(documentArray.length / getMaxThreadCount())
 	//Amount of threads to queue before waiting
 	const threadBatchSize = getMaxThreadCount()
 	let documentOperations = []
@@ -120,7 +120,7 @@ export const FULL_SCAN_ASYNC = async (
 			promises.push(batchPromise)
 			documentOperations = []
 		}
-		if (limit && !((documentIndex + 1) % threadBatchSize)) {
+		if (limit && !(promises.length % threadBatchSize)) {
 			await Promise.all(promises)
 			promises = []
 			if (matches.length >= limit) {

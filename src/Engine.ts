@@ -25,6 +25,7 @@ import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, I
 import { createEmptyIndexDocument, createDocumentFromValue, removeStopCharacters } from "./Utility/Helpers"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 import { ISpellingResult } from "./Model/ISpellingResult"
+import { setMaxThreadCount } from "./ThreadPlanner/ThreadPlanner"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -81,6 +82,7 @@ export default class SearchEngine {
 		this.queryPlanner = new QueryPlanner(this)
 
 		if (options) {
+			options.maxThreadCount && setMaxThreadCount(options.maxThreadCount)
 			options.comparison && this.setComparisonStrategy(options.comparison)
 			options.extraction && this.setExtractionStrategy(options.extraction)
 			options.sorting && this.setSortingStrategy(options.sorting)

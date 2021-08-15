@@ -59,6 +59,10 @@ export class ThreadPlanner {
 		this.metaData = new WeakMap()
 	}
 
+	setMaxThreadCount(maxThreadCount: number) {
+		return this.maxThreads = maxThreadCount
+	}
+
 	getMaxThreadCount() {
 		return this.maxThreads
 	}

@@ -39,6 +39,13 @@ export const getMaxThreadCount = () => {
 }
 
 /**
+ * Sets the maximum number of threads that can be executed in parallel
+ */
+export const setMaxThreadCount = (maxThreadCount: number) => {
+	return threadPlanner.setMaxThreadCount(maxThreadCount)
+}
+
+/**
  * Terminates all threads for a given function
  * @param fn - Function to terminate all threads for
  */
