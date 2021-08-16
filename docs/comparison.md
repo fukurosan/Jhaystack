@@ -56,7 +56,85 @@ const customStrategy = (term, context) => {
 }
 ```  
 
----
+--- 
+
+## Multi-threading and Async
+
+When executing async search functions such as searchAsync() and queryAsync() that use comparison functions Jhaystack will attempt to multi-thread the operations off the main thread. This makes it non-blocking, as well as significantly boosts performance.
+
+When executing asynchronous search functions (e.g. searchasync, fulltextasync, queryasync), your provided comparison function is going to be serialized into a string, in order to be passed to a JavaScript worker. There are a few things worth noting with regards to this.
+
+#### Memory References
+
+When your provided function gets serialized any references to memory outside of it will be lost.
+
+For example:
+```javascript
+const se = new Jhaystack()
+//(...)
+var myVar = {
+    someValue: 0
+}
+function doSomething() {
+    return myVar.someValue 
+}
+se.setComparisonStrategy(doSomething)
+se.search() //This will work. 
+se.searchAync() //This will not work, because "myVar" will be undefined in the worker thread.
+```
+
+Jhaystack gives you a tool to bypass this problem by allowing you to provide function dependencies. These can either be provided as a pure string, or as an object. To define dependencies simply provide the information by attaching a _jhaystack property to the function. The _jhaystack property can hold the following information:
+
+##### _jhaystack
+###### dependencyString
+- A string that will be inserted as is into the new worker thread
+###### dependencies
+- An object where each key will be the name of a variable, and each value will be the value of that variable. For example, { hello: "'world'" } would result in "var hello = 'world'".
+
+Example:
+```javascript
+const se = new Jhaystack()
+//(...)
+var myVar = {
+    someValue: 0
+}
+function doSomething() {
+    return myVar.someValue + magicValue
+}
+doSomething._jhaystack = {
+  dependencyString: "const magicValue = 1"
+  dependencies: {
+    //Translates to "var myVar = { someValue: 0 }
+    myVar: myVar,
+    //Translates to "var myOtherVar = { someValue: 0 }
+    myOtherVar: myVar,
+  }
+}
+se.setComparisonStrategy(doSomething)
+se.search() //This will work. 
+se.searchAync() //This will now work, because the dependencies have been mapped.
+```
+
+Dependencies can be recursive by nature, i.e. one dependency has another dependency and so on.
+
+Note that if you are doing any kind of minification (e.g. using terser or uglify as a bundler build step) then your dependency objects may get mangled in the process. This can cause some strange errors and crashed. It is generally recommended to not mangle your function names.
+
+!> **Important!!**  
+*Note that if you are doing any kind of minification (e.g. using terser or uglify as a bundler build step) then your dependency objects may get mangled in the process. This can cause some strange errors and crashed. It is generally recommended to not mangle your function names.*
+
+Finally, note that your function *must(!)* be formatted with enclosing "{}" and the parameters (if existing) *must(!)* be enclosed with "()".
+
+Example: 
+```javascript
+//No
+const myFn = () => "hello"
+//Yes
+const myFn = () => {
+  return "hello"
+}
+```
+
+--- 
 
 Jhaystack currently comes with the following comparison strategies built in:
 

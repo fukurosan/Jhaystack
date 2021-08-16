@@ -89,6 +89,10 @@ The following options can be specified:
    - **Type**: `number`
    - **Default**: `undefined`
 
+> ### queryAsync(query, options?)
+
+Works identically to query() but is asynchronous and multi-threaded. Note that any comparison function provided to this function must support serialization. Check the comparison strategy chapter for more information
+
 > ### search(value, options?)
 
 The search function executes a search using comparison functions based on the provided search value.
@@ -102,6 +106,10 @@ The following options can be specified:
    - **Description**: *Optional query to execute as an inexact k retrieval. If provided the search will be executed on the resulting objects from the query, otherwise the entire corpus*
    - **Type**: `IQuery`
    - **Default**: `undefined`
+
+> ### searchAsync(value, options?)
+
+Works identically to search() but is asynchronous and multi-threaded. Note that any comparison function provided to this function must support serialization. Check the comparison strategy chapter for more information
 
 > ### fulltext(value, options?)
 
@@ -124,6 +132,10 @@ The following options can be specified:
    - **Description**: *If only a specific field in the index should be searched it can be specified here as a "." (dot) separated string.*
    - **Type**: `string`
    - **Default**: `undefined`
+
+> ### fulltextAsync(value, options?)
+
+Works identically to fulltext() but is asynchronous and multi-threaded. Note that any comparison function provided to this function must support serialization. Check the comparison strategy chapter for more information
 
 --- 
 

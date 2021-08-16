@@ -47,7 +47,7 @@ export class ThreadPlanner {
 	>
 
 	/** Maximum idle time before workers are terminated (in ms) */
-	private readonly MAXIMUM_IDLE_TIME_MS = 10000 //10 seconds
+	private MAXIMUM_IDLE_TIME_MS = 10000 //10 seconds
 
 	/** Maximum allowed number of threads (determined in extending classes) */
 	protected maxThreads: number
@@ -60,7 +60,11 @@ export class ThreadPlanner {
 	}
 
 	setMaxThreadCount(maxThreadCount: number) {
-		return (this.maxThreads = maxThreadCount)
+		this.maxThreads = maxThreadCount
+	}
+
+	setMaxIdleTime = (maxIdleTime: number) => {
+		this.MAXIMUM_IDLE_TIME_MS = maxIdleTime
 	}
 
 	getMaxThreadCount() {
@@ -214,9 +218,11 @@ export class ThreadPlanner {
 		metaData.freeThreads.push(thread)
 		metaData.pendingTasks--
 		if (!metaData.pendingTasks) {
-			metaData.terminationTimeout = setTimeout(() => {
-				this.terminate(fn)
-			}, this.MAXIMUM_IDLE_TIME_MS)
+			if (this.MAXIMUM_IDLE_TIME_MS) {
+				metaData.terminationTimeout = setTimeout(() => {
+					this.terminate(fn)
+				}, this.MAXIMUM_IDLE_TIME_MS)
+			}
 		}
 	}
 }

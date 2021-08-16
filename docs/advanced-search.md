@@ -53,6 +53,38 @@ myJhaystackInstance.search()
 
 A few things to keep in mind in order to boost performance
 
+#### Multi-threading
+
+Jhaystack lets you execute multi-threaded search using your provided comparison functions. This will generally perform significantly better than the synchronous single-threaded counter-part. There are a few things to keep in mind when it comes to this functionality, though.
+
+When executing two asynchronous searches in a row you may find that the second search executes faster than the first. This is because there is a fixed cost associated with creating workers (threads) in JavaScript. Once the workers have been created subsequent operations will be faster. Jhaystack will by default not create new worker threads until it is instructed to do so (for example triggered by an async search).
+
+Jhaystack by default keeps workers running for 10 seconds of idle time before terminating them automatically. If you want to manually manage this behavior you can configure it in the engine options like so:
+
+```javascript
+const options = {
+    threadPlanner: {
+        maxIdleTime: 60000 //60 000 ms = 60 seconds
+    }
+}
+const se = new Jhaystack(options)
+```
+
+If the maxIdleTime is set to 0 then workers will never terminate automatically. This may sometimes be the desired behaviour, especially in web browsers. If working with NodeJS, though, this can result in processes not exiting properly.
+
+The thread planner will automatically make sure that the number of concurrently running threads never exceeds the amount of logical cores (-1 for headroom) on the host machine. This can also be overridden by changing the default concurrency limit like so:
+
+```javascript
+const options = {
+    threadPlanner: {
+        maxThreadCount: 2 //No more than two threads will ever execute in parallel!
+    }
+}
+const se = new Jhaystack(options)
+```
+
+Note that if you are running on NodeJS you may need to adjust your libuv worker pool size in order to get optimal performance.
+
 #### Limiting results
 Do you only need x amount of results? Set a result limit. This means Jhaystack can stop searching as soon as it has found enough matches. Note, though, that the limit will also be applied to inexact k retrieval. So, if you are using filters or full-text search you may need to play around with the number a bit.
 

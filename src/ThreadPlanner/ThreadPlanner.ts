@@ -46,6 +46,13 @@ export const setMaxThreadCount = (maxThreadCount: number) => {
 }
 
 /**
+ * Sets the maximum idle time allowed for a worker thread before it is terminated.
+ */
+export const setMaxIdleTime = (maxIdleTime: number) => {
+	return threadPlanner.setMaxIdleTime(maxIdleTime)
+}
+
+/**
  * Terminates all threads for a given function
  * @param fn - Function to terminate all threads for
  */

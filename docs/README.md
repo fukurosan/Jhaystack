@@ -72,6 +72,9 @@ const data = [
 const se = new Jhaystack({data: data})
 const results = se.search("tm")
 //[{ path: ["name"], item: { name: "tom" }, value: "tom", relevance: 0.49999999, score: 0.49999999}, { path: ["name"], item: { name: "tim" }, value: "tim", relevance: 0.49999999, score: 0.49999999 }]
+
+//Or async and multi-threaded:
+se.searchAsync("tm").then(result => {})
 ```
 
 ---

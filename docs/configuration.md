@@ -54,6 +54,55 @@ Jhaystack’s constructor accepts an options object where you can specify your c
 
 All options can be changed after Jhaystack has been instantiated using functions on the Jhaystack instance. The names of these functions are marked by "function" below. Note, though, that changing certain options can cause indices to have to be rebuilt resulting in load times.
 
+Check out this options interface, as well as further descriptions below.
+```javascript
+interface IOptions {
+	/** Default comparison function to be used for evaluating matches. */
+	comparison?: IComparison
+	/** Sets the extraction strategy to be used. I.e. how documents should be extracted from the dataset. */
+	extraction?: IExtraction
+	/** Sets the scoring function used for comparing full-text vector matches. */
+	fullTextScoringStrategy?: IFullTextScoring
+	/** Sets the indexing strategy to be used */
+	indexing?: {
+		enable: boolean
+		options?: IIndexOptions
+		doNotBuild?: boolean
+	}
+	/** Sets the cluster strategy to be used */
+	clustering?: {
+		strategy: IClusterSpecification[]
+		doNotBuild?: boolean
+	}
+	/** Sets the spelling strategy to use */
+	spelling?: {
+		strategy: (new () => ISpelling)[]
+		doNotBuild?: boolean
+	}
+	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
+	sorting?: ((a: SearchResult, b: SearchResult) => number)[]
+	/** Options related to the thread planner */
+	threadPlanner?: {
+		/** Maximum amount threads allowed to run in parallel */
+		maxThreadCount?: number
+		/** Maximum idle wait time before a worker thread is terminated (in ms) */
+		maxIdleTime?: number
+	}
+	/** Maximum number of matches before search ends */
+	limit?: null | number
+	/** Filters for what data should or should not be searchable */
+	filters?: IFilter[]
+	/** Weight functions that determine how certain property paths and values should be weighed in terms of their relevance. */
+	weights?: IWeight[]
+	/** Pre processor functions used for preprocessing the provided search data. E.g. "make all strings upper case", or "make all data objects into a string of format yyyy-MM-dd". */
+	preProcessing?: IPreProcessor[]
+	/** Should preprocessors be applied to the search term as well? */
+	applyPreProcessorsToTerm?: boolean
+	/** Array of data to be searched */
+	data?: any[]
+}
+```
+
 > ## data
 - **Type**: `any[]`
 - **Default**: `[]`
@@ -218,3 +267,10 @@ Integer that sets the maximum number of search matches to be collected before se
 ```javascript
 const myLimit = 100
 ```
+
+> ## threadPlanner
+- **Type**: `{ maxThreadCount }`
+- **Default**: `undefined`
+- **Function**: `n/a`
+
+Object that can be used to configure Jhaystack's internal thread planner.

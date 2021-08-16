@@ -1,10 +1,9 @@
 # Changelog
 
-### 0.2.0 TBR
+### 0.2.0 (next) TBR
 
 - TODO:: Implement Storage Strategy
 - TODO:: Implement Logging Strategy
-- TODO:: Implement Multi threading
 
 ### 0.1.0
 
@@ -29,6 +28,10 @@
 - Added full-text search
 - Added binary queries
 - Added new options for search functions
+- Implemented thread planner
+- Moved (mostly) search execution off main thread
+- Added multi-threading support
+- Added dependency management for multi-threaded functions
 - Added optional automatic k-value computation for Bitap based on term length
 - Improved test runner performance by lowering concurrent number of workers
 - Ended support for legacy browsers (IE11)

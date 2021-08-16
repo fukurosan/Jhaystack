@@ -25,7 +25,7 @@ import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, I
 import { createEmptyIndexDocument, createDocumentFromValue, removeStopCharacters } from "./Utility/Helpers"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 import { ISpellingResult } from "./Model/ISpellingResult"
-import { setMaxThreadCount, runManyInThread } from "./ThreadPlanner/ThreadPlanner"
+import { setMaxThreadCount, runManyInThread, setMaxIdleTime } from "./ThreadPlanner/ThreadPlanner"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -83,6 +83,7 @@ export default class SearchEngine {
 
 		if (options) {
 			options.threadPlanner && options.threadPlanner.maxThreadCount && setMaxThreadCount(options.threadPlanner.maxThreadCount)
+			options.threadPlanner && options.threadPlanner.maxIdleTime && setMaxIdleTime(options.threadPlanner.maxIdleTime)
 			options.comparison && this.setComparisonStrategy(options.comparison)
 			options.extraction && this.setExtractionStrategy(options.extraction)
 			options.sorting && this.setSortingStrategy(options.sorting)
@@ -476,13 +477,48 @@ export default class SearchEngine {
 		}
 		const exact = options?.exact ? options.exact : undefined
 		const field = options?.field ? options.field : undefined
-		const documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap, filter, exact, field)
+		let documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap, filter, exact, field)
 		if (!documentIDs.length) {
 			return []
 		}
 		const limit = options?.limit ? options.limit : this.limit
 		if (limit && limit <= documentIDs.length) {
-			documentIDs.splice(limit - 1)
+			documentIDs = documentIDs.splice(0, limit)
+		}
+		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
+		const searchResult = sparseVectors.map(vectors => {
+			const score = this.fullTextScoringStrategy!(vectors.vector1, vectors.vector2)
+			if (typeof score === "number") {
+				return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score, score, 0, 0)
+			}
+			return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score.score, score.score, 0, 0, score)
+		})
+		this.sortSearchResults(searchResult)
+		return searchResult
+	}
+
+	async fulltextAsync(searchValue: any, options?: ISearchOptionsFullText): Promise<SearchResult[]> {
+		if (!this.indexStrategy) {
+			throw new Error("No index strategy has been configured!")
+		}
+		if (!this.fullTextScoringStrategy) {
+			throw new Error("No full-text scoring strategy has been configured!")
+		}
+		const value = this.applyPreProcessors(searchValue) //Always apply preprocessors for index retrieval
+		const tokenMap = this.indexStrategy!.getQueryTokenMapFromValue(value)
+		let filter = undefined
+		if (options?.filter) {
+			filter = await this.queryPlanner.executeQueryAsync(options.filter)
+		}
+		const exact = options?.exact ? options.exact : undefined
+		const field = options?.field ? options.field : undefined
+		let documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap, filter, exact, field)
+		if (!documentIDs.length) {
+			return []
+		}
+		const limit = options?.limit ? options.limit : this.limit
+		if (limit && limit <= documentIDs.length) {
+			documentIDs = documentIDs.splice(0, limit)
 		}
 		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
 		const searchResult = sparseVectors.map(vectors => {
@@ -509,7 +545,7 @@ export default class SearchEngine {
 	processQueryResult(resultIDs: number[], options?: ISearchOptionsQuery) {
 		const limit = options?.limit ? options.limit : this.limit
 		if (limit && limit <= resultIDs.length) {
-			resultIDs.splice(limit - 1)
+			resultIDs = resultIDs.slice(0, limit)
 		}
 		const resultIDsSet = new Set(resultIDs)
 		const searchResult = this.corpus

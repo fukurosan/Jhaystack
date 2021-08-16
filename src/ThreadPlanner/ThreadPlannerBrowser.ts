@@ -3,7 +3,7 @@ import { ThreadPlanner, IThreaderFunction, IThreaderWorker } from "./ThreadPlann
 export default class BrowserThreadPlanner extends ThreadPlanner {
 	constructor() {
 		super()
-		this.maxThreads = navigator.hardwareConcurrency - 1
+		this.maxThreads = Math.max(navigator.hardwareConcurrency - 1, 1)
 	}
 
 	/**

@@ -7,7 +7,7 @@ export default class NodeThreadPlanner extends ThreadPlanner {
 	constructor() {
 		super()
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		this.maxThreads = require("os").cpus().length - 1
+		this.maxThreads = Math.max(require("os").cpus().length - 1, 1)
 	}
 
 	/**

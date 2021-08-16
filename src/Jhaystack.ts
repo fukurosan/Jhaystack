@@ -251,6 +251,16 @@ export default class Jhaystack {
 	}
 
 	/**
+	 * Perform an async full-text search
+	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsFullText} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	async fulltextAsync(searchValue: any, options?: ISearchOptionsFullText): Promise<SearchResult[]> {
+		return this.engine.fulltextAsync(searchValue, options)
+	}
+
+	/**
 	 * Execute a binary query
 	 * @param {IQuery} query - Query to execute
 	 * @param {ISearchOptionsQuery} options - Optional options
