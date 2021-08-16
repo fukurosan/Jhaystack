@@ -22,4 +22,8 @@ export default class Declaration {
 		this.weight = 1
 		this.normalizedWeight = 1
 	}
+
+	get normalizedPath() {
+		return this.path.filter(field => typeof field === "string").join(".")
+	}
 }

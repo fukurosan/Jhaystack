@@ -1,9 +1,8 @@
 import { BITAP } from "./Comparison/Bitap"
 import { BY_VALUE } from "./Extraction/ByValue"
 import { mergeArraySortFunctions } from "./Utility/JsonUtility"
-import Document from "./Model/Document"
+import Document, { DocumentID } from "./Model/Document"
 import SearchResult from "./Model/SearchResult"
-import { IIndex } from "./Model/Index"
 import { RELEVANCE } from "./Sorting/Relevance"
 import IOptions from "./Model/IOptions"
 import IExtraction from "./Model/IExtraction"
@@ -12,25 +11,45 @@ import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import { TO_STRING, TO_LOWER_CASE } from "./PreProcessing/PreProcessingStrategy"
-import { FULL_SCAN } from "./Utility/Scan"
-import { minMax } from "./Utility/Relevance"
+import { FULL_SCAN, FULL_SCAN_ASYNC } from "./Utility/Scan"
+import { minMax } from "./Utility/MathUtils"
 import Declaration from "./Model/Declaration"
+import { Index } from "./Indexing/Index"
+import IIndexOptions from "./Indexing/IIndexOptions"
+import IClusterSpecification from "./Model/IClusterSpecification"
+import ICluster from "./Model/ICluster"
+import ISpelling from "./Model/ISpelling"
+import { IFullTextScoring } from "./Model/IFullTextScoring"
+import { QueryPlanner } from "./QueryPlanner/QueryPlanner"
+import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, IQuery } from "./Model/IQuery"
+import { createEmptyIndexDocument, createDocumentFromValue, removeStopCharacters } from "./Utility/Helpers"
+import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
+import { ISpellingResult } from "./Model/ISpellingResult"
+import { setMaxThreadCount, runManyInThread, setMaxIdleTime } from "./ThreadPlanner/ThreadPlanner"
 
 export default class SearchEngine {
-	/** Array containing the comparison functions to be used for evaluating matches */
-	private comparisonStrategy: IComparison[]
+	/** Default Comparison function to be used for evaluating matches */
+	private comparisonStrategy: IComparison
 	/** The extraction strategy to use */
 	private extractionStrategy: IExtraction
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
 	private sortingStrategy: ((a: SearchResult, b: SearchResult) => number)[]
 	/** Array of value processors to use for preprocessing the search data values */
 	private preProcessingStrategy: IPreProcessor[]
+	/** The full-text scoring strategy to use */
+	private fullTextScoringStrategy: IFullTextScoring | null
+	/** The index strategy to use */
+	private indexStrategy: Index | null
+	/** The cluster strategy to use */
+	private clusterStrategy: ICluster[]
+	/** The speller strategy to use */
+	private spellingStrategy: ISpelling[]
+	/** All words in the dataset */
+	private allWords: Set<string>
 	/** The processed data set used for searching */
-	private documents: Document[]
+	private corpus: Document[]
 	/** The original data set provided by the user */
 	private originData: any[]
-	/** Types of indices to be built for offline search */
-	private indexStrategy: IIndex[]
 	/** Maximum number of matches before search ends */
 	private limit: number | null
 	/** Filters for what data should or should not be searchable */
@@ -39,40 +58,52 @@ export default class SearchEngine {
 	private weights: IWeight[]
 	/** Should preprocessors be applied to the search term as well? */
 	private isApplyPreProcessorsToTerm: boolean
+	/** Query Planner for the engine */
+	private queryPlanner: QueryPlanner
+	/** Next available document identifier */
+	private nextDocumentID = 0
 
 	constructor(options?: IOptions) {
-		this.comparisonStrategy = [BITAP]
+		this.comparisonStrategy = BITAP
 		this.extractionStrategy = BY_VALUE
-		this.indexStrategy = []
+		this.fullTextScoringStrategy = null
+		this.indexStrategy = null
+		this.clusterStrategy = []
+		this.spellingStrategy = []
+		this.allWords = new Set()
 		this.sortingStrategy = [RELEVANCE.DESCENDING]
-		this.documents = []
+		this.corpus = []
 		this.originData = []
 		this.limit = null
 		this.filters = []
 		this.weights = []
 		this.preProcessingStrategy = [TO_STRING, TO_LOWER_CASE]
 		this.isApplyPreProcessorsToTerm = true
+		this.queryPlanner = new QueryPlanner(this)
 
 		if (options) {
+			options.threadPlanner && options.threadPlanner.maxThreadCount && setMaxThreadCount(options.threadPlanner.maxThreadCount)
+			options.threadPlanner && options.threadPlanner.maxIdleTime && setMaxIdleTime(options.threadPlanner.maxIdleTime)
 			options.comparison && this.setComparisonStrategy(options.comparison)
 			options.extraction && this.setExtractionStrategy(options.extraction)
 			options.sorting && this.setSortingStrategy(options.sorting)
 			options.limit && this.setLimit(options.limit)
-			options.index && this.setIndexStrategy(options.index)
 			options.filters && this.setFilters(options.filters)
 			options.weights && this.setWeights(options.weights)
 			options.preProcessing && this.setPreProcessingStrategy(options.preProcessing)
+			options.fullTextScoringStrategy && this.setFullTextScoringStrategy(options.fullTextScoringStrategy)
 			typeof options.applyPreProcessorsToTerm === "boolean" && (this.isApplyPreProcessorsToTerm = options.applyPreProcessorsToTerm)
 			options.data && this.setDataset(options.data)
+			if (options.indexing && options.indexing.enable) {
+				this.setIndexStrategy(options.indexing.options, options.indexing.doNotBuild)
+			}
+			options.spelling && options.spelling.strategy && this.setSpellingStrategy(options.spelling.strategy, options.spelling.doNotBuild)
+			options.clustering && options.clustering.strategy && this.setClusterStrategy(options.clustering.strategy, options.clustering.doNotBuild)
 		}
 	}
 
-	setComparisonStrategy(strategy: IComparison[]): void {
-		if (!Array.isArray(strategy)) {
-			this.comparisonStrategy = [strategy]
-		} else {
-			this.comparisonStrategy = strategy
-		}
+	setComparisonStrategy(strategy: IComparison): void {
+		this.comparisonStrategy = strategy
 	}
 
 	setExtractionStrategy(strategy: IExtraction): void {
@@ -110,31 +141,27 @@ export default class SearchEngine {
 		this.originData.push(item)
 		const maxWeight = this.getMaxWeight()
 		this.extractionStrategy(item).forEach(declarations => {
-			this.documents.push(
-				new Document(item, this.originData.length - 1, this.processDeclarations(declarations, maxWeight), this.filters, this.indexStrategy)
-			)
+			this.corpus.push(new Document(this.nextDocumentID++, item, this.originData.length - 1, this.processDeclarations(declarations, maxWeight)))
 		})
+		if (this.indexStrategy) {
+			this.indexStrategy.addDocument(this.corpus[this.corpus.length - 1])
+		}
 	}
 
 	removeItem(item: any) {
 		const index = this.originData.indexOf(item)
 		if (index !== -1) {
 			this.originData.splice(index, 1)
-			this.documents = this.documents.filter(doc => doc.originIndex !== index)
+			const doc = <Document> this.corpus.find(doc => doc.originIndex === index)
+			if (this.indexStrategy) {
+				this.indexStrategy.removeDocument(doc)
+			}
+			this.corpus = this.corpus.filter(doc => doc.originIndex !== index)
 		}
 	}
 
 	setLimit(limit: number): void {
 		this.limit = limit
-	}
-
-	setIndexStrategy(indexStrategy: IIndex[]): void {
-		if (!indexStrategy || !Array.isArray(indexStrategy)) {
-			this.indexStrategy = []
-		} else {
-			this.indexStrategy = indexStrategy
-		}
-		this.prepareDataset()
 	}
 
 	setWeights(weights: IWeight[]): void {
@@ -160,10 +187,10 @@ export default class SearchEngine {
 			const extractedDocuments = this.extractionStrategy(this.originData[i])
 			for (let j = 0; j < extractedDocuments.length; j++) {
 				const declarations = this.processDeclarations(extractedDocuments[j], maxWeight)
-				documents.push(new Document(this.originData[i], i, declarations, this.filters, this.indexStrategy))
+				documents.push(new Document(this.nextDocumentID++, this.originData[i], i, declarations))
 			}
 		}
-		this.documents = documents
+		this.corpus = documents
 	}
 
 	getMaxWeight() {
@@ -173,6 +200,11 @@ export default class SearchEngine {
 		return maxWeight
 	}
 
+	/**
+	 * Processes declarations by applying filters, preprocessors and weighting
+	 * @param declarations - List to process
+	 * @param maxWeight - Maximum weight recorded
+	 */
 	processDeclarations(declarations: Declaration[], maxWeight: number) {
 		return declarations
 			.filter(declaration => this.filters.every(filter => filter(declaration.path, declaration.originValue)))
@@ -185,34 +217,341 @@ export default class SearchEngine {
 					}
 					declaration.normalizedWeight = minMax(declaration.weight, maxWeight, 0)
 				}
-				this.preProcessingStrategy.forEach(processor => (declaration.value = processor(declaration.value)))
+				declaration.value = this.applyPreProcessors(declaration.value)
 				return declaration
 			})
 	}
 
-	onlineSearch(searchValueIn: any): SearchResult[] {
-		let searchValue = searchValueIn
+	setFullTextScoringStrategy(strategy: IFullTextScoring) {
+		this.fullTextScoringStrategy = strategy
+	}
+
+	setIndexStrategy(options?: IIndexOptions, doNotBuild?: boolean) {
+		const index = new Index(this.corpus, options)
+		if (!doNotBuild) {
+			index.build()
+		}
+		this.indexStrategy = index
+	}
+
+	buildIndex() {
+		if (this.indexStrategy) {
+			this.indexStrategy.build()
+		}
+	}
+
+	setClusterStrategy(clusterSpecifications: IClusterSpecification[], doNotBuild?: boolean) {
+		this.clusterStrategy = clusterSpecifications.map(specification => {
+			return new specification.cluster(specification.id, specification.options)
+		})
+		if (!doNotBuild) {
+			this.buildClusters()
+		}
+	}
+
+	buildClusters() {
+		const documents = this.indexStrategy
+			? this.indexStrategy.getAllIndexDocuments()
+			: this.corpus.map(doc => ({
+				document: doc,
+				tokenMap: new Map(),
+				vector: []
+			  }))
+		const statistics = this.indexStrategy
+			? this.indexStrategy.getStatistics()
+			: {
+				numberOfDocuments: this.corpus.length,
+				numberOfTokens: -1,
+				averageDocumentLength: -1
+			  }
+		this.clusterStrategy.forEach(cluster => {
+			cluster.build(documents, statistics)
+		})
+	}
+
+	setSpellingStrategy(spellers: (new () => ISpelling)[], doNotBuild?: boolean) {
+		this.spellingStrategy = spellers.map(speller => new speller())
+		if (!doNotBuild) {
+			this.buildSpellers()
+		}
+	}
+
+	buildSpellers() {
+		this.allWords = new Set()
+		this.corpus.forEach(doc => {
+			doc.declarations.forEach(declaration => {
+				if (typeof declaration.originValue === "string") {
+					removeStopCharacters(declaration.originValue)
+						.split(" ")
+						.map(word => word.toLowerCase())
+						.forEach((word: string) => this.allWords.add(word))
+				}
+			})
+		})
+		const allWords = Array.from(this.allWords)
+		this.spellingStrategy.forEach(speller => speller.build(allWords))
+	}
+
+	/**
+	 * If preprocessors should be applied to the term then this will return the applied value, otherwise the original value.
+	 * @param value - Value to process
+	 */
+	getProcessedTermValue(value: any) {
 		if (this.isApplyPreProcessorsToTerm) {
-			this.preProcessingStrategy.forEach(processor => (searchValue = processor(searchValue)))
+			return this.applyPreProcessors(value)
 		}
-		const searchResult = FULL_SCAN(this.documents, searchValue, this.comparisonStrategy, this.limit)
+		return value
+	}
+
+	/**
+	 * Applies all preprocessor to a given value.
+	 * @param value - Value to process
+	 */
+	applyPreProcessors(value: any) {
+		const result = this.preProcessingStrategy.reduce((acc, processor) => {
+			acc = processor(acc)
+			return acc
+		}, value)
+		return result
+	}
+
+	sortSearchResults(list: SearchResult[]) {
 		if (this.sortingStrategy.length > 0) {
-			searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))
+			list.sort(mergeArraySortFunctions(this.sortingStrategy))
 		}
+		return list
+	}
+
+	checkSpelling(value: string): ISpellingResult {
+		const words: string[] = removeStopCharacters(this.applyPreProcessors(value))
+			.split(" ")
+			.map(word => word.toLowerCase())
+		const result: ISpellingResult = {
+			result: "",
+			corrections: []
+		}
+		words
+			.filter(word => !this.allWords.has(word))
+			.forEach(word => {
+				let suggestion = null
+				this.spellingStrategy.some(strategy => {
+					suggestion = strategy.evaluate(word)
+					return suggestion
+				})
+				suggestion && result.corrections.push({ word, suggestion })
+			})
+		result.result = result.corrections.reduce((acc, correction) => {
+			return value.split(correction.word).join(correction.suggestion)
+		}, value)
+		return result
+	}
+
+	/**
+	 * Executes an inexact K retrieval using clustering
+	 * @param criteria - Criteria
+	 * @param value - Optional root search value
+	 */
+	clusterRetrieval(criteria: IClusterQueryCriteria, value?: any): DocumentID[] {
+		const cluster = this.clusterStrategy.find(cluster => cluster.id === criteria.id)
+		if (!cluster) {
+			throw new Error("No such cluster found: " + criteria.id)
+		}
+		let indexDocument = createEmptyIndexDocument()
+		if (value) {
+			const processedValue = this.getProcessedTermValue(value)
+			indexDocument.document = createDocumentFromValue(processedValue)
+			if (this.indexStrategy) {
+				indexDocument = this.indexStrategy.getQueryIndexDocument(indexDocument.document)
+			}
+		}
+		return cluster.evaluate(indexDocument, criteria.options)
+	}
+
+	/**
+	 * Executes an inexact K retrieval using a full-text index
+	 * @param criteria - Criteria
+	 * @param filter - Optional filtered corpus by ID
+	 */
+	indexRetrieval(criteria: IIndexQueryCriteria, filter?: DocumentID[]): DocumentID[] {
+		if (!this.indexStrategy) {
+			throw new Error("No index strategy has been configured!")
+		}
+		const value = this.applyPreProcessors(criteria.value) //Always apply preprocessors for index retrieval
+		return this.indexStrategy.inexactKRetrievalByValue(value, filter, criteria.exact, criteria.field)
+	}
+
+	/**
+	 * Executes an inexact K retrieval using value comparison
+	 * @param criteria - Criteria
+	 * @param filter - Optional filtered corpus by ID
+	 */
+	comparisonRetrieval(criteria: IComparisonQueryCriteria, filter?: DocumentID[]): DocumentID[] {
+		const strategy = criteria.strategy ? criteria.strategy : this.comparisonStrategy
+		const value = this.getProcessedTermValue(criteria.value)
+		let documentArray = this.corpus
+		if (filter) {
+			const filterSet = new Set(filter)
+			documentArray = documentArray.filter(doc => filterSet.has(doc.id))
+		}
+		return documentArray
+			.filter(doc => {
+				let declarations = doc.declarations
+				if (criteria.field) {
+					declarations = doc.declarations.filter(declaration => declaration.normalizedPath === criteria.field)
+				}
+				return declarations.find(declaration => strategy(value, declaration.value))
+			})
+			.map(doc => doc.id)
+	}
+
+	/**
+	 * Executes an async inexact K retrieval using value comparison
+	 * @param criteria - Criteria
+	 * @param filter - Optional filtered corpus by ID
+	 */
+	async comparisonRetrievalAsync(criteria: IComparisonQueryCriteria, filter?: DocumentID[]): Promise<DocumentID[]> {
+		const strategy = criteria.strategy ? criteria.strategy : this.comparisonStrategy
+		const value = this.getProcessedTermValue(criteria.value)
+		let documentArray = this.corpus
+		if (filter) {
+			const filterSet = new Set(filter)
+			documentArray = documentArray.filter(doc => filterSet.has(doc.id))
+		}
+		const matches: Document[] = []
+		const promises = documentArray.reduce((acc: Promise<any>[], doc) => {
+			let declarations = doc.declarations
+			if (criteria.field) {
+				declarations = doc.declarations.filter(declaration => declaration.normalizedPath === criteria.field)
+			}
+			if (declarations.length) {
+				acc.push(
+					runManyInThread(strategy, ...declarations.map(declaration => [value, declaration.value])).then(result => {
+						if (result && result.some((resultItem: any) => resultItem && (typeof resultItem === "number" || resultItem.score))) {
+							matches.push(doc)
+						}
+					})
+				)
+			}
+			return acc
+		}, [])
+		await Promise.all(promises)
+		return matches.map(doc => doc.id)
+	}
+
+	search(searchValueIn: any, options?: ISearchOptionsSearch): SearchResult[] {
+		const searchValue = this.getProcessedTermValue(searchValueIn)
+		let data = this.corpus
+		if (options?.filter) {
+			const filterIDs = new Set(this.queryPlanner.executeQuery(options.filter))
+			data = this.corpus.filter(doc => filterIDs.has(doc.id))
+		}
+		const searchResult = FULL_SCAN(data, searchValue, this.comparisonStrategy, options?.limit ? options.limit : this.limit)
+		this.sortSearchResults(searchResult)
 		return searchResult
 	}
 
-	offlineSearch(searchValueIn: any): SearchResult[] {
-		let searchValue = searchValueIn
-		if (this.isApplyPreProcessorsToTerm) {
-			this.preProcessingStrategy.forEach(processor => (searchValue = processor(searchValue)))
+	async searchAsync(searchValueIn: any, options?: ISearchOptionsSearch): Promise<SearchResult[]> {
+		const searchValue = this.getProcessedTermValue(searchValueIn)
+		let data = this.corpus
+		if (options?.filter) {
+			const filterIDs = new Set(await this.queryPlanner.executeQueryAsync(options.filter))
+			data = this.corpus.filter(doc => filterIDs.has(doc.id))
 		}
-		const searchResult = this.documents.reduce((resultArray: SearchResult[], document: Document) => {
-			return [...resultArray, ...document.offlineSearch(searchValue)]
-		}, [])
-		if (this.sortingStrategy.length > 0) {
-			searchResult.sort(mergeArraySortFunctions(this.sortingStrategy))
+		const searchResult = await FULL_SCAN_ASYNC(data, searchValue, this.comparisonStrategy, options?.limit ? options.limit : this.limit)
+		this.sortSearchResults(searchResult)
+		return searchResult
+	}
+
+	fulltext(searchValue: any, options?: ISearchOptionsFullText): SearchResult[] {
+		if (!this.indexStrategy) {
+			throw new Error("No index strategy has been configured!")
 		}
+		if (!this.fullTextScoringStrategy) {
+			throw new Error("No full-text scoring strategy has been configured!")
+		}
+		const value = this.applyPreProcessors(searchValue) //Always apply preprocessors for index retrieval
+		const tokenMap = this.indexStrategy!.getQueryTokenMapFromValue(value)
+		let filter = undefined
+		if (options?.filter) {
+			filter = this.queryPlanner.executeQuery(options.filter)
+		}
+		const exact = options?.exact ? options.exact : undefined
+		const field = options?.field ? options.field : undefined
+		let documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap, filter, exact, field)
+		if (!documentIDs.length) {
+			return []
+		}
+		const limit = options?.limit ? options.limit : this.limit
+		if (limit && limit <= documentIDs.length) {
+			documentIDs = documentIDs.splice(0, limit)
+		}
+		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
+		const searchResult = sparseVectors.map(vectors => {
+			const score = this.fullTextScoringStrategy!(vectors.vector1, vectors.vector2)
+			if (typeof score === "number") {
+				return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score, score, 0, 0)
+			}
+			return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score.score, score.score, 0, 0, score)
+		})
+		this.sortSearchResults(searchResult)
+		return searchResult
+	}
+
+	async fulltextAsync(searchValue: any, options?: ISearchOptionsFullText): Promise<SearchResult[]> {
+		if (!this.indexStrategy) {
+			throw new Error("No index strategy has been configured!")
+		}
+		if (!this.fullTextScoringStrategy) {
+			throw new Error("No full-text scoring strategy has been configured!")
+		}
+		const value = this.applyPreProcessors(searchValue) //Always apply preprocessors for index retrieval
+		const tokenMap = this.indexStrategy!.getQueryTokenMapFromValue(value)
+		let filter = undefined
+		if (options?.filter) {
+			filter = await this.queryPlanner.executeQueryAsync(options.filter)
+		}
+		const exact = options?.exact ? options.exact : undefined
+		const field = options?.field ? options.field : undefined
+		let documentIDs = this.indexStrategy!.inexactKRetrievalByTokenMap(tokenMap, filter, exact, field)
+		if (!documentIDs.length) {
+			return []
+		}
+		const limit = options?.limit ? options.limit : this.limit
+		if (limit && limit <= documentIDs.length) {
+			documentIDs = documentIDs.splice(0, limit)
+		}
+		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
+		const searchResult = sparseVectors.map(vectors => {
+			const score = this.fullTextScoringStrategy!(vectors.vector1, vectors.vector2)
+			if (typeof score === "number") {
+				return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score, score, 0, 0)
+			}
+			return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score.score, score.score, 0, 0, score)
+		})
+		this.sortSearchResults(searchResult)
+		return searchResult
+	}
+
+	query(query: IQuery, options?: ISearchOptionsQuery): SearchResult[] {
+		const resultIDs = this.queryPlanner.executeQuery(query)
+		return this.processQueryResult(resultIDs, options)
+	}
+
+	async queryAsync(query: IQuery, options?: ISearchOptionsQuery): Promise<SearchResult[]> {
+		const resultIDs = await this.queryPlanner.executeQueryAsync(query)
+		return this.processQueryResult(resultIDs, options)
+	}
+
+	processQueryResult(resultIDs: number[], options?: ISearchOptionsQuery) {
+		const limit = options?.limit ? options.limit : this.limit
+		if (limit && limit <= resultIDs.length) {
+			resultIDs = resultIDs.slice(0, limit)
+		}
+		const resultIDsSet = new Set(resultIDs)
+		const searchResult = this.corpus
+			.filter(doc => resultIDsSet.has(doc.id))
+			.map(doc => new SearchResult(doc.origin, doc.originIndex, [], "", 1, 0, 0, 0, null))
+		this.sortSearchResults(searchResult)
 		return searchResult
 	}
 }

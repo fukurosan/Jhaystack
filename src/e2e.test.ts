@@ -1,5 +1,6 @@
-import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, IndexStrategy } from "./index"
+import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, PreProcessingStrategy, FullTextScoringStrategy } from "./index"
 import SearchResult from "./Model/SearchResult"
+import { TRIGRAM_SPELLER } from "./Spelling/Trigram"
 
 describe("End to end", () => {
 	const data = [
@@ -38,11 +39,20 @@ describe("End to end", () => {
 	]
 
 	it("Typical fuzzy match setup works", () => {
-		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.FUZZY_SEQUENCE])
-			.setExtractionStrategy(ExtractionStrategy.BY_VALUE)
-			.setDataset(data)
+		const se = new Jhaystack().setComparisonStrategy(ComparisonStrategy.FUZZY_SEQUENCE).setExtractionStrategy(ExtractionStrategy.BY_VALUE).setDataset(data)
 		const result = se.search("dck")
+		expect(result.length).toBe(1)
+		expect(result[0].item.firstName).toBe("Arnold")
+		expect(result[0].path[0]).toBe("lastName")
+		expect(result[0].path.length).toBe(1)
+	})
+
+	it("Typical async search works", async () => {
+		const contains = (term: any, context: any) => {
+			return context.toLowerCase().includes(term.toLowerCase()) ? 1 : 0
+		}
+		const se = new Jhaystack().setComparisonStrategy(contains).setExtractionStrategy(ExtractionStrategy.BY_VALUE).setDataset(data)
+		const result = await se.searchAsync("duck")
 		expect(result.length).toBe(1)
 		expect(result[0].item.firstName).toBe("Arnold")
 		expect(result[0].path[0]).toBe("lastName")
@@ -64,7 +74,7 @@ describe("End to end", () => {
 
 	it("Typical weighted setup works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.BITAP])
+			.setComparisonStrategy(ComparisonStrategy.BITAP)
 			.setExtractionStrategy(ExtractionStrategy.BY_VALUE)
 			.setWeights([[path => /lastName/.test(path.join(".")), 0.7]])
 			.setDataset(data)
@@ -76,7 +86,7 @@ describe("End to end", () => {
 
 	it("Typical setup with a limiter works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.CONTAINS])
+			.setComparisonStrategy(ComparisonStrategy.CONTAINS)
 			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setDataset(data)
 			.setLimit(1)
@@ -89,7 +99,7 @@ describe("End to end", () => {
 
 	it("Typical setup with sorting works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.CONTAINS])
+			.setComparisonStrategy(ComparisonStrategy.CONTAINS)
 			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setDataset(data)
 			.setSortingStrategy([SortingStrategy.PROPERTY.ASCENDING])
@@ -99,7 +109,7 @@ describe("End to end", () => {
 	})
 
 	it("Typical setup with a nested search result works", () => {
-		const se = new Jhaystack().setComparisonStrategy([ComparisonStrategy.CONTAINS]).setExtractionStrategy(ExtractionStrategy.BY_OBJECT).setDataset(data)
+		const se = new Jhaystack().setComparisonStrategy(ComparisonStrategy.CONTAINS).setExtractionStrategy(ExtractionStrategy.BY_OBJECT).setDataset(data)
 		const result = se.search("Nested")
 		expect(result.length).toBe(1)
 		expect(result[0].item.id).toBe("1")
@@ -107,19 +117,9 @@ describe("End to end", () => {
 		expect(result[0].path.length).toBe(4)
 	})
 
-	it("Typical setup with an indexed trigram search works", () => {
-		const se = new Jhaystack().setIndexStrategy([IndexStrategy.TRIGRAM]).setDataset(data)
-		const result = se.indexLookup("Teddy Ject")
-		expect(result.length).toBe(1)
-		expect(result[0]?.relevance).toBe(0.375)
-		expect(result[0]?.item.id).toBe("1")
-		expect(JSON.stringify(result[0]?.path)).toBe(JSON.stringify(["children", 0, "nested", "text"]))
-		expect(result[0]?.path.length).toBe(4)
-	})
-
 	it("Typical setup with filters works", () => {
 		const se = new Jhaystack()
-			.setComparisonStrategy([ComparisonStrategy.BITAP])
+			.setComparisonStrategy(ComparisonStrategy.BITAP)
 			.setExtractionStrategy(ExtractionStrategy.BY_OBJECT)
 			.setFilters([])
 			.setDataset(data)
@@ -141,5 +141,36 @@ describe("End to end", () => {
 		se.setFilters([path => /lastName/.test(path.join(".")), (path, value) => !/Duck/.test(value)])
 		result = se.search("uck")
 		expect(result.length).toBe(1)
+	})
+
+	it("Typical full-text search works", () => {
+		const se = new Jhaystack({
+			data,
+			indexing: {
+				enable: true,
+				options: {
+					preProcessors: [PreProcessingStrategy.PORTER2]
+				}
+			},
+			fullTextScoringStrategy: FullTextScoringStrategy.FULLTEXT_COSINE
+		})
+		const result = se.fulltext("nest")
+		expect(result.length).toBe(1)
+		expect(result[0].item.id).toBe("1")
+		expect(result[0].relevance).toBe(0.7071067811865475)
+	})
+
+	it("Typical spelling check works", () => {
+		const se = new Jhaystack({
+			data,
+			spelling: {
+				strategy: [TRIGRAM_SPELLER]
+			}
+		})
+		const result = se.checkSpelling("arnlo")
+		expect(result.result).toBe("arnold")
+		expect(result.corrections.length).toBe(1)
+		expect(result.corrections[0].word).toBe("arnlo")
+		expect(result.corrections[0].suggestion).toBe("arnold")
 	})
 })

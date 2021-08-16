@@ -1,6 +1,6 @@
 # Comparison Strategy
 
-The comparison strategy defines how Jhaystack compares the search term with values to evaluate if it has found a match or not. You can configure Jhaystack to use different comparison functions depending on your needs. The order of the provided functions will help in determining the relevance of a match. A function with a lower index in the array will result in a higher relevance.
+The comparison strategy defines how Jhaystack compares the search term with values to evaluate if it has found a match or not. You can configure Jhaystack to use different comparison functions depending on your needs.
 
 Example:
 ```javascript
@@ -20,12 +20,12 @@ const data = [
 
 const options = {
     data: data,
-    comparison: [ComparisonStrategy.STARTS_WITH, ComparisonStrategy.ENDS_WITH]
+    comparison: ComparisonStrategy.STARTS_WITH
 }
 
 const se = new Jhaystack(options)
 const result = se.search("ton")
-//[{ path: ["name"], item: { name: "tony" }, value: "tony", relevance: 0.99999999, comparisonScore: 1, comparisonIndex: 0 }, { path: ["name"], item: { name: "paddington" }, value: "paddington", relevance: 0.49999999, comparisonScore: 1, comparisonIndex: 1 }]
+//[{ path: ["name"], item: { name: "tony" }, value: "tony", relevance: 1, score: 1 }]
 ```
 
 !> **Tip**  
@@ -46,7 +46,7 @@ const customStrategyWithMetaData = (term, context) => {
 ```
 Note that the data type of both the term and context could be anything.
 
-You can also nest the built in comparison functions in Jhaystack. This is useful if, for instance, you want two comparison functions to be of equal worth, or if you want to overwrite the default settings of the built in function. Joining strategies can often times have a positive impact on performance, since Jhaystack won't have to traverse through the dataset multiple times.
+You can also nest the built in comparison functions in Jhaystack. This is useful if, for instance, you want to overwrite the default settings of the built in function.
 
 Example:
 ```javascript
@@ -56,7 +56,80 @@ const customStrategy = (term, context) => {
 }
 ```  
 
----
+--- 
+
+## Multi-threading and Async
+
+When executing async search functions such as searchAsync() and queryAsync() that use comparison functions Jhaystack will attempt to multi-thread the operations off the main thread. This makes it non-blocking, as well as significantly boosts performance. When doing this your provided comparison functions are going to be serialized into strings, in order to be passed to a JavaScript worker. There are a few things worth noting with regards to this.
+
+#### Memory References
+
+When your provided function gets serialized any references to memory outside of it will be lost.
+
+For example:
+```javascript
+const se = new Jhaystack()
+//(...)
+var myVar = {
+    someValue: 0
+}
+function doSomething() {
+    return myVar.someValue 
+}
+se.setComparisonStrategy(doSomething)
+se.search() //This will work. 
+se.searchAync() //This will not work, because "myVar" will be undefined in the new thread.
+```
+
+Jhaystack gives you a tool to bypass this problem by allowing you to provide function dependencies. These can either be provided as a pure string, or as an object. To define dependencies simply provide the information by attaching a _jhaystack property to the function. The _jhaystack property can hold the following information:
+
+- dependencyString
+  - A string that will be inserted as is into the new worker thread
+- dependencies
+  - An object where each key will be the name of a variable, and each value will be the value of that variable. For example, { hello: "'world'" } would result in "var hello = 'world'".
+
+Example:
+```javascript
+const se = new Jhaystack()
+//(...)
+var myVar = {
+    someValue: 0
+}
+function doSomething() {
+    return myVar.someValue + magicValue
+}
+doSomething._jhaystack = {
+  dependencyString: "const magicValue = 1"
+  dependencies: {
+    //Translates to "var myVar = { someValue: 0 }
+    myVar: myVar,
+    //Translates to "var myOtherVar = { someValue: 0 }
+    myOtherVar: myVar,
+  }
+}
+se.setComparisonStrategy(doSomething)
+se.search() //This will work. 
+se.searchAync() //This will also work, because the dependencies have now been mapped.
+```
+
+Dependencies can be recursive by nature, i.e. one dependency has another dependency and so on.
+
+!> **Tip**  
+*Note that if you are doing any kind of minification (e.g. using terser or uglify as a bundler build step) then your dependency objects may get mangled in the process. This can cause some strange errors and crashed.*
+
+Finally, note that your function *must(!)* be formatted with enclosing "{}" and the parameters (if existing) *must(!)* be enclosed with "()".
+
+Example: 
+```javascript
+//No
+const myFn = () => "hello"
+//Yes
+const myFn = () => {
+  return "hello"
+}
+```
+
+--- 
 
 Jhaystack currently comes with the following comparison strategies built in:
 
@@ -73,33 +146,33 @@ This comparison function can only handle search values that are up to 32 charact
 
 The following additional arguments can be passed to this function:
  - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Is the search case sensitive?*
+   - **Type**: `boolean`
+   - **Default**: `true`
  - **isFullScan** 
-  - **Description**: *Should the entire context be scanned to find the best possible match (full scan), or should the best first possible match be used (partial scan)?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Should the entire context be scanned to find the best possible match (full scan), or should the best first possible match be used (partial scan)?*
+   - **Type**: `boolean`
+   - **Default**: `true`
  - **maxErrors** 
-  - **Description**: *Maximum levenshtein distance*
-  - **Type**: `Integer`
-  - **Default**: `2`
+   - **Description**: *Maximum levenshtein distance*
+   - **Type**: `Integer`
+   - **Default**: `2`
  - **isPositionRelevant**
-  - **Description**: *Should the position in the context where the match was found be taken into account when calculating the relevance?*
-  - **Type**: `Boolean`
-  - **Default**: `true`
+   - **Description**: *Should the position in the context where the match was found be taken into account when calculating the relevance?*
+   - **Type**: `Boolean`
+   - **Default**: `true`
  - **isContextSizeRelevant**
-  - **Description**: *Should the size of the context where the match was found be taken into account when calculating the relevance? Usually a smaller context will mean a more relevant match. This could be names, titles, and so on.*
-  - **Type**: `Boolean`
-  - **Default**: `true`
+   - **Description**: *Should the size of the context where the match was found be taken into account when calculating the relevance? Usually a smaller context will mean a more relevant match. This could be names, titles, and so on.*
+   - **Type**: `Boolean`
+   - **Default**: `true`
 
 The following meta data will be provided by this function:
  - **k**:
-  - **Description**: *The levenshtein distance*
-  - **Type**: `Integer`
+   - **Description**: *The levenshtein distance*
+   - **Type**: `Integer`
  - **matchIndex**:
-  - **Description**: *The character index inside of the context where the match was confirmed. I.e. the last character in the match.*
-  - **Type**: `Integer`
+   - **Description**: *The character index inside of the context where the match was confirmed. I.e. the last character in the match.*
+   - **Type**: `Integer`
 
 ---
 
@@ -110,13 +183,13 @@ Determines the cosine distance between two strings based on their n grams. The s
 
 The following additional arguments can be passed to this function:
  - **threshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.2`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.2`
  - **n** 
-  - **Description**: *gram sizes to format the input term and context into.*
-  - **Type**: `number`
-  - **Default**: `3`
+   - **Description**: *gram sizes to format the input term and context into.*
+   - **Type**: `number`
+   - **Default**: `3`
 
 ---
 
@@ -129,9 +202,9 @@ The difference between this function and bitap is that this function makes an ab
 
 The following additional arguments can be passed to this function:
  - **threshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.2`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.2`
 
 ---
 
@@ -152,9 +225,9 @@ Damerau-Levenshtein
 
 The following additional arguments can be passed to this function:
  - **threshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.2`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.2`
 
 ---
 
@@ -167,13 +240,13 @@ The Euclidean distance is the distance between to vectors within a coordinate sy
 
 The following additional arguments can be passed to this function:
  - **threshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.7`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.7`
  - **n** 
-  - **Description**: *gram sizes to format the input term and context into.*
-  - **Type**: `number`
-  - **Default**: `3`
+   - **Description**: *gram sizes to format the input term and context into.*
+   - **Type**: `number`
+   - **Default**: `3`
 
 ---
 
@@ -194,9 +267,9 @@ For example:
 
 The following additional arguments can be passed to this function:
  - **threshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.2`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.2`
 
 ---
 
@@ -213,13 +286,13 @@ The score would either be computed as the result * 2 / (term length + context le
 
 The following additional arguments can be passed to this function:
  - **threshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.3`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.3`
  - **containsSearch** 
-  - **Description**: *Determines of the computed score should be based on only term length, or the full combined length.*
-  - **Type**: `boolean`
-  - **Default**: `false`
+   - **Description**: *Determines of the computed score should be based on only term length, or the full combined length.*
+   - **Type**: `boolean`
+   - **Default**: `false`
 ---
 
 > ## JACCARD
@@ -235,13 +308,13 @@ For example:
 
 The following additional arguments can be passed to this function:
  - **threshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.2`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.2`
  - **n** 
-  - **Description**: *Determines the size of ngrams to use for the calculation.*
-  - **Type**: `number`
-  - **Default**: `3`
+   - **Description**: *Determines the size of ngrams to use for the calculation.*
+   - **Type**: `number`
+   - **Default**: `3`
 ---
 
 > ## JARO_WINKLER
@@ -255,21 +328,21 @@ Jaro-Winkler adds a bias to the prefix of the strings. If the prefix is identica
 
 The following additional arguments can be passed to this function:
  - **matchThreshold** 
-  - **Description**: *Threshold between 0-1 for what is considered a match.*
-  - **Type**: `number`
-  - **Default**: `0.6`
+   - **Description**: *Threshold between 0-1 for what is considered a match.*
+   - **Type**: `number`
+   - **Default**: `0.6`
  - **winklerThreshold** 
-  - **Description**: *Threshold for a Jaro score where Winkler should be applied.*
-  - **Type**: `number`
-  - **Default**: `0.7`
+   - **Description**: *Threshold for a Jaro score where Winkler should be applied.*
+   - **Type**: `number`
+   - **Default**: `0.7`
  - **prefixLength** 
-  - **Description**: *Threshold for the string prefix (1-4).*
-  - **Type**: `number`
-  - **Default**: `4`
+   - **Description**: *Threshold for the string prefix (1-4).*
+   - **Type**: `number`
+   - **Default**: `4`
  - **scalingFactor** 
-  - **Description**: *Scaling factor for the prefix boost (0-0.25).*
-  - **Type**: `number`
-  - **Default**: `0.1`
+   - **Description**: *Scaling factor for the prefix boost (0-0.25).*
+   - **Type**: `number`
+   - **Default**: `0.1`
 ---
 
 > ## FUZZY_SEQUENCE
@@ -283,8 +356,8 @@ Relevance will be based on the total distance between the characters.
 
 The following meta data will be provided by this function:
  - **totalDistance**:
-  - **Description**: *The total distance between characters*
-  - **Type**: `Integer`
+   - **Description**: *The total distance between characters*
+   - **Type**: `Integer`
 
 ---
 
@@ -297,9 +370,9 @@ For example, the context  `"I am eating cake next week"` would match with the te
 
 The following additional arguments can be passed to this function:
  - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Is the search case sensitive?*
+   - **Type**: `boolean`
+   - **Default**: `true`
 
 ---
 
@@ -312,9 +385,9 @@ Determines if the context matches the regular expression pattern.
 
 The following additional arguments can be passed to this function:
  - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Is the search case sensitive?*
+   - **Type**: `boolean`
+   - **Default**: `true`
 
 ---
 
@@ -325,9 +398,9 @@ Determines if the context starts with the term.
 
 The following additional arguments can be passed to this function:
  - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Is the search case sensitive?*
+   - **Type**: `boolean`
+   - **Default**: `true`
 
 ---
 
@@ -339,9 +412,9 @@ Determines if the context ends with the term.
 
 The following additional arguments can be passed to this function:
  - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Is the search case sensitive?*
+   - **Type**: `boolean`
+   - **Default**: `true`
 
 ---
 
@@ -353,9 +426,9 @@ Determines if the context contains the term.
 
 The following additional arguments can be passed to this function:
  - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Is the search case sensitive?*
+   - **Type**: `boolean`
+   - **Default**: `true`
 
 ---
 
@@ -367,7 +440,7 @@ Determines if the term equals the context.
 
 The following additional arguments can be passed to this function:
  - **caseSensitive** 
-  - **Description**: *Is the search case sensitive?*
-  - **Type**: `boolean`
-  - **Default**: `true`
+   - **Description**: *Is the search case sensitive?*
+   - **Type**: `boolean`
+   - **Default**: `true`
 

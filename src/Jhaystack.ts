@@ -1,12 +1,18 @@
 import Engine from "./Engine"
-import { IIndex } from "./Model/Index"
 import SearchResult from "./Model/SearchResult"
 import IOptions from "./Model/IOptions"
 import IExtraction from "./Model/IExtraction"
 import IComparison from "./Model/IComparison"
+import { IFullTextScoring } from "./Model/IFullTextScoring"
 import IFilter from "./Model/IFilter"
 import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
+import IIndexOptions from "./Indexing/IIndexOptions"
+import IClusterSpecification from "./Model/IClusterSpecification"
+import ISpelling from "./Model/ISpelling"
+import { IQuery } from "./Model/IQuery"
+import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
+import { ISpellingResult } from "./Model/ISpellingResult"
 
 /**
  * The main Jhaystack class.
@@ -22,11 +28,21 @@ export default class Jhaystack {
 
 	/**
 	 * Sets the value comparison strategy to be used.
-	 * @param {IComparison[]} strategy - Array of comparison functions to be used
+	 * @param {IComparison} strategy - comparison function to be used
 	 * @returns {Jhaystack} - this
 	 */
-	setComparisonStrategy(strategy: IComparison[]): Jhaystack {
+	setComparisonStrategy(strategy: IComparison): Jhaystack {
 		this.engine.setComparisonStrategy(strategy)
+		return this
+	}
+
+	/**
+	 * Sets the full-text scoring strategy to be used.
+	 * @param {IFullTextScoring} strategy - comparison function to be used
+	 * @returns {Jhaystack} - this
+	 */
+	setFullTextScoringStrategy(strategy: IFullTextScoring): Jhaystack {
+		this.engine.setFullTextScoringStrategy(strategy)
 		return this
 	}
 
@@ -104,16 +120,6 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Sets the index strategy to be used. The index strategy is only relevant if you are doing offline searches.
-	 * @param {IIndex[]} strategy - Array of indices to be used
-	 * @returns {Jhaystack} - this
-	 */
-	setIndexStrategy(strategy: IIndex[]): Jhaystack {
-		this.engine.setIndexStrategy(strategy)
-		return this
-	}
-
-	/**
 	 * Sets the maximum number of matches to be found before search stops.
 	 * @param {number} limit - Maximum number of matches (integer)
 	 * @returns {Jhaystack} - this
@@ -147,20 +153,130 @@ export default class Jhaystack {
 	}
 
 	/**
-	 * Perform an online search for a given value
-	 * @param {any} searchValue - Value to search for
-	 * @returns {SearchResult[]} - Search results
+	 * Sets the index strategy to use
+	 * @param options Options for the index
+	 * @param doNotBuild If set to true the index will not immediately be built
+	 * @returns {Jhaystack} - this
 	 */
-	search(searchValue: any): SearchResult[] {
-		return this.engine.onlineSearch(searchValue)
+	setIndexStrategy(options: IIndexOptions, doNotBuild?: boolean) {
+		this.engine.setIndexStrategy(options, doNotBuild)
+		return this
 	}
 
 	/**
-	 * Perform an offline search for a given value
+	 * (re)Builds all indexes
+	 * @returns {Jhaystack} - this
+	 */
+	buildIndex() {
+		this.engine.buildIndex()
+		return this
+	}
+
+	/**
+	 * Sets the cluster strategy to use
+	 * @param clusterSpecifications - Cluster specifications
+	 * @param doNotBuild If set to true the clusters will not immediately be built
+	 * @returns {Jhaystack} - this
+	 */
+	setClusterStrategy(clusterSpecifications: IClusterSpecification[], doNotBuild?: boolean) {
+		this.engine.setClusterStrategy(clusterSpecifications, doNotBuild)
+		return this
+	}
+
+	/**
+	 * (re)Builds all clusters
+	 * @returns {Jhaystack} - this
+	 */
+	buildClusters() {
+		this.engine.buildClusters()
+		return this
+	}
+
+	/**
+	 * Sets the speller strategy to use
+	 * @param spellers - List of speller implementations to use, in order of importance
+	 * @param doNotBuild If set to true the clusters will not immediately be built
+	 * @returns {Jhaystack} - this
+	 */
+	setSpellingStrategy(spellers: (new () => ISpelling)[], doNotBuild?: boolean) {
+		this.engine.setSpellingStrategy(spellers, doNotBuild)
+		return this
+	}
+
+	/**
+	 * (re)Builds all spellers
+	 * @returns {Jhaystack} - this
+	 */
+	buildSpellers() {
+		this.engine.buildSpellers()
+		return this
+	}
+
+	/**
+	 * Executes the provided spelling strategies and provides suggestions for changes if necessary
+	 * @param value - String to check spelling for
+	 */
+	checkSpelling(value: string): ISpellingResult {
+		return this.engine.checkSpelling(value)
+	}
+
+	/**
+	 * Perform a search
 	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsSearch} options - Optional options
 	 * @returns {SearchResult[]} - Search results
 	 */
-	indexLookup(searchValue: any): SearchResult[] {
-		return this.engine.offlineSearch(searchValue)
+	search(searchValue: any, options?: ISearchOptionsSearch): SearchResult[] {
+		return this.engine.search(searchValue, options)
+	}
+
+	/**
+	 * Perform an async search
+	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsSearch} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	searchAsync(searchValue: any, options?: ISearchOptionsSearch): Promise<SearchResult[]> {
+		return this.engine.searchAsync(searchValue, options)
+	}
+
+	/**
+	 * Perform a full-text search
+	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsFullText} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	fulltext(searchValue: any, options?: ISearchOptionsFullText): SearchResult[] {
+		return this.engine.fulltext(searchValue, options)
+	}
+
+	/**
+	 * Perform an async full-text search
+	 * @param {any} searchValue - Value to search for
+	 * @param {ISearchOptionsFullText} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	async fulltextAsync(searchValue: any, options?: ISearchOptionsFullText): Promise<SearchResult[]> {
+		return this.engine.fulltextAsync(searchValue, options)
+	}
+
+	/**
+	 * Execute a binary query
+	 * @param {IQuery} query - Query to execute
+	 * @param {ISearchOptionsQuery} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	query(query: IQuery, options?: ISearchOptionsQuery): SearchResult[] {
+		return this.engine.query(query, options)
+	}
+
+	/**
+	 * Execute a binary query
+	 * @param {IQuery} query - Query to execute
+	 * @param {ISearchOptionsQuery} options - Optional options
+	 * @returns {SearchResult[]} - Search results
+	 */
+	queryAsync(query: IQuery, options?: ISearchOptionsQuery): Promise<SearchResult[]> {
+		return this.engine.queryAsync(query, options)
 	}
 }

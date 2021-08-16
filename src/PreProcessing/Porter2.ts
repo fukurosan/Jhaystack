@@ -3,10 +3,10 @@
  * This code is based on the explanation found at:
  * https://snowballstem.org/algorithms/english/stemmer.html
  * Processes either a string value or an array of string values
- * @param {unknown} value - The value to be processed
+ * @param {any} value - The value to be processed
  * @return {number} - Resulting value
  */
-export const PORTER2 = (value: unknown): unknown => {
+export const PORTER2 = (value: any): any => {
 	if (typeof value === "string") {
 		return value
 			.split(" ")

@@ -25,7 +25,7 @@ const options = {
 
 const se = new Jhaystack(options)
 const result = se.search("tom")
-//[{ path: ["name"], item: { name: "tom", secondName: "tom", children: { name: "tom" }}, value: "tom", relevance: 0.999999995, comparisonScore: 0.99999999, comparisonIndex: 0 }, { path: ["children", "name"], item: { name: "tom", secondName: "tom", children: { name: "tom" }}, value: "tom", relevance: 0.999999995, comparisonScore: 0.99999999, comparisonIndex: 0 }]
+//[{ path: ["name"], item: { name: "tom", secondName: "tom", children: { name: "tom" }}, value: "tom", relevance: 0.99999999, score: 0.99999999 }, { path: ["children", "name"], item: { name: "tom", secondName: "tom", children: { name: "tom" }}, value: "tom", relevance: 0.99999999, score: 0.99999999 }]
 ```
 
 ---

@@ -1,9 +1,9 @@
 /**
  * Cleans an array or a string from common English stop words.
- * @param {unknown} value - The value to be processed
+ * @param {any} value - The value to be processed
  * @return {number} - Cleaned value
  */
-export const STOP_WORDS_EN = (value: unknown): unknown => {
+export const STOP_WORDS_EN = (value: any): any => {
 	if (Array.isArray(value)) {
 		return value.filter(val => !stopWords.has(getScrubbedWord(val)))
 	} else if (typeof value === "string") {

@@ -12,15 +12,13 @@ export default class SearchResult {
 	/** The relevance of the match */
 	relevance: number
 	/** The score from the value comparison function */
-	comparisonScore: number
-	/** The index of the comparison function that found the match */
-	comparisonIndex: number
+	score: number
 	/** The weight of the result */
 	weight: number
 	/** The normalized weight of the result (0-1) */
 	normalizedWeight: number
 	/** Potential meta data from the comparison function */
-	metaData: ObjectLiteral
+	metaData: ObjectLiteral | null
 
 	constructor(
 		item: ObjectLiteral,
@@ -28,19 +26,17 @@ export default class SearchResult {
 		path: (string | number)[],
 		value: any,
 		relevance: number,
-		comparisonScore: number,
-		comparisonIndex: number,
+		score: number,
 		weight: number,
 		normalizedWeight: number,
-		metaData?: ObjectLiteral
+		metaData?: ObjectLiteral | null
 	) {
 		this.item = item
 		this.itemIndex = index
 		this.path = path
 		this.value = value
 		this.relevance = relevance
-		this.comparisonScore = comparisonScore
-		this.comparisonIndex = comparisonIndex
+		this.score = score
 		this.weight = weight
 		this.normalizedWeight = normalizedWeight
 		this.metaData = {}

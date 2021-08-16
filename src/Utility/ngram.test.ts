@@ -24,29 +24,29 @@ describe("N-Gram Module", () => {
 	})
 
 	it("custom max/min-Gram ngram works", () => {
-		const expectedResult = JSON.stringify(["H", "d", "He", "ld", "Hel", "ell", "llo", "lo ", "o W", " Wo", "Wor", "orl", "rld"])
-		const expectedResult2 = JSON.stringify([
-			"H",
-			"d",
+		const expectedResult = JSON.stringify([
 			"He",
-			"ld",
-			"Hee",
-			"eee",
-			"eel",
+			"Hel",
+			"el",
 			"ell",
+			"ll",
 			"llo",
+			"lo",
 			"lo ",
+			"o ",
 			"o W",
+			" W",
 			" Wo",
-			"Woo",
-			"ooo",
-			"oor",
+			"Wo",
+			"Wor",
+			"or",
 			"orl",
-			"rld"
+			"rl",
+			"rld",
+			"ld"
 		])
-		const expectedResult3 = JSON.stringify([])
-		expect(JSON.stringify([...nGram(string1, 3, 1)])).toBe(expectedResult)
-		expect(JSON.stringify([...nGram(string2, 3, 1)])).toBe(expectedResult2)
-		expect(JSON.stringify([...nGram("", 3, 1)])).toBe(expectedResult3)
+		const expectedResult2 = JSON.stringify([])
+		expect(JSON.stringify([...nGram(string1, 3, 2)])).toBe(expectedResult)
+		expect(JSON.stringify([...nGram("", 3, 1)])).toBe(expectedResult2)
 	})
 })

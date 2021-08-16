@@ -11,8 +11,7 @@
  */
 export const nGram = (termIn: string, maxGram = 3, minGram = maxGram, captureSpace = true, captureStartEnd = false): Set<string> => {
 	if (minGram > maxGram) {
-		console.error("Min Gram length can not be larger than Max Gram length.")
-		return new Set()
+		throw new Error("Min Gram length can not be larger than Max Gram length.")
 	}
 	let term = termIn
 	if (!captureSpace) {
@@ -26,15 +25,16 @@ export const nGram = (termIn: string, maxGram = 3, minGram = maxGram, captureSpa
 	if (length < minGram) {
 		return new Set()
 	}
-	if (minGram < maxGram) {
-		for (let i = minGram - 1; i < maxGram - 1; i++) {
-			ngrams.add(term.substr(0, i + 1))
-			ngrams.add(term.substr(length - i - 1))
+
+	outerTraversal: for (let i = 0; i < length - minGram + 1; i++) {
+		for (let j = minGram; j < maxGram + 1; j++) {
+			if (i + j > length) {
+				break outerTraversal
+			}
+			ngrams.add(term.substr(i, j))
 		}
 	}
-	for (let i = 0; i < length - maxGram + 1; i++) {
-		ngrams.add(term.substr(i, maxGram))
-	}
+
 	return ngrams
 }
 
