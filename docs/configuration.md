@@ -269,7 +269,7 @@ const myLimit = 100
 ```
 
 > ## threadPlanner
-- **Type**: `{ maxThreadCount }`
+- **Type**: `{ maxThreadCount, maxIdleTime }`
 - **Default**: `undefined`
 - **Function**: `n/a`
 

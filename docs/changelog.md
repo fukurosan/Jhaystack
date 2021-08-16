@@ -4,6 +4,7 @@
 
 - TODO:: Implement Storage Strategy
 - TODO:: Implement Logging Strategy
+- TODO:: Improve fulltextAsync() performance
 
 ### 0.1.0
 
