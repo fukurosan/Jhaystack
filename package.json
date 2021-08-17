@@ -1,6 +1,6 @@
 {
   "name": "jhaystack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JavaScript search engine",
   "main": "./dist/jhaystack.cjs.min.js",
   "module": "./dist/jhaystack.esm.js",

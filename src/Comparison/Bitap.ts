@@ -170,5 +170,10 @@ export const BITAP = (
 }
 
 BITAP._jhaystack = {
-	dependencies: { generateBitMask, getRelativeRelevance, sigmoidPositive, getScorePenaltyValue }
+	dependencies: {
+		[generateBitMask.name]: generateBitMask,
+		[getRelativeRelevance.name]: getRelativeRelevance,
+		[sigmoidPositive.name]: sigmoidPositive,
+		[getScorePenaltyValue.name]: getScorePenaltyValue
+	}
 }

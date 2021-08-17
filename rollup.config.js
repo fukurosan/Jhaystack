@@ -114,9 +114,6 @@ export default [
 							return /@preserve|@license|@cc_on/i.test(text)
 						}
 					}
-				},
-				mangle: {
-					keep_fnames: true //This is necessary because of _jhaystack function dependencies for workers
 				}
 			})
 		]

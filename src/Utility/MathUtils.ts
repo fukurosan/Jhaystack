@@ -54,7 +54,7 @@ export const sigmoidPositive = (z: number): number => {
 	return (sigmoid(z) - 0.5) * 2
 }
 sigmoidPositive._jhaystack = {
-	dependencies: { sigmoid }
+	dependencies: { [sigmoid.name]: sigmoid }
 }
 
 /**
