@@ -33,6 +33,9 @@ export const QGRAM = (term: unknown, context: unknown, q = 3, containsSearch = f
 	}
 	return score > threshold ? score : 0
 }
+
 QGRAM._jhaystack = {
-	dependencies: { nGram }
+	dependencies: {
+		[nGram.name]: nGram
+	}
 }

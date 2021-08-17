@@ -102,7 +102,7 @@ doSomething._jhaystack = {
   dependencyString: "const magicValue = 1"
   dependencies: {
     //Translates to "var myVar = { someValue: 0 }
-    myVar: myVar,
+    [myVar.name]: myVar,
     //Translates to "var myOtherVar = { someValue: 0 }
     myOtherVar: myVar,
   }
@@ -115,7 +115,7 @@ se.searchAync() //This will also work, because the dependencies have now been ma
 Dependencies can be recursive by nature, i.e. one dependency has another dependency and so on.
 
 !> **Tip**  
-*Note that if you are doing any kind of minification (e.g. using terser or uglify as a bundler build step) then your dependency objects may get mangled in the process. This can cause some strange errors and crashed.*
+*Note that if you are doing any kind of minification (e.g. using terser or uglify as a bundler build step) then your dependency objects may get mangled in the process. This can cause some strange errors and crashed. To avoid this you are recommended to use the above syntax of "[yourFn.name]: yourFn" rather than "yourFn: yourFn".*
 
 Finally, note that your function *must(!)* be formatted with enclosing "{}" and the parameters (if existing) *must(!)* be enclosed with "()".
 
