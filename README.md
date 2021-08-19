@@ -16,7 +16,7 @@ Jhaystack is a JavaScript search engine.
 
 The word Jhaystack is a play of words with "JS-Stack", and was coined because it `helps you find a needle in a JS-Stack`.
 
-Jhaystack aims to be a library that can scale together with projects as requirements grow more advanced. Every part of the library is built to be customizable as well as unit testable, with support for a variety addons. 
+Jhaystack aims to be a library that can scale together with projects as requirements grow more complex. Every part of the library is built to be customizable as well as unit testable, with support for a variety addons. 
 
 ## Why Jhaystack?
 - Modular and customizable
