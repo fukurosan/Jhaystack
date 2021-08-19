@@ -6,6 +6,12 @@
 - TODO:: Implement Logging Strategy
 - TODO:: Improve fulltextAsync() performance
 
+### 0.1.2
+- Improved trigram spelling strategy
+
+### 0.1.1
+- Improved internal function dependency management
+
 ### 0.1.0
 
 - Added new index implementation
