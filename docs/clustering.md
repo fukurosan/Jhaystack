@@ -45,7 +45,7 @@ Jhaystack comes with the following clusters built in:
 
 > ## KMeans
 
-KMeans will compute groups of documents based on a KMeans algorithm applied to the documents’ vectors. You can either supply the amount of groups to create, or let Jhaystack make a guesstimate. You can also specify how many cycles Jhaystack should loop through in trying to optimize the groupings. Beware of setting this to -1 since it could lead to very long cluster construction times for large datasets.
+KMeans will compute groups of documents based on an unsupervised k-means algorithm applied to the documents’ vectors. You can either supply the amount of groups to create, or let Jhaystack make a guesstimate. You can also specify how many cycles Jhaystack should loop through in trying to optimize the groupings. Beware of setting this to -1 since it could lead to very long cluster construction times for large datasets.
 
 This strategy requires a built index.
 
@@ -60,6 +60,32 @@ The following options can be configured at **build time**:
    - **Default**: `10`
 
 No options can be passed at **query time**
+
+> ## Naive Bayes
+
+Naive Bayes is a supervised probabilistic classification algorithm that can be used for text classification. Typical use cases are spam filters, sentiment analysis or categorization of texts like news articles or blog posts. Using either a provided training dataset or a training function the cluster will create a document classification index that can be used for filtering information at query time.
+
+This strategy does not require a built index.
+
+The following options can be configured at **build time**:
+ - **training** 
+   - **Description**: *This can either be a training set, which is an array where each inner array contains a string of text and a classification, or a function that takes an (original) object from the provided dataset as input and provides a classification as output.*
+   - **Type**: `number[string, string][] | ((obj: any) => [string, string])`
+   - **Default**: `undefined`
+ - **field?** 
+   - **Description**: *If only a specific field should be used for the analysis the property path can be provided here as a string, with each property separated with a ".".*
+   - **Type**: `string`
+   - **Default**: `undefined`
+
+The following options can be configured at **query time**
+ - **category?** 
+   - **Description**: *If you want to simply filter by a category it can be provided here and no further computations will be made.*
+   - **Type**: `string`
+   - **Default**: `undefined`
+ - **field?** 
+   - **Description**: *If only a specific field should be used for the analysis the property path can be provided here as a string, with each property separated with a ".".*
+   - **Type**: `string`
+   - **Default**: `undefined`
 
 > ## Range
 
