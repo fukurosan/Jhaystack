@@ -6,6 +6,9 @@
 - TODO:: Implement Logging Strategy
 - TODO:: Improve fulltextAsync() performance
 
+### 0.1.3
+- Added Naive Bayes cluster strategy
+
 ### 0.1.2
 - Improved trigram spelling strategy
 

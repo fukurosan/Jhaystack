@@ -1,4 +1,4 @@
-import { KMeans, Range } from "./clusterStrategy"
+import { KMeans, Range, NaiveBayes } from "./clusterStrategy"
 import Document from "../Model/Document"
 import Declaration from "../Model/Declaration"
 
@@ -99,5 +99,52 @@ describe("Clustering Strategy Module", () => {
 		const followers = [...clustermap.values()]
 		expect(leaders.length).toBe(2)
 		expect(followers[0].length).not.toBe(followers[1].length) //In this case the length may vary, but one should always be longer than the other.
+	})
+
+	it("NaiveBayes works", () => {
+		const trainingSet = [
+			["I love BBQ outside in the sun.", "positive"],
+			["Yesterday's pizza was epic. Super delicious", "positive"],
+			["Fresh pinapple on a hot day is fantastic. I love it.", "positive"],
+			["Nothing beats an amazing breakfast buffet.", "positive"],
+			["Everyone is happy when dinner is served.", "positive"],
+
+			["I hate BBQ outside on a rainy day.", "negative"],
+			["Yesterday's pizza was disgusting and made me want to vomit.", "negative"],
+			["Fresh pineapple sucks and burns my tongue.", "negative"],
+			["Breakfast buffets are nasty in my opinion.", "negative"],
+			["No one is happy when dinner is served.", "negative"]
+		]
+		const NaiveBayesCluster = new NaiveBayes("1", { training: <[string, string][]>trainingSet })
+
+		const documents = [
+			{
+				document: new Document(0, "Love great super delicious fantastic", 0, [new Declaration("Love great super delicious fantastic", [])]),
+				tokenMap: new Map(),
+				vector: []
+			},
+			{
+				document: new Document(1, "disgusting vomit hate sucks", 1, [new Declaration("disgusting vomit hate sucks", [])]),
+				tokenMap: new Map(),
+				vector: []
+			}
+		]
+
+		NaiveBayesCluster.build(documents)
+		const testDocumentPositive = {
+			document: new Document(-1, "I heard pineapple is delicious for breakfast.", -1, [
+				new Declaration("I heard pineapple is delicious for breakfast.", [])
+			]),
+			tokenMap: new Map(),
+			vector: []
+		}
+		const testDocumentNegative = {
+			document: new Document(-1, "I hate having to eat breakfast.", -1, [new Declaration("I hate having to eat breakfast.", [])]),
+			tokenMap: new Map(),
+			vector: []
+		}
+		expect(NaiveBayesCluster.evaluate(testDocumentPositive)[0]).toBe(0)
+		expect(NaiveBayesCluster.evaluate(testDocumentNegative)[0]).toBe(1)
+		expect(NaiveBayesCluster.evaluate({ document: new Document(-1, "", -1, []), tokenMap: new Map(), vector: []}, { category: "positive" })[0]).toBe(0)
 	})
 })
