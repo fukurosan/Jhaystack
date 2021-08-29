@@ -1,28 +1,57 @@
 import ISpelling from "../Model/ISpelling"
 import { nGram } from "../Utility/ngram"
 import { DAMERAU } from "../Comparison/Damerau"
+import IWordMeta from "../Model/IWordMeta"
 
 interface IndexMap {
 	[key: string]: string[]
 }
 
-export class TRIGRAM_SPELLER implements ISpelling {
+interface INGramSpellerBuildOptions {
+	gramSize?: number
+	captureStartEnd?: boolean
+}
+
+const DEFAULT_CONFIG: INGramSpellerBuildOptions = {
+	gramSize: 2,
+	captureStartEnd: false
+}
+
+export class NGRAM implements ISpelling {
+	/** Identifier for the speller module */
+	id: string
+	/** Options for the module */
+	private options: INGramSpellerBuildOptions
+	/** Map of Gram -> Word(s) */
 	private index: IndexMap = {}
 
-	extractTokens(string: any) {
-		return Array.from(nGram(string, 3, 3, false, false))
+	constructor(id: string, options?: INGramSpellerBuildOptions) {
+		this.id = id
+		this.options = {
+			...DEFAULT_CONFIG
+		}
+		if (options) {
+			this.options = {
+				...this.options,
+				...options
+			}
+		}
 	}
 
-	build(values: any[]) {
+	extractTokens(string: any) {
+		return Array.from(nGram(string, this.options.gramSize, this.options.gramSize, false, this.options.captureStartEnd))
+	}
+
+	build(values: Map<string, IWordMeta>) {
 		this.index = {}
-		values.forEach(originValue => {
-			const value = `${originValue}`.toUpperCase()
+		Array.from(values.keys()).forEach(valueIn => {
+			const value = valueIn.toLowerCase()
 			const tokens = this.extractTokens(value)
 			tokens.forEach(token => {
 				if (!this.index[token]) {
 					this.index[token] = []
 				}
-				this.index[token].push(originValue)
+				this.index[token].push(value)
 			})
 		})
 	}
@@ -30,12 +59,14 @@ export class TRIGRAM_SPELLER implements ISpelling {
 	/**
 	 * Evaluates a value against the index.
 	 * Score is evaluated by building an index of the term, and then seeing if any declarations match the same index keys within a certain range.
-	 * @param {any} value - The term that should be evaluated
+	 * @param {string} value - The term that should be evaluated
 	 */
-	evaluate(value: any): string | null {
-		const stringValue = `${value}`.toUpperCase()
-		const maxLength = stringValue.length + 2
-		const termTokens = this.extractTokens(stringValue)
+	evaluate(value: string): string | null {
+		if (!value) {
+			return null
+		}
+		const maxLength = value.length + 2
+		const termTokens = this.extractTokens(value)
 		const indexQueryResult = new Map<string, number>()
 		for (let i = 0; i < termTokens.length; i++) {
 			const valueArray = this.index[termTokens[i]]

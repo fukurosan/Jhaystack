@@ -1,3 +1,5 @@
-import { TRIGRAM_SPELLER } from "./Trigram"
+import { NGRAM } from "./Ngram"
+import { SOUNDEX } from "./Soundex"
+import { NORVIG } from "./Norvig"
 
-export { TRIGRAM_SPELLER }
+export { NGRAM, SOUNDEX, NORVIG }

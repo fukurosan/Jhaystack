@@ -6,8 +6,8 @@ import IPreProcessor from "./IPreProcessor"
 import IExtraction from "./IExtraction"
 import IIndexOptions from "../Indexing/IIndexOptions"
 import IClusterSpecification from "./IClusterSpecification"
-import ISpelling from "./ISpelling"
 import { IFullTextScoring } from "./IFullTextScoring"
+import ISpellingSpecification from "./ISpellingSpecification"
 
 export default interface IOptions {
 	/** Default comparison function to be used for evaluating matches. */
@@ -29,7 +29,7 @@ export default interface IOptions {
 	}
 	/** Sets the spelling strategy to use */
 	spelling?: {
-		strategy: (new () => ISpelling)[]
+		strategy: ISpellingSpecification[]
 		doNotBuild?: boolean
 	}
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */

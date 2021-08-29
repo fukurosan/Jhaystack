@@ -1,4 +1,4 @@
-import { TO_STRING, TO_LOWER_CASE, STOP_WORDS_EN, SCRUB, PORTER2, LANCASTER } from "./PreProcessingStrategy"
+import { TO_STRING, TO_LOWER_CASE, STOP_WORDS_EN, SCRUB, PORTER2, LANCASTER, NORMALIZE_CHARACTERS } from "./PreProcessingStrategy"
 import { ObjectLiteral } from "../Utility/JsonUtility"
 
 describe("Value Processing Strategy", () => {
@@ -31,6 +31,12 @@ describe("Value Processing Strategy", () => {
 		expect(SCRUB(stringValue)).toBe("Im really happy")
 		expect(SCRUB(arrayValue)).toStrictEqual(["Im really happy", "Im really grumpy too though"])
 		expect(SCRUB(123)).toBe(123)
+	})
+
+	it("Normalizes characters", () => {
+		const stringValue = "ím rêally happy!"
+		expect(NORMALIZE_CHARACTERS(stringValue)).toBe("im really happy!")
+		expect(NORMALIZE_CHARACTERS(123)).toBe(123)
 	})
 
 	it("Porter2 stemmer works", () => {

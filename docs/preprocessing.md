@@ -86,10 +86,15 @@ Removes common English stop words from either an array of values, or from inside
 
 Removes commonly used special characters from either an array of values, or from inside of a string.
 
-The scrubber will also normalize characters. 
+For example: `"I'm very happy today, because the sun is shining!" -> "Im very happy today because the sun is shining"`
+
+---
+
+> ## NORMALIZE_CHARACTERS
+
+Normalizes variations of characters in either an array of values, or inside of a string.
 
 For example:
 `àáâãäå -> a`
 
 ---
-

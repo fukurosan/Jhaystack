@@ -14,23 +14,6 @@ export const SCRUB = (value: any): any => {
 
 const getScrubbedWord = (word: string) => {
 	return word
-		.replace(/[àáâãäå]/g, "a")
-		.replace(/æ/g, "ae")
-		.replace(/ç/g, "c")
-		.replace(/[èéêë]/g, "e")
-		.replace(/[ìíîï]/g, "i")
-		.replace(/ñ/g, "n")
-		.replace(/[òóôõö]/g, "o")
-		.replace(/œ/g, "oe")
-		.replace(/[ùúûü]/g, "u")
-		.replace(/[ýÿ]/g, "y")
-		.replace(/[ÀÁÂÃÄÅ]/g, "A")
-		.replace(/[ÈÉÊË]/g, "E")
-		.replace(/[ÌÍÎÏ]/g, "i")
-		.replace(/Ñ/g, "N")
-		.replace(/[ÒÓÔÕÖ]/g, "O")
-		.replace(/[ÙÚÛÜ]/g, "U")
-		.replace(/[ÝŸ]/g, "Y")
 		.split("")
 		.filter(character => !stopCharacters.has(character))
 		.join("")

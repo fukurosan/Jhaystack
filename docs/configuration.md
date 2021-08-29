@@ -76,7 +76,7 @@ interface IOptions {
 	}
 	/** Sets the spelling strategy to use */
 	spelling?: {
-		strategy: (new () => ISpelling)[]
+		strategy: ISpellingSpecification[]
 		doNotBuild?: boolean
 	}
 	/** Array containing the Sorting functions to be used. Search results will be sorted in order of sorting function provided. */
@@ -207,7 +207,7 @@ const indexStrategy = { enable: true }
 
 > ## clustering
 - **Type**: `object`
-- **Default**: `{ doNotBuild: false, options: {} }`
+- **Default**: `{ doNotBuild: false, {id: string, strategy: ICluster, options?: any} }`
 - **Function**: `setClusterStrategy`
 
 Sets the cluster strategy to be used
@@ -219,14 +219,14 @@ const clusterStrategy = { options: [{id: "kmeans", strategy: ClusterStrategy.KMe
 
 > ## spelling
 - **Type**: `object`
-- **Default**: `{ doNotBuild: false, strategy: [] }`
+- **Default**: `{ doNotBuild: false, strategy: [{id: string, strategy: ISpelling, options?: any}] }`
 - **Function**: `setSpellingStrategy`
 
 Sets the spelling strategy to be used
 
 ```javascript
 import { SpellingStrategy } from "jhaystack"
-const spellingStrategy = { strategy: [SpellingStrategy.TRIGRAM] }
+const spellingStrategy = { strategy: [{ id: "ngram", strategy: SpellingStrategy.NGRAM }] }
 ```
 
 > ## fullTextScoringStrategy
