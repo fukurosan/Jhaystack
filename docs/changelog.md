@@ -6,6 +6,16 @@
 - TODO:: Implement Logging Strategy
 - TODO:: Improve fulltextAsync() performance
 
+### 0.1.4
+- Split SCRUB preprocessor into SCRUB and NORMALIZE_CHARACTERS.
+- Generalized TRIGRAM_SPELLER into NGRAM
+- Added additional ngram speller options
+- Added Soundex spelling strategy
+- Added fuzzy soundex option to soundex spelling strategy
+- Added Norvig spelling strategy
+- Added ID settings for spelling strategies. 
+- Added ability to execute specific spelling strategies. 
+
 ### 0.1.3
 - Added Naive Bayes cluster strategy
 

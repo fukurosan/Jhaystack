@@ -1,4 +1,11 @@
+import IWordMeta from "./IWordMeta"
+
+interface ISpellingBuildOptions {
+	[key: string]: any
+}
+
 export default interface ISpelling {
-	build: (values: any[]) => void
-	evaluate: (value: any) => string | null
+	id: string
+	build: (values: Map<string, IWordMeta>, options?: ISpellingBuildOptions) => void
+	evaluate: (value: string) => string | null
 }

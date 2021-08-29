@@ -9,10 +9,10 @@ import IWeight from "./Model/IWeight"
 import IPreProcessor from "./Model/IPreProcessor"
 import IIndexOptions from "./Indexing/IIndexOptions"
 import IClusterSpecification from "./Model/IClusterSpecification"
-import ISpelling from "./Model/ISpelling"
 import { IQuery } from "./Model/IQuery"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 import { ISpellingResult } from "./Model/ISpellingResult"
+import ISpellingSpecification from "./Model/ISpellingSpecification"
 
 /**
  * The main Jhaystack class.
@@ -198,7 +198,7 @@ export default class Jhaystack {
 	 * @param doNotBuild If set to true the clusters will not immediately be built
 	 * @returns {Jhaystack} - this
 	 */
-	setSpellingStrategy(spellers: (new () => ISpelling)[], doNotBuild?: boolean) {
+	setSpellingStrategy(spellers: ISpellingSpecification[], doNotBuild?: boolean) {
 		this.engine.setSpellingStrategy(spellers, doNotBuild)
 		return this
 	}
@@ -215,9 +215,10 @@ export default class Jhaystack {
 	/**
 	 * Executes the provided spelling strategies and provides suggestions for changes if necessary
 	 * @param value - String to check spelling for
+	 * @param id - Optional id to execute a specific speller, if not provided the spellers will be executed in provided order until a suggestion can be produced or all spellers are exhausted.
 	 */
-	checkSpelling(value: string): ISpellingResult {
-		return this.engine.checkSpelling(value)
+	checkSpelling(value: string, id?: string): ISpellingResult {
+		return this.engine.checkSpelling(value, id)
 	}
 
 	/**

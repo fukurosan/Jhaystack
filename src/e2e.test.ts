@@ -1,6 +1,6 @@
 import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, PreProcessingStrategy, FullTextScoringStrategy } from "./index"
 import SearchResult from "./Model/SearchResult"
-import { TRIGRAM_SPELLER } from "./Spelling/Trigram"
+import { NGRAM } from "./Spelling/Ngram"
 
 describe("End to end", () => {
 	const data = [
@@ -164,7 +164,12 @@ describe("End to end", () => {
 		const se = new Jhaystack({
 			data,
 			spelling: {
-				strategy: [TRIGRAM_SPELLER]
+				strategy: [
+					{
+						id: "ngram",
+						speller: NGRAM
+					}
+				]
 			}
 		})
 		const result = se.checkSpelling("arnlo")

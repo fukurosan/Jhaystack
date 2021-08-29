@@ -3,6 +3,7 @@ import Document, { DocumentID } from "../Model/Document"
 import IIndexDocument from "../Model/IIndexDocument"
 import { PORTER2 } from "../PreProcessing/Porter2"
 import { SCRUB } from "../PreProcessing/Scrub"
+import { NORMALIZE_CHARACTERS } from "../PreProcessing/NormalizeCharacters"
 
 interface INaiveBayesClusterQuery {
 	field?: string
@@ -111,7 +112,7 @@ export class NaiveBayes implements ICluster {
 	}
 
 	private getTokensFromValue(value: any) {
-		return PORTER2(SCRUB(`${value}`))
+		return PORTER2(NORMALIZE_CHARACTERS(SCRUB(`${value}`)))
 			.toLowerCase()
 			.split(/\W+/)
 	}
