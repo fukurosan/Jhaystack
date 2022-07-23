@@ -1,7 +1,6 @@
 import resolve from "@rollup/plugin-node-resolve"
 import commonjs from "@rollup/plugin-commonjs"
-import babel from "@rollup/plugin-babel"
-//import typescript from 'rollup-plugin-typescript2'
+import typescript from "rollup-plugin-typescript2"
 import pkg from "./package.json"
 import { terser } from "rollup-plugin-terser"
 
@@ -58,11 +57,7 @@ export default [
 				extensions: [".ts", ".js"]
 			}),
 			commonjs(),
-			babel({
-				exclude: "node_modules/**",
-				extensions: [".ts", ".js"],
-				babelHelpers: "bundled"
-			})
+			typescript()		
 		]
 	},
 	{
@@ -100,11 +95,7 @@ export default [
 				extensions: [".ts", ".js"]
 			}),
 			commonjs(),
-			babel({
-				exclude: "node_modules/**",
-				extensions: [".ts", ".js"],
-				babelHelpers: "bundled"
-			}),
+			typescript(),
 			terser({
 				format: {
 					comments(node, comment) {

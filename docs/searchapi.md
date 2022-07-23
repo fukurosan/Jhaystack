@@ -180,13 +180,13 @@ const options = {
 const query = [
     {
         type: "comparison",
-        value: "my"
+        value: "my",
         strategy: (term, context) => context.startsWith(term)
     },
     "AND",
     {
         type: "comparison",
-        value: "waffles"
+        value: "waffles",
         strategy: (term, context) => context.endsWith(term)
     }
 ]

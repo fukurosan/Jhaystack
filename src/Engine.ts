@@ -25,9 +25,10 @@ import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, I
 import { createEmptyIndexDocument, createDocumentFromValue } from "./Utility/Helpers"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 import { ISpellingResult } from "./Model/ISpellingResult"
-import { setMaxThreadCount, runManyInThread, setMaxIdleTime } from "./ThreadPlanner/ThreadPlanner"
+import { setMaxThreadCount, runManyInThread, setMaxIdleTime, getMaxThreadCount } from "./ThreadPlanner/ThreadPlanner"
 import ISpellingSpecification from "./Model/ISpellingSpecification"
 import IWordMeta from "./Model/IWordMeta"
+import IComparisonResult from "./Model/IComparisonResult"
 
 export default class SearchEngine {
 	/** Default Comparison function to be used for evaluating matches */
@@ -532,13 +533,31 @@ export default class SearchEngine {
 			documentIDs = documentIDs.splice(0, limit)
 		}
 		const sparseVectors = this.indexStrategy!.getSparseIndexVectorsFromArray(tokenMap, documentIDs)
-		const searchResult = sparseVectors.map(vectors => {
-			const score = this.fullTextScoringStrategy!(vectors.vector1, vectors.vector2)
-			if (typeof score === "number") {
-				return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score, score, 0, 0)
+		const searchResult: SearchResult[] = []
+		const promises: Promise<(number | IComparisonResult)[]>[] = []
+		const operationBatchSize = Math.min(Math.round(sparseVectors.length / getMaxThreadCount()), 2000)
+		let operations = []
+		for (let vectorIndex = 0; vectorIndex < sparseVectors.length; vectorIndex++) {
+			const vectors = sparseVectors[vectorIndex]
+			operations.push([vectors.vector1, vectors.vector2])
+			if (operations.length >= operationBatchSize || vectorIndex === sparseVectors.length - 1) {
+				const batchPromise: Promise<(number | IComparisonResult)[]> = runManyInThread(this.fullTextScoringStrategy!, ...operations)
+				batchPromise.then(results => {
+					results.forEach(score => {
+						if (typeof score === "number") {
+							searchResult.push(new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score, score, 0, 0))
+						} else {
+							searchResult.push(
+								new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score.score, score.score, 0, 0, score)
+							)
+						}
+					})
+				})
+				promises.push(batchPromise)
+				operations = []
 			}
-			return new SearchResult(vectors.document.origin, vectors.document.originIndex, [], "", score.score, score.score, 0, 0, score)
-		})
+		}
+		await Promise.all(promises)
 		this.sortSearchResults(searchResult)
 		return searchResult
 	}

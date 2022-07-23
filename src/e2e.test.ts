@@ -1,4 +1,5 @@
 import { Jhaystack, ComparisonStrategy, ExtractionStrategy, SortingStrategy, PreProcessingStrategy, FullTextScoringStrategy } from "./index"
+import { IIndexVector } from "./Model/IFullTextScoring"
 import SearchResult from "./Model/SearchResult"
 import { NGRAM } from "./Spelling/Ngram"
 
@@ -155,6 +156,53 @@ describe("End to end", () => {
 			fullTextScoringStrategy: FullTextScoringStrategy.FULLTEXT_COSINE
 		})
 		const result = se.fulltext("nest")
+		expect(result.length).toBe(1)
+		expect(result[0].item.id).toBe("1")
+		expect(result[0].relevance).toBe(0.7071067811865475)
+	})
+
+	it("Typical full-text-async search works", async () => {
+		/*
+		 * Because of istanbul code coverage reports interfering with function serialization
+		 * we basically need to redefine this whole function here.
+		 * https://github.com/gotwarlost/istanbul/issues/445
+		 */
+		const FULLTEXT_COSINE_COPY = (vector1: IIndexVector, vector2: IIndexVector): number => {
+			const v1 = vector1.vector
+			const v2 = vector2.vector
+			const isVector1UnitLength = vector1.isUnitLength
+			const isVector2UnitLength = vector2.isUnitLength
+			let dotProduct = 0
+			let vector1Length = 1
+			let vector2Length = 1
+			for (let i = 0; i < v1.length; i++) {
+				dotProduct += v1[i] * v2[i]
+				if (!isVector1UnitLength) {
+					vector1Length += v1[i] ** 2
+				}
+				if (!isVector2UnitLength) {
+					vector2Length += v2[i] ** 2
+				}
+			}
+			if (!isVector1UnitLength) {
+				vector1Length = Math.sqrt(vector1Length)
+			}
+			if (!isVector2UnitLength) {
+				vector2Length = Math.sqrt(vector2Length)
+			}
+			return dotProduct / (vector1Length * vector2Length)
+		}
+		const se = new Jhaystack({
+			data,
+			indexing: {
+				enable: true,
+				options: {
+					preProcessors: [PreProcessingStrategy.PORTER2]
+				}
+			},
+			fullTextScoringStrategy: FULLTEXT_COSINE_COPY
+		})
+		const result = await se.fulltextAsync("nest")
 		expect(result.length).toBe(1)
 		expect(result[0].item.id).toBe("1")
 		expect(result[0].relevance).toBe(0.7071067811865475)
