@@ -1,10 +1,11 @@
 # Changelog
 
 ### 0.2.0 (next) TBR
-
 - TODO:: Implement Storage Strategy
-- TODO:: Implement Logging Strategy
-- TODO:: Improve fulltextAsync() performance
+
+### 0.1.5
+- Performance improvements for full-text async searches
+- Simplified build setup & Optimized build output
 
 ### 0.1.4
 - Split SCRUB preprocessor into SCRUB and NORMALIZE_CHARACTERS.
