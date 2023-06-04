@@ -6,4 +6,5 @@ export default interface ICluster {
 	id: string
 	build: (documents: IIndexDocument[], statistics: IIndexStatistics) => void
 	evaluate: (document?: IIndexDocument, options?: any) => DocumentID[]
+	getData: () => any
 }

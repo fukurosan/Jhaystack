@@ -53,9 +53,47 @@ export const setMaxIdleTime = (maxIdleTime: number) => {
 }
 
 /**
+ * Gets the maximum idle time allowed for a worker thread before it is terminated.
+ */
+export const getMaxIdleTime = () => {
+	return threadPlanner.getMaxIdleTime()
+}
+
+/**
  * Terminates all threads for a given function
  * @param fn - Function to terminate all threads for
  */
 export const terminateThread = (fn: (...args: any[]) => any) => {
 	threadPlanner.terminate(fn)
+}
+
+/**
+ * Terminates all threads in the thread planner.
+ */
+export const terminateAllThreads = () => {
+	threadPlanner.terminateAllThreads()
+}
+
+/**
+ * Pre-allocates a number of threads for a given function. This can be done to lower the initial cost when actually executing a search.
+ * If no number is specified the threadplanner will guess.
+ * @param fn - Function to allocate threads for
+ * @param numberOfThreads - Number of threads to allocate
+ */
+export const warmupThreads = (fn: (...args: any[]) => any, numberOfThreads?: number) => {
+	threadPlanner.warmup(fn, numberOfThreads)
+}
+
+/**
+ * Returns the number of running threads
+ */
+export const getNumberOfRunningJobs = (): number => {
+	return threadPlanner.getNumberOfRunningJobs()
+}
+
+/**
+ * Returns the number of queued jobs
+ */
+export const getNumberOfQueuedJobs = (): number => {
+	return threadPlanner.getNumberOfQueuedJobs()
 }

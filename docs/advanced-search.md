@@ -85,6 +85,25 @@ const se = new Jhaystack(options)
 
 Note that if you are running on NodeJS you may need to adjust your libuv worker pool size in order to get optimal performance.
 
+You can configure Jhaystack to warmup threads ahead of time by configuring the shouldWarmup flag. If this is set to true then Jhaystack will create worker threads as soon as a comparison or full text scoring strategy has been configured instead of waiting until a search has been executed.
+
+```javascript
+const options = {
+    threadPlanner: {
+        shouldWarmup: true //Threads will be created ahead of time
+    }
+}
+const se = new Jhaystack(options)
+```
+
+You can use Jhaystack's terminate() function to shut down the search engine, effectively removing all running background threads. This will also allow the main thread to terminate.
+
+```javascript
+const options = {}
+const se = new Jhaystack(options)
+se.terminate()
+```
+
 #### Limiting results
 Do you only need x amount of results? Set a result limit. This means Jhaystack can stop searching as soon as it has found enough matches. Note, though, that the limit will also be applied to inexact k retrieval. So, if you are using filters or full-text search you may need to play around with the number a bit.
 

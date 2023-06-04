@@ -4,6 +4,7 @@ import IIndexDocument from "../Model/IIndexDocument"
 
 interface IRangeClusterOptions {
 	field: string
+	transformer?: (value: any) => number
 }
 
 interface IRangeClusterQuery {
@@ -18,9 +19,12 @@ export class Range implements ICluster {
 	private options: IRangeClusterOptions
 	/** A sorted list of all indexed values */
 	private sortedIndex: [DocumentID, any][] = []
+	/** Transformer function for provided values */
+	private transformer
 
 	constructor(id: any, options: IRangeClusterOptions) {
 		this.id = id
+		this.transformer = options.transformer
 		this.options = options
 	}
 
@@ -28,19 +32,31 @@ export class Range implements ICluster {
 		if (!options!.greaterThan && !options!.lessThan) {
 			return []
 		}
-		let result = this.sortedIndex
+		if (this.sortedIndex.length === 0) {
+			return []
+		}
 		//TODO:: This can be sped up significantly in the future
-		if (options!.greaterThan) {
-			result = result.filter(item => item[1] > options!.greaterThan)
+		const result = []
+		const greaterThan = options?.greaterThan ? options.greaterThan : -Infinity
+		const lessThan = options?.lessThan ? options.lessThan : Infinity
+		for (let i = 0; i < this.sortedIndex.length; i++) {
+			const item = this.sortedIndex[i]
+			if (item[1] >= lessThan) {
+				break
+			}
+			if (item[1] > greaterThan) {
+				result.push(item[0])
+			}
 		}
-		if (options!.lessThan) {
-			result = result.filter(item => item[1] < options!.lessThan)
-		}
-		return result.map(item => item[0])
+		return result
 	}
 
 	build(documents: IIndexDocument[]) {
 		this.buildCluster(documents)
+	}
+
+	getData() {
+		return this.sortedIndex
 	}
 
 	/**
@@ -56,7 +72,7 @@ export class Range implements ICluster {
 				if (!declaration) {
 					return null
 				} else {
-					return [doc.document.id, declaration.originValue]
+					return [doc.document.id, this.transformer ? this.transformer(declaration.originValue) : declaration.originValue]
 				}
 			})
 			.filter(declaration => declaration !== null)

@@ -25,7 +25,7 @@ import { IClusterQueryCriteria, IIndexQueryCriteria, IComparisonQueryCriteria, I
 import { createEmptyIndexDocument, createDocumentFromValue } from "./Utility/Helpers"
 import { ISearchOptionsSearch, ISearchOptionsFullText, ISearchOptionsQuery } from "./Model/ISearchOptions"
 import { ISpellingResult } from "./Model/ISpellingResult"
-import { setMaxThreadCount, runManyInThread, setMaxIdleTime, getMaxThreadCount } from "./ThreadPlanner/ThreadPlanner"
+import { setMaxThreadCount, runManyInThread, setMaxIdleTime, getMaxThreadCount, warmupThreads, terminateAllThreads } from "./ThreadPlanner/ThreadPlanner"
 import ISpellingSpecification from "./Model/ISpellingSpecification"
 import IWordMeta from "./Model/IWordMeta"
 import IComparisonResult from "./Model/IComparisonResult"
@@ -65,6 +65,8 @@ export default class SearchEngine {
 	private queryPlanner: QueryPlanner
 	/** Next available document identifier */
 	private nextDocumentID = 0
+	/** Should threads be warmed up? */
+	private shouldWarmupThreads = false
 
 	constructor(options?: IOptions) {
 		this.comparisonStrategy = BITAP
@@ -87,6 +89,7 @@ export default class SearchEngine {
 		if (options) {
 			options.threadPlanner && options.threadPlanner.maxThreadCount && setMaxThreadCount(options.threadPlanner.maxThreadCount)
 			options.threadPlanner && options.threadPlanner.maxIdleTime && setMaxIdleTime(options.threadPlanner.maxIdleTime)
+			options.threadPlanner && options.threadPlanner.shouldWarmup && (this.shouldWarmupThreads = options.threadPlanner.shouldWarmup)
 			options.comparison && this.setComparisonStrategy(options.comparison)
 			options.extraction && this.setExtractionStrategy(options.extraction)
 			options.sorting && this.setSortingStrategy(options.sorting)
@@ -107,10 +110,15 @@ export default class SearchEngine {
 
 	setComparisonStrategy(strategy: IComparison): void {
 		this.comparisonStrategy = strategy
+		this.shouldWarmupThreads && warmupThreads(strategy)
 	}
 
 	setExtractionStrategy(strategy: IExtraction): void {
 		this.extractionStrategy = strategy
+	}
+
+	terminate() {
+		terminateAllThreads()
 	}
 
 	setSortingStrategy(strategy: ((a: SearchResult, b: SearchResult) => number)[]): void {
@@ -227,6 +235,7 @@ export default class SearchEngine {
 
 	setFullTextScoringStrategy(strategy: IFullTextScoring) {
 		this.fullTextScoringStrategy = strategy
+		this.shouldWarmupThreads && warmupThreads(strategy)
 	}
 
 	setIndexStrategy(options?: IIndexOptions, doNotBuild?: boolean) {
@@ -270,6 +279,14 @@ export default class SearchEngine {
 		this.clusterStrategy.forEach(cluster => {
 			cluster.build(documents, statistics)
 		})
+	}
+
+	getClusterdata(id: string) {
+		const cluster = this.clusterStrategy.find(cluster => cluster.id === id)
+		if (!cluster) {
+			throw new Error("No such cluster found: " + id)
+		}
+		return cluster.getData()
 	}
 
 	setSpellingStrategy(spellerSpecifications: ISpellingSpecification[], doNotBuild?: boolean) {

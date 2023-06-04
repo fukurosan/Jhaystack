@@ -87,6 +87,8 @@ interface IOptions {
 		maxThreadCount?: number
 		/** Maximum idle wait time before a worker thread is terminated (in ms) */
 		maxIdleTime?: number
+		/** If set to true threads will the created ahead of time when comparison strategies are configured */
+		shouldWarmup: boolean
 	}
 	/** Maximum number of matches before search ends */
 	limit?: null | number

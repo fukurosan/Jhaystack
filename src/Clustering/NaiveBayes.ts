@@ -111,6 +111,10 @@ export class NaiveBayes implements ICluster {
 		})
 	}
 
+	getData() {
+		return this.categoryDocumentIndex
+	}
+
 	private getTokensFromValue(value: any) {
 		return PORTER2(NORMALIZE_CHARACTERS(SCRUB(`${value}`)))
 			.toLowerCase()

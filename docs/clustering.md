@@ -13,7 +13,7 @@ import { Jhaystack, ClusteringStrategy } from "jhaystack"
 
 const options = {
     clustering: {
-        options: [
+        strategy: [
             {
                 id: "kmeans",
                 cluster: ClusteringStrategy.KMEANS,
@@ -41,11 +41,19 @@ se.buildClusters()
 
 Clusters can be queried using filters at search time. Check out the search API for more information.
 
+It is possible to extract computed data from a cluster for example for troubleshooting or NLP purposes. The data structure for different types of clusters may be different. To extract the data you simply use the getClusterData() function:
+
+```javascript
+kmeans.getClusterData("kmeans") // -> Map<string, number[]>
+```
+
 Jhaystack comes with the following clusters built in:
 
 > ## KMeans
 
 KMeans will compute groups of documents based on an unsupervised k-means algorithm applied to the documents’ vectors. You can either supply the amount of groups to create, or let Jhaystack make a guesstimate. You can also specify how many cycles Jhaystack should loop through in trying to optimize the groupings. Beware of setting this to -1 since it could lead to very long cluster construction times for large datasets.
+
+The getClusterData() function will return a map object where each key is a category and each value an array of numbers specifying the index of the document in the data source.
 
 This strategy requires a built index.
 
@@ -64,6 +72,8 @@ No options can be passed at **query time**
 > ## Naive Bayes
 
 Naive Bayes is a supervised probabilistic classification algorithm that can be used for text classification. Typical use cases are spam filters, sentiment analysis or categorization of texts like news articles or blog posts. Using either a provided training dataset or a training function the cluster will create a document classification index that can be used for filtering information at query time.
+
+The getClusterData() function will return a map object where each key is a category and each value an array of numbers specifying the index of the document in the data source.
 
 This strategy does not require a built index.
 
@@ -91,11 +101,17 @@ The following options can be configured at **query time**
 
 Range allows you to query for ranges of values, for example numbers and dates. This cluster requires that you specify a field to be used. The index will map all values on the field, and allow you to retrieve all documents using greater than/less than operators. Beware that the cluster does not have a constant lookup time.
 
+The getClusterData() function will return an ordered list values with their corresponding document index in the data source.
+
 This strategy does not require a built index.
 
 The following options can be configured at **build time**:
  - **field** 
    - **Description**: *Field that cluster should be based on formatted as a "." joined string of the property path*
+   - **Type**: `string`
+   - **Default**: `undefined`
+ - **transformer** 
+   - **Description**: *Optional transformer function that will be applied to all values*
    - **Type**: `string`
    - **Default**: `undefined`
 
@@ -181,6 +197,7 @@ interface ICluster {
 	id: string
 	build: (documents: IIndexDocument[], statistics: IIndexStatistics) => void
 	evaluate: (document?: IIndexDocument, options?: any) => DocumentID[]
+  getData: () => any
 }
 
 /** And the constructor looks like this */

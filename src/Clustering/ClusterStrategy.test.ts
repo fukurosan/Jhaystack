@@ -94,7 +94,7 @@ describe("Clustering Strategy Module", () => {
 		}
 		const kmeans = new KMeans(1, {})
 		kmeans.build(documents, statistics)
-		const clustermap = kmeans.getClusterMap()
+		const clustermap = kmeans.getData()
 		const leaders = [...clustermap.keys()]
 		const followers = [...clustermap.values()]
 		expect(leaders.length).toBe(2)

@@ -29,6 +29,13 @@ export interface IThreaderFunction {
 	}
 }
 
+export interface IThreaderThreadMetaData {
+	freeThreads: IThreaderWorker[]
+	pendingTasks: number
+	dependencyString: string
+	terminationTimeout: ReturnType<typeof setTimeout> | undefined
+}
+
 /**
  * Main Thread Planner Class.
  * The threadplanner will serialize functions into strings and create worker objects that can execute these.
@@ -39,18 +46,15 @@ export class ThreadPlanner {
 	/** A list of queued jobs. The first item is the promise that is waiting for the resolution of the thread. The second is the function to execute, and the third is a list of arguments. */
 	private threadQueue: [IThreaderPromise, IThreaderFunction, any[]][]
 	/** Currently running number of threads */
-	private numberOfRunningThreads: 0
-	/** A map between functions and information about how many tasks are currently pending, a timeout object used to keep track of worker idle time for auto-termination, worker dependencies, as well as free worker threads. */
-	private metaData: WeakMap<
-		IThreaderFunction,
-		{ freeThreads: IThreaderWorker[]; pendingTasks: number; dependencyString: string; terminationTimeout: ReturnType<typeof setTimeout> | undefined }
-	>
-
-	/** Maximum idle time before workers are terminated (in ms) */
-	private MAXIMUM_IDLE_TIME_MS = 10000 //10 seconds
-
+	private numberOfRunningThreads: number
 	/** Maximum allowed number of threads (determined in extending classes) */
 	protected maxThreads: number
+	/** A map between functions and information about how many tasks are currently pending, a timeout object used to keep track of worker idle time for auto-termination, worker dependencies, as well as free worker threads. */
+	private metaData: WeakMap<IThreaderFunction, IThreaderThreadMetaData>
+	/** Maximum idle time before workers are terminated (in ms) */
+	private MAXIMUM_IDLE_TIME_MS = 10000 //10 seconds
+	/** All registered functions */
+	private registeredFns: IThreaderFunction[] = []
 
 	constructor() {
 		this.threadQueue = []
@@ -63,12 +67,24 @@ export class ThreadPlanner {
 		this.maxThreads = maxThreadCount
 	}
 
-	setMaxIdleTime = (maxIdleTime: number) => {
+	setMaxIdleTime(maxIdleTime: number) {
 		this.MAXIMUM_IDLE_TIME_MS = maxIdleTime
 	}
 
 	getMaxThreadCount() {
 		return this.maxThreads
+	}
+
+	getMaxIdleTime() {
+		return this.MAXIMUM_IDLE_TIME_MS
+	}
+
+	getNumberOfQueuedJobs() {
+		return this.threadQueue.length
+	}
+
+	getNumberOfRunningJobs() {
+		return this.numberOfRunningThreads
 	}
 
 	hasNext() {
@@ -123,11 +139,9 @@ export class ThreadPlanner {
 	}
 
 	/**
-	 * Queues a function in the thread planner (and starts a thread execution loop if possible).
-	 * @param fn - Function to run
-	 * @param args - Arguments for the function
+	 * Retrieves meta data for a function from the threadplanner. If no meta data exists then it will be created by this function.
 	 */
-	async run(fn: IThreaderFunction, ...args: any[]) {
+	getMetaData(fn: IThreaderFunction): IThreaderThreadMetaData {
 		if (!this.metaData.has(fn)) {
 			this.metaData.set(fn, {
 				pendingTasks: 0,
@@ -135,8 +149,40 @@ export class ThreadPlanner {
 				dependencyString: this.getDependencyString(fn),
 				freeThreads: []
 			})
+			this.registeredFns.push(fn)
 		}
-		const metaData = this.metaData.get(fn)!
+		return this.metaData.get(fn)!
+	}
+
+	/**
+	 * Warms up threads for a given function for later use.
+	 */
+	warmup(fn: IThreaderFunction, number?: number) {
+		const metaData = this.getMetaData(fn)
+		const threads = metaData.freeThreads
+		const loops = number ? number : Math.max(0, this.maxThreads - threads.length)
+		for (let i = 0; i < loops; i++) {
+			threads.push(this.createInlineWorker(fn, metaData.dependencyString))
+		}
+	}
+
+	/**
+	 * Terminates all threads in the thread planner.
+	 */
+	terminateAllThreads() {
+		let fn
+		while ((fn = this.registeredFns.pop())) {
+			this.terminate(fn)
+		}
+	}
+
+	/**
+	 * Queues a function in the thread planner (and starts a thread execution loop if possible).
+	 * @param fn - Function to run
+	 * @param args - Arguments for the function
+	 */
+	async run(fn: IThreaderFunction, ...args: any[]) {
+		const metaData = this.getMetaData(fn)
 		if (metaData.terminationTimeout) {
 			clearTimeout(metaData.terminationTimeout)
 			delete metaData.terminationTimeout
@@ -214,13 +260,18 @@ export class ThreadPlanner {
 	 * @param thread - Worker that completed
 	 */
 	handleThreadCompleted(fn: IThreaderFunction, thread: IThreaderWorker) {
-		const metaData = this.metaData.get(fn)!
+		const metaData = this.metaData.get(fn)
+		if (!metaData) {
+			//A termination command must have been executed
+			return
+		}
 		metaData.freeThreads.push(thread)
 		metaData.pendingTasks--
 		if (!metaData.pendingTasks) {
 			if (this.MAXIMUM_IDLE_TIME_MS) {
 				metaData.terminationTimeout = setTimeout(() => {
 					this.terminate(fn)
+					this.registeredFns = this.registeredFns.filter(registeredFn => registeredFn !== fn)
 				}, this.MAXIMUM_IDLE_TIME_MS)
 			}
 		}

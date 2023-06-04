@@ -47,6 +47,13 @@ export default class Jhaystack {
 	}
 
 	/**
+	 * Terminates the search engine and all running threads.
+	 */
+	terminate() {
+		this.engine.terminate()
+	}
+
+	/**
 	 * Sets the extraction strategy to be used. I.e. how documents should be extracted from the dataset.
 	 * @param {IExtraction} strategy - Extraction strategy to be used
 	 * @returns {Jhaystack} - this
@@ -181,6 +188,15 @@ export default class Jhaystack {
 	setClusterStrategy(clusterSpecifications: IClusterSpecification[], doNotBuild?: boolean) {
 		this.engine.setClusterStrategy(clusterSpecifications, doNotBuild)
 		return this
+	}
+
+	/**
+	 * Extracts data from a configured cluster. Useful for debugging or NLP purposes.
+	 * @param id - ID of the cluster to extract data from.
+	 * @returns {any} - Data from the cluster
+	 */
+	getClusterdata(id: string) {
+		return this.engine.getClusterdata(id)
 	}
 
 	/**
