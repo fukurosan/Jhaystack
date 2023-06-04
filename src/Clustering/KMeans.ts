@@ -41,8 +41,7 @@ export class KMeans implements ICluster {
 		this.buildCluster(documents, statistics, this.options.k, this.options.maxRepetition)
 	}
 
-	/** Only for testing */
-	getClusterMap() {
+	getData() {
 		return this.clusterMap
 	}
 

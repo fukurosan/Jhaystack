@@ -1,10 +1,18 @@
 # Changelog
 
 ### 0.2.0 (next) TBR
-
 - TODO:: Implement Storage Strategy
-- TODO:: Implement Logging Strategy
-- TODO:: Improve fulltextAsync() performance
+
+### 0.1.6
+- Added ability to extract computed cluster indices
+- Added new "transformer" option for range cluster
+- Fixed an error with typings not working properly
+- Added ability to configure thread planner to warm up threads ahead of time
+- Added a terminate function to Jhaystack to safely close down the search engine.
+
+### 0.1.5
+- Performance improvements for full-text async searches
+- Simplified build setup & Optimized build output
 
 ### 0.1.4
 - Split SCRUB preprocessor into SCRUB and NORMALIZE_CHARACTERS.
@@ -62,14 +70,12 @@
 
  - Rewrote traversal strategies into extraction strategies
 
-
 ### 0.0.52
 
 - Added Scrubber preprocessor
 - Added English Stop Words preprocessor
 - Added Porter2 stemmer preprocessor
 - Added Lancaster stemmer preprocessor
-
 
 ### 0.0.51
 
@@ -82,7 +88,6 @@
 - Added Jaro-Winkler distance comparison strategy
 - Added Longest Common Substring comparison strategy
  
-
 ### 0.0.40
 
 - Added ability to add and remove individual items from search data set
@@ -93,7 +98,6 @@
 - Implemented search meta data
 - Simplified comparison functions
 - Added index of the result item in the original array to search result object
-
 
 ### 0.0.39
 

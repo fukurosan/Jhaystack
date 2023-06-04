@@ -38,8 +38,10 @@ export default interface IOptions {
 	threadPlanner?: {
 		/** Maximum amount threads allowed to run in parallel */
 		maxThreadCount?: number
-		/** Maximum idle wait time before a worker thread is terminated (in ms) */
+		/** Maximum idle wait time before a worker thread is terminated (in ms). If set to 0 the threads will never be terminated. */
 		maxIdleTime?: number
+		/** If set to true threads will the created ahead of time when comparison strategies are configured */
+		shouldWarmup: boolean
 	}
 	/** Maximum number of matches before search ends */
 	limit?: null | number
