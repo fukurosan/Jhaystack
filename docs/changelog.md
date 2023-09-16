@@ -3,6 +3,9 @@
 ### 0.2.0 (next) TBR
 - TODO:: Implement Storage Strategy
 
+### 0.1.7
+- Fixed incorrect types
+
 ### 0.1.6
 - Added ability to extract computed cluster indices
 - Added new "transformer" option for range cluster
