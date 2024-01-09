@@ -3,6 +3,9 @@
 ### 0.2.0 (next) TBR
 - TODO:: Implement Storage Strategy
 
+### 0.1.8
+- Fixed broken images
+
 ### 0.1.7
 - Fixed incorrect types
 
