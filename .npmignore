@@ -21,6 +21,7 @@ package-lock.json
 jest.config.js
 rollup.config.js
 tsconfig.json
+./github
 
 # Sources
 src
